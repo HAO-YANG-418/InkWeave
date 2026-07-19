@@ -72,9 +72,9 @@ gwe check 你的章节.txt
 
 ## 开源
 
-MIT协议，随便用。GitHub在这：[github.com/yourname/gwe-engine]()
+MIT协议，随便用。GitHub在这：https://github.com/HAO-YANG-418/gwe-engine
 
-在线体验（不用安装，浏览器直接试）：[landing page链接]()
+在线体验（不用安装，浏览器直接试）：https://hao-yang-418.github.io/gwe-engine/
 
 内置了22个配置节点、12个平台预设（起点仙侠、番茄都市、晋江言情等），可以针对不同平台调检测标准。
 

@@ -10526,7 +10526,426 @@ function createEngineWithKB(provider) {
   const result = loadAllKB(engine);
   return { engine, result };
 }
+
+// src/book-context.ts
+var SENSORY_SINGLE = /^(疼|麻|冷|热|烫|酸|胀|痒|涩|苦|甜|咸|腥|臭|香|黑|亮|静|响|湿|干|硬|软|滑|糙|重|轻)。?$/;
+var DIALOGUE_OPEN = /^[""「"]/;
+var NEGATION_REVEAL = /不是[^。？！]{1,8}[。？！]\s*是/g;
+function detectOpeningPattern(firstSentence) {
+  const trimmed = firstSentence.trim();
+  const len = trimmed.length;
+  let type = "description";
+  let keyword = trimmed.slice(0, 4);
+  let signature = "";
+  if (SENSORY_SINGLE.test(trimmed) || len <= 3 && /[疼麻冷热烫酸胀痛痒涩]/.test(trimmed)) {
+    type = "single-sensory";
+    keyword = trimmed.replace(/[。！？]/g, "");
+    signature = `sensory:${keyword}`;
+  } else if (DIALOGUE_OPEN.test(trimmed)) {
+    type = "dialogue";
+    signature = "dialogue";
+  } else if (/^(他|她|我|[\u4e00-\u9fa5]{2,3})(把|将|用|举|拿|握|伸|抬|踢|踩|抓|放|推|拉|扯|拽|蹲|站|跳|跑|走|转身|回头|低头|抬头)/.test(trimmed)) {
+    type = "action";
+    signature = `action:${trimmed.slice(0, 2)}`;
+  } else if (/^(我|他|她)(想|觉得|意识到|知道|明白|想起|记得|感觉|以为|怀疑)/.test(trimmed)) {
+    type = "internal-thought";
+    signature = "internal";
+  } else {
+    type = "description";
+    signature = `desc:${len}`;
+  }
+  return { length: len, type, keyword, signature };
+}
+function detectEndingPattern(lastSentences) {
+  const fullEnding = lastSentences.join("");
+  const lastSent = lastSentences[lastSentences.length - 1]?.trim() || "";
+  const negationMatches = fullEnding.match(NEGATION_REVEAL);
+  const usesNegationReveal = negationMatches !== null && negationMatches.length >= 1;
+  const fragmentCount = lastSentences.filter((s) => s.trim().length <= 8).length;
+  let type = "action";
+  if (usesNegationReveal && /(是|原来|其实)/.test(fullEnding.slice(-20))) {
+    type = "reveal";
+  } else if (/[？?]|吗|呢|难道|会不会|是不是/.test(lastSent)) {
+    type = "cliffhanger";
+  } else if (DIALOGUE_OPEN.test(lastSent)) {
+    type = "dialogue";
+  } else if (usesNegationReveal) {
+    type = "reveal";
+  } else if (fragmentCount >= 2 && lastSent.length <= 6) {
+    type = "emotion";
+  } else {
+    type = "action";
+  }
+  const signature = `${type}:${usesNegationReveal ? "neg" : "normal"}:${fragmentCount}`;
+  return {
+    type,
+    usesNegationReveal,
+    fragmentCount,
+    lastSentenceLength: lastSent.length,
+    signature
+  };
+}
+function extractSettingRules(text, chapterIndex) {
+  const rules = [];
+  const absolutePatterns = [
+    /([^，。？！\n]{2,15})永远(?:是|不会|不能|不可能)([^，。？！\n]{2,15})/g,
+    /([^，。？！\n]{2,15})从来(?:不|没|没有)([^，。？！\n]{2,15})/g,
+    /([^，。？！\n]{2,15})(?:绝?对|一定|必须)是([^，。？！\n]{2,15})/g,
+    /([^，。？！\n]{2,8})只(?:能|会|有)([^，。？！\n]{2,15})/g
+  ];
+  for (const pattern of absolutePatterns) {
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      rules.push({
+        rule: match[0],
+        type: "absolute",
+        keywords: [match[1].slice(-4), match[2].slice(0, 4)],
+        establishedIn: chapterIndex
+      });
+    }
+  }
+  return rules;
+}
+function extractForeshadowing(text, chapterIndex) {
+  const foreshadows = [];
+  const plantPatterns = [
+    { re: /([^，。？！\n]{0,10}(?:想起|记得|回忆起|意识到|感觉到|注意到)[^，。？！\n]{2,25})/g, importance: 2 },
+    { re: /([^，。？！\n]{0,10}(?:说过|警告过|提醒过|告诉过他)[^，。？！\n]{2,25})/g, importance: 3 },
+    { re: /(不对劲|有问题|不对|奇怪|异常|反常|不寻常)/g, importance: 2 }
+  ];
+  const seen = /* @__PURE__ */ new Set();
+  for (const { re, importance } of plantPatterns) {
+    let match;
+    while ((match = re.exec(text)) !== null) {
+      const desc = match[1] || match[0];
+      const key = desc.slice(0, 10);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      foreshadows.push({
+        keyword: key,
+        description: desc.slice(0, 40),
+        plantedIn: chapterIndex,
+        importance,
+        resolved: false
+      });
+    }
+  }
+  return foreshadows;
+}
+var BookContext = class {
+  chapters = [];
+  allSettingRules = [];
+  allForeshadowing = [];
+  globalCharacterStates = /* @__PURE__ */ new Map();
+  /** 添加一个章节的快照，返回检测到的全书级别问题 */
+  addChapter(snapshot) {
+    const issues = [];
+    const openingIssues = this.checkOpeningRepetition(snapshot);
+    issues.push(...openingIssues);
+    const endingIssues = this.checkEndingRepetition(snapshot);
+    issues.push(...endingIssues);
+    const settingIssues = this.checkSettingViolations(snapshot);
+    issues.push(...settingIssues);
+    const continuityIssues = this.checkContinuity(snapshot);
+    issues.push(...continuityIssues);
+    const foreshadowIssues = this.checkForeshadowing(snapshot);
+    issues.push(...foreshadowIssues);
+    this.chapters.push(snapshot);
+    for (const rule of snapshot.settingRules) {
+      this.allSettingRules.push(rule);
+    }
+    for (const fs of snapshot.foreshadowing) {
+      this.allForeshadowing.push(fs);
+    }
+    for (const [name, state] of snapshot.characterStates) {
+      this.globalCharacterStates.set(name, state);
+    }
+    return issues;
+  }
+  /** 检测最近N章开头模式是否重复 */
+  checkOpeningRepetition(snapshot) {
+    const issues = [];
+    const recentN = 5;
+    const recent = this.chapters.slice(-recentN);
+    const sameTypeCount = recent.filter((c) => c.openingPattern.type === snapshot.openingPattern.type).length;
+    const sameSensoryCount = recent.filter((c) => c.openingPattern.type === "single-sensory").length;
+    if (sameSensoryCount >= 1 && snapshot.openingPattern.type === "single-sensory") {
+      issues.push({
+        level: sameSensoryCount >= 2 ? "warning" : "info",
+        type: "repetitive-opening",
+        message: `${sameSensoryCount >= 2 ? "\u8FDE\u7EED" : ""}${sameSensoryCount + 1}\u7AE0\u4F7F\u7528\u5355\u5B57\u611F\u5B98\u5F00\u5934\uFF08"${snapshot.firstSentence.slice(0, 8)}"\uFF09${sameSensoryCount >= 2 ? "\uFF0C\u5BB9\u6613\u5957\u8DEF\u5316" : ""}\u3002\u5EFA\u8BAE\u6362\u5BF9\u8BDD/\u52A8\u4F5C\u5F00\u5934\u3002`,
+        chapterIndex: snapshot.index
+      });
+    }
+    if (sameTypeCount >= 2 && snapshot.openingPattern.type !== "single-sensory") {
+      issues.push({
+        level: "info",
+        type: "repetitive-opening",
+        message: `\u8FDE\u7EED${sameTypeCount + 1}\u7AE0\u4F7F\u7528${snapshot.openingPattern.type}\u7C7B\u578B\u5F00\u5934\uFF0C\u5EFA\u8BAE\u53D8\u5316\u8282\u594F\u3002`,
+        chapterIndex: snapshot.index
+      });
+    }
+    return issues;
+  }
+  /** 检测最近N章结尾模式是否重复 */
+  checkEndingRepetition(snapshot) {
+    const issues = [];
+    const recentN = 5;
+    const recent = this.chapters.slice(-recentN);
+    const sameEndingCount = recent.filter((c) => c.endingPattern.signature === snapshot.endingPattern.signature).length;
+    const sameNegationCount = recent.filter((c) => c.endingPattern.usesNegationReveal).length;
+    if (sameNegationCount >= 1 && snapshot.endingPattern.usesNegationReveal) {
+      issues.push({
+        level: sameNegationCount >= 2 ? "warning" : "info",
+        type: "repetitive-ending",
+        message: `${sameNegationCount >= 2 ? "\u8FDE\u7EED" : ""}${sameNegationCount + 1}\u7AE0\u4F7F\u7528"\u4E0D\u662FX\u3002\u662FY\u3002"\u7684\u5426\u5B9A\u63ED\u793A\u7ED3\u5C3E${sameNegationCount >= 2 ? "\uFF0C\u5957\u8DEF\u611F\u5F3A" : ""}\u3002\u5EFA\u8BAE\u6362\u4E2A\u7ED3\u5C3E\u65B9\u5F0F\uFF08\u5BF9\u8BDD/\u52A8\u4F5C/\u60AC\u5FF5\u63D0\u95EE\uFF09\u3002`,
+        chapterIndex: snapshot.index
+      });
+    }
+    if (sameEndingCount >= 2 && snapshot.endingPattern.fragmentCount >= 3) {
+      issues.push({
+        level: "info",
+        type: "repetitive-ending",
+        message: `\u8FDE\u7EED${sameEndingCount + 1}\u7AE0\u4F7F\u7528\u591A\u6BB5\u65AD\u53E5\u6536\u5C3E\uFF08${snapshot.endingPattern.fragmentCount}\u4E2A\u77ED\u53E5\uFF09\uFF0C\u6CE8\u610F\u53D8\u5316\u3002`,
+        chapterIndex: snapshot.index
+      });
+    }
+    return issues;
+  }
+  /** 检测本章是否违反之前建立的设定 */
+  checkSettingViolations(snapshot) {
+    const issues = [];
+    for (const rule of this.allSettingRules) {
+      const { keywords, rule: ruleText, establishedIn } = rule;
+      if (keywords.length < 2) continue;
+      const isNegative = /不|没|从未|永不/.test(ruleText);
+      if (!isNegative) continue;
+      const [subject, predicate] = keywords;
+      const violationRegex = new RegExp(`${subject}[^\uFF0C\u3002\uFF1F\uFF01]{0,15}${predicate.replace(/不|没/g, "")}`);
+    }
+    return issues;
+  }
+  /** 检测与上一章的衔接是否断裂 */
+  checkContinuity(snapshot) {
+    const issues = [];
+    if (this.chapters.length === 0) return issues;
+    const prev = this.chapters[this.chapters.length - 1];
+    const prevScene = prev.closingScene;
+    const firstSent = snapshot.firstSentence;
+    const openContext = firstSent.slice(0, 50);
+    const hasCharacterLink = [...snapshot.characterStates.keys()].some(
+      (name) => prev.characterStates.has(name)
+    );
+    if (!hasCharacterLink && prev.characterStates.size > 0 && snapshot.characterStates.size > 0) {
+      const prevNames = [...prev.characterStates.keys()].slice(0, 3).join("\u3001");
+      issues.push({
+        level: "warning",
+        type: "continuity-break",
+        message: `\u4E0A\u7AE0\u51FA\u573A\u4EBA\u7269\uFF08${prevNames}\uFF09\u5728\u672C\u7AE0\u5F00\u5934\u5747\u672A\u51FA\u73B0\uFF0C\u6CE8\u610F\u573A\u666F\u8F6C\u6362\u662F\u5426\u81EA\u7136\u3002`,
+        chapterIndex: snapshot.index
+      });
+    }
+    return issues;
+  }
+  /** 追踪伏笔，标记长期未回收的伏笔 */
+  checkForeshadowing(snapshot) {
+    const issues = [];
+    const currentText = snapshot.lastSentences.join("") + snapshot.firstSentence;
+    for (const fs of this.allForeshadowing) {
+      if (fs.resolved) continue;
+      if (currentText.includes(fs.keyword.slice(0, 3))) {
+        fs.resolved = true;
+      }
+    }
+    for (const fs of this.allForeshadowing) {
+      if (fs.resolved) continue;
+      const gap = snapshot.index - fs.plantedIn;
+      if (fs.importance >= 3 && gap >= 5) {
+        issues.push({
+          level: "warning",
+          type: "unresolved-foreshadow",
+          message: `\u91CD\u8981\u4F0F\u7B14"${fs.keyword}\u2026\u2026"\u5728\u7B2C${fs.plantedIn + 1}\u7AE0\u57CB\u8BBE\uFF0C\u5DF2\u8FC7${gap}\u7AE0\u672A\u56DE\u6536\u3002`,
+          chapterIndex: snapshot.index,
+          details: fs.description
+        });
+      } else if (fs.importance >= 2 && gap >= 10) {
+        issues.push({
+          level: "info",
+          type: "stale-thread",
+          message: `\u4F0F\u7B14"${fs.keyword}\u2026\u2026"\u5DF2\u8FC7${gap}\u7AE0\u672A\u56DE\u6536\uFF0C\u53EF\u80FD\u5DF2\u88AB\u9057\u5FD8\u3002`,
+          chapterIndex: snapshot.index
+        });
+      }
+    }
+    return issues;
+  }
+  getChapterCount() {
+    return this.chapters.length;
+  }
+  getStats() {
+    const unresolved = this.allForeshadowing.filter((f) => !f.resolved).length;
+    const total = this.allForeshadowing.length;
+    return {
+      chapters: this.chapters.length,
+      totalForeshadowing: total,
+      unresolvedForeshadowing: unresolved,
+      settingRules: this.allSettingRules.length,
+      characters: this.globalCharacterStates.size
+    };
+  }
+};
+
+// src/book-checker.ts
+var CHAPTER_HEADER = /第[一二三四五六七八九十百千万零\d]+[章节回卷部][\s\n]*/g;
+function splitChapters(text) {
+  const matches = [...text.matchAll(CHAPTER_HEADER)];
+  if (matches.length === 0) {
+    return [{ title: "\u5168\u6587", content: text.trim(), index: 0 }];
+  }
+  const chapters = [];
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    const titleStart = match.index ?? 0;
+    const contentStart = titleStart + match[0].length;
+    const contentEnd = i + 1 < matches.length ? matches[i + 1].index ?? text.length : text.length;
+    const title = match[0].trim();
+    const content = text.slice(contentStart, contentEnd).trim();
+    if (content.length > 30) {
+      chapters.push({ title, content, index: chapters.length });
+    }
+  }
+  return chapters.length > 0 ? chapters : [{ title: "\u5168\u6587", content: text.trim(), index: 0 }];
+}
+function extractChapterSnapshot(text, index, title = `\u7B2C${index + 1}\u7AE0`) {
+  const sentences = text.replace(/\r\n/g, "\n").split(/(?<=[。！？…])\s*\n?|(?<=[。！？])\s+/).map((s) => s.trim()).filter((s) => s.length > 0);
+  const firstSentence = sentences[0] || text.slice(0, 20);
+  const lastSentences = sentences.slice(-5);
+  const nameRegex = /[\u4e00-\u9fa5]{2,3}(?=说|道|问|喊|叫|笑|怒|叹|想|看|听|走|跑|站|蹲|转身|回头|点头|摇头|皱眉|咬|握|拿|举|伸|抬)/g;
+  const nameCounts = /* @__PURE__ */ new Map();
+  let m;
+  while ((m = nameRegex.exec(text)) !== null) {
+    const name = m[0];
+    if (/^(自己|大家|众人|对方|这个|那个|什么|怎么|没有|不是|可以|已经|突然|然后|可是|但是|如果|因为|所以|虽然|只是|就是|还是|还有|有些|一点|一下|一声|一眼|脸上|心里|眼中|时候|地方|东西|声音|样子|问题|事情)/.test(name)) continue;
+    nameCounts.set(name, (nameCounts.get(name) || 0) + 1);
+  }
+  const characterStates = /* @__PURE__ */ new Map();
+  for (const [name, count] of nameCounts) {
+    if (count >= 2) {
+      const lastIdx = text.lastIndexOf(name);
+      const context = text.slice(Math.max(0, lastIdx - 10), Math.min(text.length, lastIdx + 30));
+      characterStates.set(name, {
+        name,
+        lastLocation: "",
+        lastAction: context.slice(0, 30),
+        lastChapter: index
+      });
+    }
+  }
+  const endingText = text.slice(-200);
+  const closingScene = endingText.slice(0, 50);
+  const settingRules = extractSettingRules(text, index);
+  const foreshadowing = extractForeshadowing(text, index);
+  return {
+    index,
+    title,
+    firstSentence,
+    openingPattern: detectOpeningPattern(firstSentence),
+    lastSentences,
+    endingPattern: detectEndingPattern(lastSentences),
+    characterStates,
+    settingRules,
+    foreshadowing,
+    resolvedForeshadow: [],
+    closingScene,
+    charCount: text.length
+  };
+}
+function checkBook(fullText) {
+  const chapters = splitChapters(fullText);
+  const ctx = new BookContext();
+  const allIssues = [];
+  const snapshots = [];
+  let totalChars = 0;
+  const openingCounts = {};
+  const endingCounts = {};
+  let repOpen = 0, repEnd = 0, setVio = 0, contBrk = 0;
+  for (const { title, content, index } of chapters) {
+    const snap = extractChapterSnapshot(content, index, title);
+    snapshots.push(snap);
+    totalChars += snap.charCount;
+    openingCounts[snap.openingPattern.type] = (openingCounts[snap.openingPattern.type] || 0) + 1;
+    endingCounts[snap.endingPattern.type] = (endingCounts[snap.endingPattern.type] || 0) + 1;
+    const issues = ctx.addChapter(snap);
+    for (const issue of issues) {
+      allIssues.push(issue);
+      if (issue.type === "repetitive-opening") repOpen++;
+      if (issue.type === "repetitive-ending") repEnd++;
+      if (issue.type === "setting-violation") setVio++;
+      if (issue.type === "continuity-break") contBrk++;
+    }
+  }
+  const stats = ctx.getStats();
+  return {
+    issues: allIssues,
+    chapters: snapshots,
+    stats: {
+      totalChapters: chapters.length,
+      totalChars,
+      openingTypeCounts: openingCounts,
+      endingTypeCounts: endingCounts,
+      totalForeshadowing: stats.totalForeshadowing,
+      unresolvedForeshadowing: stats.unresolvedForeshadowing,
+      repetitiveOpenings: repOpen,
+      repetitiveEndings: repEnd,
+      settingViolations: setVio,
+      continuityBreaks: contBrk
+    }
+  };
+}
+function checkChapterFiles(files) {
+  const ctx = new BookContext();
+  const allIssues = [];
+  const snapshots = [];
+  let totalChars = 0;
+  const openingCounts = {};
+  const endingCounts = {};
+  let repOpen = 0, repEnd = 0, setVio = 0, contBrk = 0;
+  for (let i = 0; i < files.length; i++) {
+    const { name, content } = files[i];
+    const snap = extractChapterSnapshot(content, i, name);
+    snapshots.push(snap);
+    totalChars += snap.charCount;
+    openingCounts[snap.openingPattern.type] = (openingCounts[snap.openingPattern.type] || 0) + 1;
+    endingCounts[snap.endingPattern.type] = (endingCounts[snap.endingPattern.type] || 0) + 1;
+    const issues = ctx.addChapter(snap);
+    for (const issue of issues) {
+      allIssues.push(issue);
+      if (issue.type === "repetitive-opening") repOpen++;
+      if (issue.type === "repetitive-ending") repEnd++;
+      if (issue.type === "setting-violation") setVio++;
+      if (issue.type === "continuity-break") contBrk++;
+    }
+  }
+  const stats = ctx.getStats();
+  return {
+    issues: allIssues,
+    chapters: snapshots,
+    stats: {
+      totalChapters: files.length,
+      totalChars,
+      openingTypeCounts: openingCounts,
+      endingTypeCounts: endingCounts,
+      totalForeshadowing: stats.totalForeshadowing,
+      unresolvedForeshadowing: stats.unresolvedForeshadowing,
+      repetitiveOpenings: repOpen,
+      repetitiveEndings: repEnd,
+      settingViolations: setVio,
+      continuityBreaks: contBrk
+    }
+  };
+}
 export {
+  BookContext,
   DEFAULT_RADAR_WEIGHTS,
   DEFAULT_THRESHOLDS,
   GWEEngine,
@@ -10544,12 +10963,19 @@ export {
   calculateWeightedScore,
   canSelectOption,
   check,
+  checkBook,
+  checkChapterFiles,
   cloneMergedConfig,
   countSensoryMentions,
   createEngineWithKB,
   createProvider,
   detectAnchors,
+  detectEndingPattern,
   detectFillers,
+  detectOpeningPattern,
+  extractChapterSnapshot,
+  extractForeshadowing,
+  extractSettingRules,
   formatValidationResult,
   getAllNodes,
   getDefaultSelections,
@@ -10563,6 +10989,7 @@ export {
   mergeConfig,
   registerNode,
   registerNodeOption,
+  splitChapters,
   validate,
   validateSelectionsComplete
 };

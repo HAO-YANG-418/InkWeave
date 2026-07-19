@@ -88,3 +88,9 @@ export type { WriteTask, BuildPromptOptions, BuildUserMessageOptions } from './p
 
 // 节点注册表
 export * from './node-registry';
+
+// 全书上下文与跨章检测
+export { BookContext, detectOpeningPattern, detectEndingPattern, extractSettingRules, extractForeshadowing } from './book-context';
+export type { ChapterSnapshot, OpeningPattern, EndingPattern, CharacterState, SettingRule, Foreshadow, BookIssue } from './book-context';
+export { checkBook, checkChapterFiles, splitChapters, extractChapterSnapshot } from './book-checker';
+export type { BookCheckResult } from './book-checker';

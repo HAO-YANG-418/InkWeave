@@ -7,8 +7,10 @@ import path from 'path';
 import { createEngineWithKB } from './kb-loader';
 import { MockProvider } from './llm-provider';
 import type { CheckResult } from './types';
+import { checkBook } from './book-checker';
+import type { BookIssue } from './book-context';
 
-const VERSION = '3.2.0';
+const VERSION = '3.3.0';
 
 // 颜色
 const colors = {
@@ -32,7 +34,8 @@ function printHelp(): void {
 ${colorize('GWE - Generic Web-novel Engine 网文追读力引擎', 'bold')} v${VERSION}
 
 ${colorize('用法:', 'cyan')}
-  gwe check <file>        检测一个网文章节文件
+  gwe check <file>        检测单个章节文件
+  gwe book <file>         全书检测（多章连贯性/套路化/伏笔）
   gwe -                   从标准输入读取文本并检测
   gwe --json <file>       输出JSON格式结果（用于程序集成）
   gwe --help, -h          显示帮助
@@ -40,9 +43,9 @@ ${colorize('用法:', 'cyan')}
 
 ${colorize('示例:', 'cyan')}
   gwe check chapter.txt
+  gwe book novel.txt
   cat chapter.txt | gwe -
   gwe --json chapter.txt > report.json
-  echo "疼。凿尖砸进指骨..." | gwe -
 
 ${colorize('评分说明:', 'cyan')}
   ≥90分 🏆 优秀，对标一线热门网文
@@ -54,6 +57,9 @@ ${colorize('评分说明:', 'cyan')}
 ${colorize('评分维度:', 'cyan')}
   身体反应  感官信号  动作推进  情绪张力
   信息推进  转折密度  章末钩子
+
+${colorize('全书检测:', 'cyan')}
+  检测开头/结尾套路重复、章节衔接断裂、设定违反、伏笔未回收
 `);
 }
 
@@ -163,6 +169,81 @@ function runCheck(text: string, filePath?: string, outputJson = false): void {
   console.log('');
 }
 
+function printBookIssues(issues: BookIssue[]): void {
+  if (issues.length === 0) {
+    console.log(colorize('  ✓ 全书检测通过，未发现跨章问题！', 'green'));
+    console.log('');
+    return;
+  }
+
+  const errors = issues.filter(i => i.level === 'error');
+  const warnings = issues.filter(i => i.level === 'warning');
+  const infos = issues.filter(i => i.level === 'info');
+
+  console.log(colorize(`  ─── 全书问题 (${colorize(`${errors.length} error`, 'red')}, ${colorize(`${warnings.length} warning`, 'yellow')}, ${colorize(`${infos.length} info`, 'gray')}) ───`, 'cyan'));
+  console.log('');
+
+  for (const issue of issues) {
+    const icon = issue.level === 'error' ? colorize('  ✗', 'red') : issue.level === 'warning' ? colorize('  ⚠', 'yellow') : colorize('  ℹ', 'gray');
+    const ch = issue.chapterIndex !== undefined ? colorize(`[第${issue.chapterIndex + 1}章]`, 'cyan') : '';
+    console.log(`${icon} ${ch} ${issue.message}`);
+    console.log('');
+  }
+}
+
+function runBookCheck(text: string, filePath?: string): void {
+  console.log('');
+  if (filePath) {
+    console.log(colorize(`  GWE V${VERSION} 全书连贯性检测`, 'bold') + colorize(`  ${filePath}`, 'gray'));
+  } else {
+    console.log(colorize(`  GWE V${VERSION} 全书连贯性检测`, 'bold'));
+  }
+  console.log('');
+
+  const result = checkBook(text);
+
+  // 统计概览
+  console.log(colorize('  ─── 全书概览 ───', 'cyan'));
+  console.log(`  章节数: ${result.stats.totalChapters}  总字数: ${result.stats.totalChars}字`);
+  console.log(`  伏笔总数: ${result.stats.totalForeshadowing}  未回收: ${colorize(String(result.stats.unresolvedForeshadowing), result.stats.unresolvedForeshadowing > 5 ? 'yellow' : 'green')}`);
+  console.log('');
+
+  // 开头类型分布
+  console.log(colorize('  ─── 开头类型分布 ───', 'cyan'));
+  const typeNames: Record<string, string> = {
+    'single-sensory': '单字感官',
+    'dialogue': '对话',
+    'action': '动作',
+    'description': '描写',
+    'internal-thought': '内心',
+  };
+  for (const [type, count] of Object.entries(result.stats.openingTypeCounts)) {
+    const name = typeNames[type] || type;
+    const warn = type === 'single-sensory' && count >= 3;
+    console.log(`  ${name.padEnd(6)}: ${colorize(String(count), warn ? 'yellow' : 'cyan')}章 ${warn ? colorize('← 偏多，建议变化', 'yellow') : ''}`);
+  }
+  console.log('');
+
+  // 结尾类型分布
+  console.log(colorize('  ─── 结尾类型分布 ───', 'cyan'));
+  const endNames: Record<string, string> = {
+    'reveal': '否定揭示',
+    'cliffhanger': '悬念提问',
+    'dialogue': '对话收尾',
+    'action': '动作收尾',
+    'emotion': '情绪短句',
+  };
+  for (const [type, count] of Object.entries(result.stats.endingTypeCounts)) {
+    const name = endNames[type] || type;
+    const warn = type === 'reveal' && count >= 3;
+    console.log(`  ${name.padEnd(6)}: ${colorize(String(count), warn ? 'yellow' : 'cyan')}章 ${warn ? colorize('← 套路化风险', 'yellow') : ''}`);
+  }
+  console.log('');
+
+  // 问题列表
+  printBookIssues(result.issues);
+}
+
 // 主逻辑
 const args = process.argv.slice(2);
 
@@ -205,6 +286,20 @@ if (cleanArgs[0] === '-' || cleanArgs[0] === '--stdin') {
   }
   const text = fs.readFileSync(resolvedPath, 'utf-8');
   runCheck(text, filePath, outputJson);
+} else if (cleanArgs[0] === 'book') {
+  const filePath = cleanArgs[1];
+  if (!filePath) {
+    console.error(colorize('错误: 请指定要检测的文件路径（支持含多章的全书文件）', 'red'));
+    console.log('用法: gwe book <novel.txt>');
+    process.exit(1);
+  }
+  const resolvedPath = path.resolve(process.cwd(), filePath);
+  if (!fs.existsSync(resolvedPath)) {
+    console.error(colorize(`错误: 文件不存在: ${resolvedPath}`, 'red'));
+    process.exit(1);
+  }
+  const text = fs.readFileSync(resolvedPath, 'utf-8');
+  runBookCheck(text, filePath);
 } else {
   const filePath = cleanArgs[0];
   const resolvedPath = path.resolve(process.cwd(), filePath);

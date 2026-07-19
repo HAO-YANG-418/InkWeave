@@ -1,0 +1,40 @@
+{
+  "preset_id": "preset_fantasy",
+  "preset_name": "西方奇幻·V3.1追读版",
+  "preset_description": "西方奇幻V3.1追读版：3秒停留危险开头+冒险反咬+悬念钩子。剑与魔法，冒险感强，但仍遵守追读铁则。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_stylized",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_detail",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_classical",
+    "node_platform": "opt_platform_qidian",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_3",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_ornate",
+    "node_vocab_sensory": "opt_vocab_fantasy",
+    "node_vocab_filler": "opt_filler_standard",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_dense",
+    "node_strictness": "opt_strict_standard",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "西方奇幻V3.1追读版：第一句直接危险/动作现场，前300字出现冲突+主角身体反应+异常。每400-500字一次冒险反咬（以为安全→遇袭/以为赢了→Boss出场/以为是友→是敌）。章末具体悬念钩子。禁止「在XX大陆上，有一个XX」式世界观开头。情绪落到肉身，禁止48个AI套路反应词。",
+  "extra_constraints": [
+    "第一句直接危险/动作/冲突，0世界观铺垫",
+    "前300字出现冲突+身体反应+异常",
+    "每400-500字一次冒险反咬/危机",
+    "章末具体悬念钩子，最后一句≤15字",
+    "禁止开篇大段世界观/种族/历史介绍",
+    "禁止48个AI套路反应词"
+  ],
+  "tags": ["奇幻", "西幻", "冒险", "V3.1追读"]
+}

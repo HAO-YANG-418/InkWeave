@@ -1,0 +1,30 @@
+{
+  "kb_version": "3.0",
+  "node_id": "node_ending_hook",
+  "option_id": "opt_hook_suspense",
+  "option_name": "悬念钩子（未解问题）",
+  "option_description": "章末留下一个未解问题或悬念，读者想知道答案但不会被断章激怒，是比较温和的钩子方式。",
+  "system_prompt": "你使用悬念钩子模式。章节结尾留下一个具体的未解问题、即将发生的危险、或一个未完成的动作。最后一句可以是疑问、可以是未完成动作、可以是威胁即将到来。不需要颠覆前文，但必须有明确的“接下来会发生什么”的悬念。",
+  "constraints": [
+    "章末必须有明确的未解问题或未完成动作",
+    "最后一句不能是总结句/判断句",
+    "悬念必须具体，不能是“未来会怎样”这种空泛悬念",
+    "必须让读者想知道答案"
+  ],
+  "examples": [
+    {
+      "text": "那截金色的纤维停在半空中，指向林深的小臂，一下一下地搏动。林深握紧了凿子，盯着那道裂缝。\n裂缝深处，有什么东西正在往外爬。",
+      "note": "悬念钩子：新危险即将出现，读者想知道爬出来的是什么"
+    }
+  ],
+  "threshold_overrides": {
+    "endingHook": "suspense"
+  },
+  "radar_weights": {
+    "bodyReaction": 1.0,
+    "sensorySignal": 1.0,
+    "action": 1.2,
+    "emotion": 1.2,
+    "infoAdvance": 1.3
+  }
+}

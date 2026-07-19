@@ -1,0 +1,35 @@
+{
+  "kb_version": "2.0",
+  "node_id": "node_rhetoric",
+  "option_id": "opt_rhetoric_metaphor",
+  "option_name": "比喻密集",
+  "option_description": "大量使用比喻（明喻、暗喻、借喻）来描写和叙事，语言形象生动，画面感强。",
+  "threshold_overrides": {
+    "maxSentenceLength": 45,
+    "targetSentenceLength": 24,
+    "shortSentenceRatio": 0.3
+  },
+  "radar_weights": {
+    "sensorySignal": 1.3,
+    "emotion": 1.2,
+    "action": 0.9
+  },
+  "system_prompt": "善用比喻，让文字形象可感。描写人物、场景、情绪时，寻找新鲜贴切的比喻来替代直白描述。比喻要新颖，避免陈词滥调。明喻（像、如、仿佛）和暗喻（是、成了）交替使用。每个重要场景至少有一个核心比喻贯穿。比喻要为内容服务，不能为比喻而比喻——比喻的喻体应该比本体更容易被读者感知。",
+  "constraints": [
+    "比喻必须新鲜贴切，禁止陈词滥调",
+    "每个重要场景至少有2处比喻",
+    "喻体要具体可感，不使用抽象比喻抽象",
+    "避免连续使用比喻导致阅读疲劳"
+  ],
+  "examples": [
+    {
+      "text": "黑暗像一块浸透了墨汁的棉絮，密不透风地裹住一切。矿灯的光柱是一把钝刀，割了几下，只割开一道口子，光就被吞掉了。\n\n他的心跳像一面被疯狂敲击的鼓，每一下都震得耳膜发疼。汗水从额角滑下来，像一群惊慌失措的虫子，顺着脸颊往下爬。\n\n恐惧是一只冰冷的手，从地底伸出来，攥住了他的后颈。",
+      "note": "黑暗如棉絮、光柱如钝刀、心跳如鼓、汗水如虫、恐惧如手——比喻密集且新鲜。"
+    }
+  ],
+  "requires": [],
+  "conflicts": [
+    "opt_rhetoric_plain",
+    "opt_rhetoric_sketch"
+  ]
+}

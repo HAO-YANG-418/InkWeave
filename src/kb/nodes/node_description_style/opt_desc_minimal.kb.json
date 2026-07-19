@@ -1,0 +1,37 @@
+{
+  "kb_version": "2.0",
+  "node_id": "node_description_style",
+  "option_id": "opt_desc_minimal",
+  "option_name": "极简白描",
+  "option_description": "用最少的字勾勒画面，白描手法，不加修饰。留大量空白给读者想象，克制、冷峻、有力。",
+  "threshold_overrides": {
+    "minSensoryTypes": 1,
+    "sightRatio": 0.7,
+    "maxParagraphLength": 100
+  },
+  "radar_weights": {
+    "sensorySignal": 0.7,
+    "emotion": 0.8,
+    "action": 1.2,
+    "infoAdvance": 1.1
+  },
+  "system_prompt": "描写极简，白描为主。用最精准的名词和动词勾勒画面，不用形容词堆砌，不用比喻修饰。一个细节胜过十个修饰语。留白比写满更重要，让读者自己去填充画面。描写只提供最关键的视觉信息和必要的动作感知，其余一概省略。",
+  "constraints": [
+    "描写用词极简，能不用形容词就不用",
+    "每个场景描写不超过3个关键意象",
+    "禁止使用比喻、拟人等修辞进行修饰",
+    "不写感觉，只写事实（不写「恐怖的黑暗」，只写「灯灭了」）"
+  ],
+  "examples": [
+    {
+      "text": "天黑了。\n\n灯灭了。\n\n巷道很长。\n\n水从顶板滴落。\n\n滴。\n\n滴。\n\n滴。\n\n他靠在壁上。\n\n手里攥着铜碗。\n\n壁是温的。",
+      "note": "极简白描，没有修饰，纯事实呈现，反而更有力量。"
+    }
+  ],
+  "requires": [],
+  "conflicts": [
+    "opt_desc_sensory",
+    "opt_desc_poetic",
+    "opt_desc_clinical"
+  ]
+}

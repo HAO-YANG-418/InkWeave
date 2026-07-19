@@ -1,0 +1,36 @@
+{
+  "kb_version": "2.0",
+  "node_id": "node_paragraph_density",
+  "option_id": "opt_dense_high",
+  "option_name": "高密度快节奏",
+  "option_description": "短段落为主，段落切换频繁，信息推进快。适合爽文、战斗、追逐等快节奏场景，阅读感畅快。",
+  "threshold_overrides": {
+    "maxParagraphLength": 80,
+    "targetParagraphLength": 40,
+    "minParagraphCount": 40,
+    "infoPointsPerThousand": 5
+  },
+  "radar_weights": {
+    "action": 1.3,
+    "infoAdvance": 1.3,
+    "sensorySignal": 0.8,
+    "emotion": 0.9
+  },
+  "system_prompt": "采用高密度短段落写法。每段尽量不超过80字，段落之间频繁切换，一个动作或一句对话即可成段。信息推进要快，每段都要有新信息或新进展，不做冗长铺垫。对话和动作交替出现，制造翻页感。减少大段心理描写和环境铺陈。",
+  "constraints": [
+    "单段不超过80字",
+    "每千字不少于40个段落",
+    "每段必须包含新信息、新动作或新对话",
+    "禁止超过100字的连续环境/心理描写"
+  ],
+  "examples": [
+    {
+      "text": "他踹开门。\n\n屋里空无一人。\n\n桌上的茶还冒着热气。\n\n他摸向腰间的枪。\n\n窗户开着。\n\n窗帘在风里飘。\n\n楼下传来引擎声。\n\n他冲到窗口。\n\n一辆黑色轿车正驶出巷子。",
+      "note": "每段极短，切换快，紧迫感强。"
+    }
+  ],
+  "requires": [],
+  "conflicts": [
+    "opt_dense_low"
+  ]
+}

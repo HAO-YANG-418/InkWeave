@@ -1,0 +1,26 @@
+{
+  "kb_version": "3.0",
+  "node_id": "node_twist_frequency",
+  "option_id": "opt_twist_sparse",
+  "option_name": "稀疏反咬（800字+一次，慢热文）",
+  "option_description": "反咬频率低，适合慢热文、传统文学、日常治愈系，靠氛围和人物而非反转驱动。",
+  "system_prompt": "你使用稀疏反咬频率模式。反咬频率较低，约800字以上一次大的信息变化，更多靠氛围铺陈、人物互动、细节积累推动。但仍然要求章节末尾有一次关键转折或发现，不能整章平铺直叙。",
+  "constraints": [
+    "800字以上一次大反咬",
+    "中间可以用小细节变化替代大反转",
+    "章节末尾必须有一次关键转折",
+    "仍然禁止连续1000字完全无新信息"
+  ],
+  "examples": [],
+  "threshold_overrides": {
+    "twistFrequency": "sparse",
+    "minTwistsPer1000": 1
+  },
+  "radar_weights": {
+    "bodyReaction": 1.0,
+    "sensorySignal": 1.3,
+    "action": 0.9,
+    "emotion": 1.3,
+    "infoAdvance": 0.8
+  }
+}

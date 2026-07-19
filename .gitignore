@@ -3,3 +3,4 @@ dist/
 *.js.map
 test-chapter.txt
 .DS_Store
+.npmrc

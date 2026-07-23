@@ -14,6 +14,7 @@ import type {
 import { detectAnchors, calculateAnchorDensity, calculateMaxAnchorGap } from './anchor-detector';
 import { detectFillers } from './filler-words';
 import { calculateRadar, calculateWeightedScore, countSensoryMentions } from './radar';
+import { checkCharacterVoice, checkActionRollcall, checkSenseDensity, checkSentenceWaveform, checkDataAnchor, checkExclamationQuota, checkForbiddenChar, checkNotShiPattern, checkCommaChain } from './checks/index';
 
 // ============================================================
 // 检查器入口
@@ -212,6 +213,35 @@ export function check(
   // 检查项26：标签化假反应检测（V3.1客观测试新增）
   if (!disabledChecks.has('fake_reactions')) {
     checkFakeReactions(text, violations);
+  }
+
+  // ---- 5.5. V3.2 泛用化检测模块（9项） ----
+  if (!disabledChecks.has('character_voice')) {
+    checkCharacterVoice(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('action_rollcall')) {
+    checkActionRollcall(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('sense_density')) {
+    checkSenseDensity(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('sentence_waveform')) {
+    checkSentenceWaveform(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('data_anchor')) {
+    checkDataAnchor(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('exclamation_quota')) {
+    checkExclamationQuota(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('forbidden_char')) {
+    checkForbiddenChar(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('not_shi_pattern')) {
+    checkNotShiPattern(text, stats, thresholds, vocabulary, violations);
+  }
+  if (!disabledChecks.has('comma_chain')) {
+    checkCommaChain(text, stats, thresholds, vocabulary, violations);
   }
 
   // ---- 6. 计算雷达评分 ----
@@ -458,6 +488,54 @@ function checkParagraphLength(
       if (violations.filter((v) => v.ruleId === 'max_paragraph_length').length >= 3) break;
     }
   }
+}
+
+// ============================================================
+// V3.2 检测注册表初始化
+// ============================================================
+
+import { registerChecks, wrapCheck } from './checks/checker-registry';
+
+let _registryInitialized = false;
+export function initCheckerRegistry(): void {
+  if (_registryInitialized) return;
+  _registryInitialized = true;
+
+  registerChecks([
+    { id: 'anchor_density', name: '锚点密度', fn: wrapCheck('anchor_density', checkAnchorDensity, ['text', 'anchorResult', 'stats', 'thresholds', 'violations']), priority: 'core' },
+    { id: 'filler_words', name: '填充词', fn: wrapCheck('filler_words', checkFillerWords, ['text', 'fillerResult', 'stats', 'thresholds', 'violations']), priority: 'core' },
+    { id: 'paragraph_length', name: '段落长度', fn: wrapCheck('paragraph_length', checkParagraphLength, ['text', 'stats', 'thresholds', 'violations']), priority: 'core' },
+    { id: 'dialogue_interleave', name: '对话穿插', fn: wrapCheck('dialogue_interleave', checkDialogueInterleave, ['text', 'fillerResult', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'core' },
+    { id: 'sentence_rhythm', name: '句子节奏', fn: wrapCheck('sentence_rhythm', checkSentenceRhythm, ['text', 'stats', 'thresholds', 'violations']), priority: 'core' },
+    { id: 'info_density', name: '信息密度', fn: wrapCheck('info_density', checkInfoDensity, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'core' },
+    { id: 'sensory_coverage', name: '五感覆盖', fn: wrapCheck('sensory_coverage', checkSensoryCoverage, ['stats', 'thresholds', 'violations']), priority: 'core' },
+    { id: 'opening_impact', name: '开头冲击', fn: wrapCheck('opening_impact', checkOpeningImpact, ['text', 'stats', 'thresholds', 'violations']), priority: 'quality' },
+    { id: 'cliche_reactions', name: '套路反应', fn: wrapCheck('cliche_reactions', checkClicheReactions, ['text', 'violations']), priority: 'quality' },
+    { id: 'fragmented_sentences', name: '碎句病', fn: wrapCheck('fragmented_sentences', checkFragmentedSentences, ['text', 'stats', 'violations']), priority: 'quality' },
+    { id: 'dialogue_conflict', name: '对话碰撞', fn: wrapCheck('dialogue_conflict', checkDialogueConflict, ['text', 'stats', 'violations']), priority: 'quality' },
+    { id: 'ending_hook', name: '章末钩子', fn: wrapCheck('ending_hook', checkEndingHook, ['text', 'stats', 'thresholds', 'violations']), priority: 'quality' },
+    { id: 'twist_density', name: '反咬密度', fn: wrapCheck('twist_density', checkTwistDensity, ['text', 'stats', 'thresholds', 'violations']), priority: 'quality' },
+    { id: 'golden_300', name: '黄金300字', fn: wrapCheck('golden_300', checkGolden300, ['text', 'violations']), priority: 'release' },
+    { id: 'opening_taboos', name: '开篇禁忌', fn: wrapCheck('opening_taboos', checkOpeningTaboos, ['text', 'violations']), priority: 'release' },
+    { id: 'fake_hook', name: '假钩子', fn: wrapCheck('fake_hook', checkFakeHooks, ['text', 'violations']), priority: 'release' },
+    { id: 'sensory_balance', name: '五感平衡', fn: wrapCheck('sensory_balance', checkSensoryBalance, ['text', 'stats', 'violations']), priority: 'release' },
+    { id: 'hook_concreteness', name: '钩子具体性', fn: wrapCheck('hook_concreteness', checkHookConcreteness, ['text', 'violations']), priority: 'release' },
+    { id: 'simile_density', name: '比喻密度', fn: wrapCheck('simile_density', checkSimileDensity, ['text', 'violations']), priority: 'release' },
+    { id: 'unnecessary_english', name: '英文检测', fn: wrapCheck('unnecessary_english', checkUnnecessaryEnglish, ['text', 'violations']), priority: 'release' },
+    { id: 'repetition', name: '重复检测', fn: wrapCheck('repetition', checkRepetition, ['text', 'violations']), priority: 'release' },
+    { id: 'cliché_phrases', name: '空洞成语', fn: wrapCheck('cliché_phrases', checkClichéPhrases, ['text', 'violations']), priority: 'release' },
+    { id: 'opening_scene_setting', name: '开篇写景', fn: wrapCheck('opening_scene_setting', checkOpeningScene, ['text', 'violations']), priority: 'release' },
+    { id: 'fake_reactions', name: '假反应', fn: wrapCheck('fake_reactions', checkFakeReactions, ['text', 'violations']), priority: 'release' },
+    { id: 'character_voice', name: '角色台词', fn: wrapCheck('character_voice', checkCharacterVoice, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'action_rollcall', name: '动作点名册', fn: wrapCheck('action_rollcall', checkActionRollcall, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'sense_density', name: '感官密度', fn: wrapCheck('sense_density', checkSenseDensity, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'sentence_waveform', name: '句群波形', fn: wrapCheck('sentence_waveform', checkSentenceWaveform, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'data_anchor', name: '数据锚点', fn: wrapCheck('data_anchor', checkDataAnchor, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'exclamation_quota', name: '感叹号配额', fn: wrapCheck('exclamation_quota', checkExclamationQuota, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'forbidden_char', name: '禁用字', fn: wrapCheck('forbidden_char', checkForbiddenChar, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'not_shi_pattern', name: '不是X是Y', fn: wrapCheck('not_shi_pattern', checkNotShiPattern, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+    { id: 'comma_chain', name: '逗号链', fn: wrapCheck('comma_chain', checkCommaChain, ['text', 'stats', 'thresholds', 'vocabulary', 'violations']), priority: 'migrated' },
+  ]);
 }
 
 /** 检查项4：对话穿插 */

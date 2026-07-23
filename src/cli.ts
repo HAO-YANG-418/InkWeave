@@ -82,7 +82,7 @@ function getEngine() {
 
 function runCheck(text: string, filePath?: string, outputJson = false): void {
   const engine = getEngine();
-  const result: CheckResult = engine.check(text, null);
+  const result: CheckResult = engine.check(text);
 
   if (outputJson) {
     console.log(JSON.stringify(result, null, 2));

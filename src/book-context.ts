@@ -446,4 +446,78 @@ export class BookContext {
       characters: this.globalCharacterStates.size,
     };
   }
+
+  /**
+   * 生成跨章警告（v7.0）
+   * 在续写下一章时调用，从已有章节快照中提取需要警告的问题
+   * 返回人类可读的警告文本，供注入到续写 Prompt 中
+   */
+  getCrossChapterWarnings(): string[] {
+    const warnings: string[] = [];
+
+    if (this.chapters.length === 0) return warnings;
+
+    const recent = this.chapters.slice(-5);
+
+    // 1. 开头模式重复检测
+    const recentOpenings = recent.map(c => c.openingPattern);
+    const lastOpening = recentOpenings[recentOpenings.length - 1];
+    if (lastOpening) {
+      const sameTypeCount = recentOpenings.filter(o => o.type === lastOpening.type).length;
+      if (sameTypeCount >= 3) {
+        warnings.push(`最近${sameTypeCount}章中有${sameTypeCount}章使用"${lastOpening.type}"类型开头，本章必须换一种开头方式`);
+      }
+      if (lastOpening.type === 'single-sensory') {
+        const sensoryCount = recentOpenings.filter(o => o.type === 'single-sensory').length;
+        if (sensoryCount >= 2) {
+          warnings.push(`最近${sensoryCount}章连续使用单字感官开头（如"疼。""冷。"），本章严禁再用，换对话/动作开头`);
+        }
+      }
+    }
+
+    // 2. 结尾模式重复检测
+    const recentEndings = recent.map(c => c.endingPattern);
+    const lastEnding = recentEndings[recentEndings.length - 1];
+    if (lastEnding) {
+      const negationCount = recentEndings.filter(e => e.usesNegationReveal).length;
+      if (negationCount >= 2 && lastEnding.usesNegationReveal) {
+        warnings.push(`最近${negationCount}章使用了"不是X。是Y。"否定揭示结尾，本章请换结尾方式（悬念提问/对话/动作收尾）`);
+      }
+      const sameSignatureCount = recentEndings.filter(e => e.signature === lastEnding.signature).length;
+      if (sameSignatureCount >= 3) {
+        warnings.push(`最近${sameSignatureCount}章结尾结构签名相同，本章结尾需要变化节奏`);
+      }
+    }
+
+    // 3. 超期伏笔警告
+    const lastChapterIndex = this.chapters[this.chapters.length - 1].index;
+    for (const fs of this.allForeshadowing) {
+      if (fs.resolved) continue;
+      const gap = lastChapterIndex - fs.plantedIn;
+      if (fs.importance >= 3 && gap >= 5) {
+        warnings.push(`重要伏笔"${fs.keyword}"在第${fs.plantedIn + 1}章埋设，已过${gap}章未回收，建议本章推进`);
+      } else if (fs.importance >= 2 && gap >= 10) {
+        warnings.push(`伏笔"${fs.keyword}"已过${gap}章未回收，可能已被读者遗忘`);
+      }
+    }
+
+    // 4. 场景衔接提示
+    if (this.chapters.length > 0) {
+      const lastCh = this.chapters[this.chapters.length - 1];
+      if (lastCh.closingScene) {
+        warnings.push(`上章结尾场景：${lastCh.closingScene}。本章开头必须自然承接`);
+      }
+    }
+
+    // 5. 人物连续性提示
+    if (this.chapters.length >= 2) {
+      const prevCh = this.chapters[this.chapters.length - 1];
+      const prevNames = [...prevCh.characterStates.keys()];
+      if (prevNames.length > 0) {
+        warnings.push(`上章出场人物：${prevNames.slice(0, 4).join('、')}。注意本章的人物衔接`);
+      }
+    }
+
+    return warnings;
+  }
 }

@@ -1,0 +1,42 @@
+{
+  "preset_id": "preset_wasteland",
+  "preset_name": "末日废土·V3.1追读版",
+  "preset_description": "末日废土V3.1追读版：冷峻残酷+生存至上+人性抉择。环境压迫感强，生存细节真实，每场战斗都有代价。",
+  "based_on": "preset_scifi_hardcore",
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_short",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_concise",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_detail",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_cold",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_fast",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_scifi",
+    "node_vocab_filler": "opt_filler_strict",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_extreme",
+    "node_strictness": "opt_strict_strict",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_dense",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "末日废土V3.1追读版：开篇直接进入生存危机（缺水/缺粮/被追杀/变异生物袭击），禁止世界设定铺垫。环境描写要有废墟质感——「风穿过没有玻璃的窗框发出呜咽声」。生存细节必须真实：水要过滤、食物要计量、伤口要处理。每章至少1处生存细节。人物对话简短有力，废话少说。道德困境是核心主题：为了活下去，你愿意付出什么代价？身体状态持续变化：饥饿/口渴/疲惫/伤口不能凭空消失。禁止末世爽文式描写——主角不是无敌的，每次战斗都有代价。章末可以是安静时刻（看日落/喝最后一口水/数子弹），也可以是危机预告。",
+  "extra_constraints": [
+    "每章至少1处具体的生存细节（水/食物/药品/弹药的具体状态）",
+    "禁止末世爽文式描写，每次战斗必须有消耗",
+    "身体状态持续追踪：饥饿/口渴/疲惫/伤口不能凭空消失",
+    "禁止48个AI套路反应词，情绪落到身体反应（干渴/饥饿/疼痛/疲惫）",
+    "对话简短，每次对话不超过3轮（除非是关键剧情）",
+    "章末禁止'他不知道接下来会发生什么'式预告钩子"
+  ],
+  "extra_rules": [],
+  "tags": ["末日", "废土", "生存", "变异", "人性"],
+  "examples": []
+}

@@ -67,13 +67,27 @@ export { loadKBFromJSON, loadAllKB, createEngineWithKB } from './kb-loader';
 export type { LoadResult } from './kb-loader';
 
 // 检测功能
-export { check } from './checker';
+export { check, initCheckerRegistry } from './checker';
 export { detectAnchors, calculateAnchorDensity, calculateMaxAnchorGap } from './anchor-detector';
 export type { AnchorDetectionResult } from './anchor-detector';
 export { detectFillers, calculateFillerDensity } from './filler-words';
 export type { FillerDetectionResult } from './filler-words';
 export { calculateRadar, calculateScore, calculateWeightedScore, countSensoryMentions } from './radar';
 export type { RadarInput } from './radar';
+
+// V3.2 检测模块化
+export {
+  registerCheck,
+  registerChecks,
+  runAllChecks,
+  getRegisteredChecks,
+  getCheckCount,
+  getCheckStats,
+  computeTextStats,
+  applyViolationPenalty,
+  groupViolations,
+  getViolationSummary,
+} from './checks';
 
 // 验证
 export { validate, formatValidationResult, canSelectOption } from './validator';

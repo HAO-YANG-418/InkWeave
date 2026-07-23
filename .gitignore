@@ -4,3 +4,31 @@ dist/
 test-chapter.txt
 .DS_Store
 .npmrc
+
+# 私有模块（不公开发布）
+src/anti-pattern/
+src/reflection/
+src/intent/
+src/cooling/
+src/creative/
+src/learning/
+src/memory/
+src/planning/
+src/super/
+src/technique/
+src/writing/
+src/knowledge/
+src/kb/base-prompt-layered.ts
+src/llm-helper.ts
+
+# 测试与验证
+tests/
+scripts/
+validation-output/
+vitest.config.ts
+practical-validation.ts
+test-e2e.ts
+examples/test-writing.mjs
+
+# 敏感文件
+.env

@@ -4,6 +4,7 @@ dist/
 test-chapter.txt
 .DS_Store
 .npmrc
+docs/
 
 # 私有模块（不公开发布）
 src/anti-pattern/

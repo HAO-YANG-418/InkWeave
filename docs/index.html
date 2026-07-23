@@ -4,19 +4,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GWE - 网文追读力引擎</title>
+<title>InkWeave 墨织 — 网文写作智能引擎</title>
+<meta name="description" content="InkWeave（墨织）是网文写作智能引擎。7维雷达评分、35项质量规则、9项专项检测、跨章分析，零依赖，离线可用，帮你写出不被划走的网文。">
 <style>
 :root {
-  --bg: #0a0a0f;
-  --bg2: #12121a;
-  --bg3: #1a1a26;
+  --bg: #08080d;
+  --bg2: #101018;
+  --bg3: #18182a;
   --ink: #e8e6e3;
   --ink-dim: #9ca3af;
   --muted: #6b7280;
-  --rule: #2a2a3a;
-  --accent: #ef4444;
-  --accent2: #f97316;
-  --accent-glow: rgba(239,68,68,0.15);
+  --rule: #252540;
+  --accent: #8b5cf6;
+  --accent2: #6366f1;
+  --accent-glow: rgba(139,92,246,0.12);
   --good: #22c55e;
   --warn: #eab308;
   --bad: #ef4444;
@@ -37,8 +38,8 @@ body {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background-image:
-    linear-gradient(rgba(239,68,68,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(239,68,68,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(139,92,246,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.02) 1px, transparent 1px);
   background-size: 60px 60px;
   pointer-events: none;
   z-index: 0;
@@ -52,16 +53,15 @@ body {
   z-index: 0;
 }
 .bg-glow.g1 { top: -200px; right: -100px; }
-.bg-glow.g2 { bottom: -300px; left: -200px; background: radial-gradient(circle, rgba(249,115,22,0.1), transparent 70%); }
+.bg-glow.g2 { bottom: -300px; left: -200px; background: radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%); }
 .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
-/* Nav */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
   backdrop-filter: blur(20px);
-  background: rgba(10,10,15,0.7);
+  background: rgba(8,8,13,0.7);
   border-bottom: 1px solid var(--rule);
 }
 nav .container {
@@ -76,8 +76,15 @@ nav .container {
   letter-spacing: -0.02em;
   color: var(--ink);
   text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
 }
-.logo span { color: var(--accent); }
+.logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 900; color: white;
+}
 .nav-links { display: flex; gap: 28px; align-items: center; }
 .nav-links a {
   color: var(--ink-dim);
@@ -104,7 +111,7 @@ nav .container {
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   color: white;
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(239,68,68,0.3); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(139,92,246,0.3); }
 .btn-ghost {
   background: transparent;
   color: var(--ink);
@@ -112,7 +119,6 @@ nav .container {
 }
 .btn-ghost:hover { border-color: var(--accent); }
 
-/* Hero */
 .hero {
   padding: 160px 0 100px;
   text-align: center;
@@ -124,7 +130,7 @@ nav .container {
   padding: 6px 16px;
   border-radius: 100px;
   background: var(--accent-glow);
-  border: 1px solid rgba(239,68,68,0.2);
+  border: 1px solid rgba(139,92,246,0.2);
   color: var(--accent);
   font-size: 0.85rem;
   font-weight: 600;
@@ -148,7 +154,7 @@ nav .container {
   letter-spacing: -0.03em;
   margin-bottom: 20px;
 }
-.hero h1 .red { color: var(--accent); }
+.hero h1 .accent { background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .hero .subtitle {
   font-size: 1.2rem;
   color: var(--ink-dim);
@@ -180,7 +186,6 @@ nav .container {
   margin-top: 4px;
 }
 
-/* Sections */
 section { padding: 80px 0; }
 .section-label {
   display: inline-block;
@@ -204,7 +209,6 @@ section { padding: 80px 0; }
   margin-bottom: 48px;
 }
 
-/* Demo */
 .demo-box {
   background: var(--bg2);
   border: 1px solid var(--rule);
@@ -361,7 +365,6 @@ section { padding: 80px 0; }
 }
 .demo-placeholder .icon { font-size: 3rem; margin-bottom: 16px; opacity: 0.5; }
 
-/* Features grid */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -375,7 +378,7 @@ section { padding: 80px 0; }
   transition: all 0.3s;
 }
 .feature-card:hover {
-  border-color: rgba(239,68,68,0.3);
+  border-color: rgba(139,92,246,0.3);
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0,0,0,0.3);
 }
@@ -401,7 +404,6 @@ section { padding: 80px 0; }
   line-height: 1.7;
 }
 
-/* Benchmark */
 .benchmark-table {
   width: 100%;
   border-collapse: collapse;
@@ -430,7 +432,6 @@ section { padding: 80px 0; }
 .benchmark-table .bad { color: var(--bad); }
 .benchmark-table .label-cell { font-weight: 600; }
 
-/* Code block */
 .code-block {
   background: var(--bg2);
   border: 1px solid var(--rule);
@@ -475,7 +476,6 @@ section { padding: 80px 0; }
 .code-content .fn { color: #7dd3fc; }
 .code-content .num { color: #fbbf24; }
 
-/* Install section */
 .install-box {
   background: var(--bg2);
   border: 1px solid var(--rule);
@@ -495,7 +495,6 @@ section { padding: 80px 0; }
   margin: 20px 0;
 }
 
-/* Footer */
 footer {
   padding: 60px 0 40px;
   border-top: 1px solid var(--rule);
@@ -519,7 +518,6 @@ footer .copy {
   color: var(--muted);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .hero { padding: 120px 0 60px; }
   .hero-stats { gap: 24px; }
@@ -539,33 +537,36 @@ footer .copy {
 
 <nav>
   <div class="container">
-    <a href="#" class="logo">GWE<span>.</span></a>
+    <a href="#" class="logo">
+      <div class="logo-icon">墨</div>
+      InkWeave
+    </a>
     <div class="nav-links">
       <a href="#features">特性</a>
       <a href="#demo">在线Demo</a>
       <a href="#benchmark">对比</a>
       <a href="#install">安装</a>
-      <a href="https://github.com/HAO-YANG-418/gwe-engine" class="btn btn-primary" target="_blank">GitHub ★</a>
+      <a href="https://github.com/HAO-YANG-418/inkweave" class="btn btn-primary" target="_blank">GitHub ★</a>
     </div>
   </div>
 </nav>
 
 <section class="hero">
   <div class="container">
-    <div class="hero-badge">v3.2.0 · 开源 MIT</div>
-    <h1>写出<span class="red">不被划走</span>的<br>网文</h1>
-    <p class="subtitle">GWE 是网文追读力检测引擎。7维雷达评分、26条质量规则、身体锚点检测，帮你在3秒内抓住读者。零依赖，离线可用，浏览器/Node.js/CLI 全平台。</p>
+    <div class="hero-badge">v3.4.0 · 开源 MIT</div>
+    <h1>以墨为线<br><span class="accent">编织故事</span></h1>
+    <p class="subtitle">InkWeave（墨织）是网文写作智能引擎。7维雷达评分、35项质量规则、9项专项检测、跨章分析，帮你在3秒内抓住读者。零依赖，离线可用，浏览器/Node.js/CLI 全平台。</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <a href="#demo" class="btn btn-primary">立即试用 →</a>
+      <a href="#demo" class="btn btn-primary">在线试用 →</a>
       <a href="#install" class="btn btn-ghost">CLI 安装</a>
     </div>
     <div class="hero-stats">
+      <div class="hero-stat"><div class="num">35</div><div class="label">检测规则</div></div>
+      <div class="hero-stat"><div class="num">9</div><div class="label">专项检测</div></div>
       <div class="hero-stat"><div class="num">7</div><div class="label">评分维度</div></div>
-      <div class="hero-stat"><div class="num">26</div><div class="label">检测规则</div></div>
       <div class="hero-stat"><div class="num">22</div><div class="label">配置节点</div></div>
-      <div class="hero-stat"><div class="num">12</div><div class="label">平台预设</div></div>
+      <div class="hero-stat"><div class="num">18</div><div class="label">内置预设</div></div>
       <div class="hero-stat"><div class="num">&lt;10ms</div><div class="label">检测速度</div></div>
-      <div class="hero-stat"><div class="num">0</div><div class="label">外部依赖</div></div>
     </div>
   </div>
 </section>
@@ -574,12 +575,12 @@ footer .copy {
   <div class="container">
     <div class="section-label">核心能力</div>
     <h2 class="section-title">不是语法检查，是追读力检查</h2>
-    <p class="section-desc">普通写作工具检查错别字和语法，GWE 检查的是读者会不会划走。每一个评分维度都对应一个真实的读者流失点。</p>
+    <p class="section-desc">普通写作工具检查错别字和语法，InkWeave 检查的是读者会不会划走。每一个评分维度都对应一个真实的读者流失点。</p>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon">⚡</div>
         <h3>3秒停留检测</h3>
-        <p>首句字数、开篇300字内容、假钩子识别。读者划走只需要3秒，GWE 能在发布前发现这些致命问题。</p>
+        <p>首句字数、开篇300字内容、假钩子识别。读者划走只需要3秒，InkWeave 能在发布前发现这些致命问题。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎯</div>
@@ -592,6 +593,16 @@ footer .copy {
         <p>身体反应/感官信号/动作推进/情绪张力/信息推进/转折密度/章末钩子。一眼看出你的章节哪里弱。</p>
       </div>
       <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>9项专项检测</h3>
+        <p>角色台词辨识度、动作点名册、感官密度、句群波形、数据锚点、感叹号配额、禁用字、不是X是Y模式、逗号链。比AI更懂网文。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📖</div>
+        <h3>跨章分析</h3>
+        <p>开头/结尾模式重复检测、超期伏笔警告、场景衔接提示。不只看单章，更是全书写作的守护者。</p>
+      </div>
+      <div class="feature-card">
         <div class="feature-icon">🤖</div>
         <h3>AI水文识别</h3>
         <p>精准识别"宛如泼墨山水画""美不胜收"等AI常用成语堆砌、空洞写景、比喻过密、填充词泛滥。</p>
@@ -599,7 +610,7 @@ footer .copy {
       <div class="feature-card">
         <div class="feature-icon">🔧</div>
         <h3>22节点可配置</h3>
-        <p>平台（起点/番茄/七猫/晋江）、题材（仙侠/都市/科幻/悬疑）、视角、节奏、语调……每一项都可以精细调节。</p>
+        <p>平台（起点/番茄/七猫/晋江）、题材（仙侠/都市/科幻/悬疑等11类）、视角、节奏、语调……每一项都可以精细调节。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🚀</div>
@@ -614,12 +625,12 @@ footer .copy {
   <div class="container">
     <div class="section-label">在线体验</div>
     <h2 class="section-title">粘贴你的章节，立即检测</h2>
-    <p class="section-desc">下面的 Demo 完全在你的浏览器中运行，文本不会发送到任何服务器。</p>
+    <p class="section-desc">完全在浏览器中运行，文本不会发送到任何服务器。</p>
     <div class="demo-box">
       <div class="demo-header">
         <div class="demo-dots"><span></span><span></span><span></span></div>
         <div class="demo-tabs">
-          <button class="demo-tab active" data-sample="miner">矿工式强追读</button>
+          <button class="demo-tab active" data-sample="miner">追读力风格</button>
           <button class="demo-tab" data-sample="cliche">套路系统流</button>
           <button class="demo-tab" data-sample="ai">AI写景水文</button>
         </div>
@@ -648,7 +659,7 @@ footer .copy {
   <div class="container">
     <div class="section-label">对比测试</div>
     <h2 class="section-title">AI水文 vs 套路文 vs 追读力文</h2>
-    <p class="section-desc">用 GWE 对三类文本盲测，分数差距一目了然。</p>
+    <p class="section-desc">用 InkWeave 对三类文本盲测，分数差距一目了然。</p>
     <table class="benchmark-table">
       <thead>
         <tr>
@@ -662,7 +673,7 @@ footer .copy {
       </thead>
       <tbody>
         <tr>
-          <td class="label-cell">追读力风格（矿工式）</td>
+          <td class="label-cell">追读力风格</td>
           <td class="score-cell good">84.7</td>
           <td>73</td>
           <td class="good">100</td>
@@ -670,7 +681,7 @@ footer .copy {
           <td>3</td>
         </tr>
         <tr>
-          <td class="label-cell">经典套路开头（系统流）</td>
+          <td class="label-cell">经典套路开头</td>
           <td class="score-cell mid">84.4</td>
           <td class="good">92</td>
           <td class="good">100</td>
@@ -720,7 +731,7 @@ footer .copy {
     <div class="install-box">
       <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:8px;">CLI 命令行</h3>
       <p style="color:var(--ink-dim);font-size:0.9rem;">全局安装后，直接检测章节文件</p>
-      <code>npm install -g gwe-engine && gwe check chapter.txt</code>
+      <code>npm install -g inkweave && inkweave check chapter.txt</code>
       <div style="margin-top:32px;text-align:left;">
         <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:16px;">代码调用</h3>
       </div>
@@ -729,14 +740,16 @@ footer .copy {
           <span class="code-lang">TypeScript</span>
         </div>
         <div class="code-content">
-          <span class="kw">import</span> { createEngineWithKB, MockProvider } <span class="kw">from</span> <span class="str">'gwe-engine'</span>;<br><br>
+          <span class="kw">import</span> { createEngineWithKB, MockProvider } <span class="kw">from</span> <span class="str">'inkweave'</span>;<br><br>
           <span class="cmt">// 创建引擎实例（自动加载所有内置知识库）</span><br>
           <span class="kw">const</span> { engine } = <span class="fn">createEngineWithKB</span>(<span class="kw">new</span> <span class="fn">MockProvider</span>());<br><br>
-          <span class="cmt">// 检测章节文本</span><br>
-          <span class="kw">const</span> result = engine.<span class="fn">check</span>(chapterText);<br>
-          <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`得分: <span class="num">${result.score}</span>`</span>);<br>
-          <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`7维评分:`</span>, result.radarScores);<br>
-          <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`违规项:`</span>, result.violations);
+          <span class="cmt">// 单章检测</span><br>
+          <span class="kw">const</span> result = engine.<span class="fn">check</span>(chapterText);<br><br>
+          <span class="cmt">// 跨章分析</span><br>
+          <span class="kw">const</span> ctx = engine.<span class="fn">getBookContext</span>();<br>
+          ctx.<span class="fn">addChapter</span>(ch1); ctx.<span class="fn">addChapter</span>(ch2);<br>
+          <span class="kw">const</span> warnings = ctx.<span class="fn">getCrossChapterWarnings</span>();<br>
+          <span class="cmt">// → ["最近3章连续使用单字感官开头，建议换方式"]</span>
         </div>
       </div>
     </div>
@@ -746,12 +759,11 @@ footer .copy {
 <footer>
   <div class="container">
     <div class="links">
-      <a href="https://github.com/HAO-YANG-418/gwe-engine" target="_blank">GitHub</a>
-      <a href="#features">文档</a>
+      <a href="https://github.com/HAO-YANG-418/inkweave" target="_blank">GitHub</a>
       <a href="#demo">在线Demo</a>
-      <a href="https://www.npmjs.com/package/gwe-engine" target="_blank">NPM</a>
+      <a href="https://www.npmjs.com/package/inkweave" target="_blank">NPM</a>
     </div>
-    <p class="copy">GWE Engine v3.2.0 · MIT License · 写给网文作者的追读力工具</p>
+    <p class="copy">InkWeave 墨织 v3.4.0 · MIT License · 以墨为线，编织故事</p>
   </div>
 </footer>
 
@@ -771,7 +783,6 @@ footer .copy {
   const checkBtn = document.getElementById('demo-check');
   const tabs = document.querySelectorAll('.demo-tab');
 
-  // Initialize engine
   async function initEngine() {
     if (engine) return engine;
     const { engine: eng } = createEngineWithKB(new MockProvider());
@@ -779,7 +790,6 @@ footer .copy {
     return engine;
   }
 
-  // Load sample
   function loadSample(name) {
     textarea.value = samples[name] || '';
     updateCharCount();
@@ -872,14 +882,12 @@ footer .copy {
     }
   }
 
-  // Events
   checkBtn.addEventListener('click', runCheck);
   textarea.addEventListener('input', updateCharCount);
   tabs.forEach(tab => {
     tab.addEventListener('click', () => loadSample(tab.dataset.sample));
   });
 
-  // Load default sample
   loadSample('miner');
 </script>
 </body>

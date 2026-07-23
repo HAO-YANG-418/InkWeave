@@ -1,17 +1,17 @@
-# GWE - Generic Web-novel Engine 网文追读力引擎
+# InkWeave — 墨织 · 网文写作智能引擎
 
 > 「读者手指划到你的正文，只有3秒决定要不要看下去。不是三章，是三秒。」
 
-GWE 是一个专为中文网文设计的**质量检测与评分引擎**。它不依赖大模型，纯规则驱动，毫秒级响应，帮你写出不被划走的网文。
+**InkWeave**（墨织）是一个专为中文网文设计的**写作智能引擎**——以墨为线，编织故事。不依赖大模型，纯规则驱动，毫秒级响应。
 
-[![npm version](https://img.shields.io/npm/v/gwe-engine)](https://www.npmjs.com/package/gwe-engine)
+[![npm version](https://img.shields.io/npm/v/inkweave)](https://www.npmjs.com/package/inkweave)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 为什么选 GWE？
+## 为什么选 InkWeave？
 
-| | GWE | 大模型方案 |
+| | InkWeave | 大模型方案 |
 |---|---|---|
 | **速度** | 3000字 < 10ms | 3-10秒 |
 | **成本** | 零，离线可用 | 按 token 计费 |
@@ -19,7 +19,7 @@ GWE 是一个专为中文网文设计的**质量检测与评分引擎**。它不
 | **可解释** | 每个扣分项有明确原因和修改建议 | 黑盒 |
 | **可定制** | 22个配置节点 + 自定义词表 | 靠 prompt 调 |
 
-> **大模型写，GWE判。** 两者配合，迭代到分数达标再发布。
+> **大模型写，墨织判。** 两者配合，迭代到分数达标再发布。
 
 ---
 
@@ -28,7 +28,7 @@ GWE 是一个专为中文网文设计的**质量检测与评分引擎**。它不
 - **7维雷达评分**：身体反应 / 感官信号 / 动作推进 / 情绪张力 / 信息推进 / 转折密度 / 章末钩子
 - **35项质量规则**：开篇3秒、假钩子、AI水文、套路反应、水词填充、句式波形、逗号链等
 - **锚点三级制**：套路反应（×0.2）、普通反应（×1.0）、高质量生理反应（×1.8）
-- **9项专项检测（v3.4新增）**：角色台词辨识度、动作点名册、感官密度、句群波形、数据锚点、感叹号配额、禁用字、不是X是Y模式、逗号链
+- **9项专项检测（v3.4）**：角色台词辨识度、动作点名册、感官密度、句群波形、数据锚点、感叹号配额、禁用字、不是X是Y模式、逗号链
 - **跨章分析**：开头/结尾模式重复检测、超期伏笔警告、场景衔接提示
 - **22个配置节点**：平台（起点/番茄/七猫/晋江/飞卢）、题材（仙侠/都市/科幻/悬疑等11类）、风格（节奏/视角/修辞/语调）
 - **18个内置预设**：6套题材预设 + 12套平台预设，开箱即用
@@ -40,22 +40,22 @@ GWE 是一个专为中文网文设计的**质量检测与评分引擎**。它不
 ### CLI 命令行
 
 ```bash
-npm install -g gwe-engine
+npm install -g inkweave
 
 # 检测一个章节
-gwe check chapter.txt
+inkweave check chapter.txt
 
 # 从标准输入读取
-cat chapter.txt | gwe -
+cat chapter.txt | inkweave -
 
 # JSON 输出（用于程序集成）
-gwe --json chapter.txt > report.json
+inkweave --json chapter.txt > report.json
 ```
 
 输出示例：
 
 ```
-  GWE v3.4.0 网文追读力检测  chapter.txt
+  InkWeave v3.4.0 网文追读力检测  chapter.txt
 
   综合得分: 84.7分  (通过)  字数: 388字  ⚠  及格
 
@@ -82,7 +82,7 @@ gwe --json chapter.txt > report.json
 ### 代码调用
 
 ```typescript
-import { createEngineWithKB, MockProvider } from 'gwe-engine';
+import { createEngineWithKB, MockProvider } from 'inkweave';
 
 const { engine } = createEngineWithKB(new MockProvider());
 
@@ -101,7 +101,7 @@ const warnings = context.getCrossChapterWarnings();
 ### 配合 LLM 使用
 
 ```typescript
-import { createEngineWithKB, OpenAICompatibleProvider } from 'gwe-engine';
+import { createEngineWithKB, OpenAICompatibleProvider } from 'inkweave';
 
 const provider = new OpenAICompatibleProvider({
   apiKey: 'your-api-key',
@@ -187,7 +187,7 @@ const stream = await engine.writeChapter({
 
 ## 跨章分析
 
-GWE 不仅检测单章质量，还能跨章追踪写作模式：
+InkWeave 不仅检测单章质量，还能跨章追踪写作模式：
 
 - **开头模式检测**：连续3章用"单字感官开头"？它会在第4章提示你换对话/动作开头
 - **结尾模式检测**：连续用"不是X。是Y。"结尾？它会建议换悬念提问或动作收尾
@@ -199,7 +199,7 @@ GWE 不仅检测单章质量，还能跨章追踪写作模式：
 ## 架构
 
 ```
-gwe-engine/
+inkweave/
 ├── src/
 │   ├── index.ts              # 统一出口
 │   ├── types.ts              # 类型定义 + 默认阈值/权重
@@ -231,7 +231,7 @@ gwe-engine/
 
 ## 路线图
 
-GWE 正在从一个**检测引擎**进化为一个**写作智能体**。以下是正在开发的路线：
+InkWeave 正在从一个**检测引擎**进化为一个**写作智能体**：
 
 | 阶段 | 方向 | 状态 |
 |------|------|------|

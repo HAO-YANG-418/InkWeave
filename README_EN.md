@@ -1,17 +1,17 @@
-# GWE - Generic Web-novel Engine
+# InkWeave — Writing Intelligence Engine for Web Novels
 
 > "When a reader's finger scrolls to your text, you have 3 seconds to hook them. Not 3 chapters. 3 seconds."
 
-GWE is a **quality analysis and scoring engine** purpose-built for Chinese web novels (网文). No LLM dependency. Pure rules. Millisecond response. Write prose that readers won't scroll past.
+**InkWeave** (墨织, "ink weave") is a **writing intelligence engine** purpose-built for Chinese web novels (网文). No LLM dependency. Pure rules. Millisecond response. Weave stories with ink.
 
-[![npm version](https://img.shields.io/npm/v/gwe-engine)](https://www.npmjs.com/package/gwe-engine)
+[![npm version](https://img.shields.io/npm/v/inkweave)](https://www.npmjs.com/package/inkweave)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## Why GWE?
+## Why InkWeave?
 
-| | GWE | LLM-based solutions |
+| | InkWeave | LLM-based solutions |
 |---|---|---|
 | **Speed** | 3000 chars < 10ms | 3-10 seconds |
 | **Cost** | Zero, works offline | Pay per token |
@@ -19,7 +19,7 @@ GWE is a **quality analysis and scoring engine** purpose-built for Chinese web n
 | **Explainable** | Every deduction has a clear reason and fix | Black box |
 | **Customizable** | 22 config nodes + custom vocab | Prompt engineering |
 
-> **LLMs write. GWE judges.** Use both: iterate until the score clears the bar.
+> **LLMs write. InkWeave judges.** Use both: iterate until the score clears the bar.
 
 ---
 
@@ -28,8 +28,8 @@ GWE is a **quality analysis and scoring engine** purpose-built for Chinese web n
 - **7-Dimension Radar Scoring**: Body Reaction / Sensory / Action / Emotion / Info Advance / Twist Density / Chapter Hook
 - **35 Quality Rules**: 3-second opening, fake hooks, AI slop, cliché reactions, filler words, sentence waveform, comma chains, and more
 - **Anchor Quality Tiers**: Cliché (×0.2), Normal (×1.0), Quality physiological (×1.8)
-- **9 Specialized Checks (v3.4)**: Character voice distinctiveness, action variety, sensory density, sentence waveform, data concreteness, exclamation quota, forbidden characters, "not-X-but-Y" patterns, comma chains
-- **Cross-Chapter Analysis**: Opening/ending pattern repetition detection, overdue foreshadowing alerts, scene transition hints
+- **9 Specialized Checks (v3.4)**: Character voice, action variety, sensory density, sentence waveform, data concreteness, exclamation quota, forbidden characters, "not-X-but-Y" patterns, comma chains
+- **Cross-Chapter Analysis**: Opening/ending pattern detection, overdue foreshadowing alerts, scene transition hints
 - **22 Config Nodes**: Platform (Qidian/Tomato/Qimao/Jinjiang/Feilu), Genre (11 types), Style (pacing/POV/rhetoric/tone)
 - **18 Built-in Presets**: 6 genre presets + 12 platform presets, ready out of the box
 
@@ -40,22 +40,22 @@ GWE is a **quality analysis and scoring engine** purpose-built for Chinese web n
 ### CLI
 
 ```bash
-npm install -g gwe-engine
+npm install -g inkweave
 
 # Check a chapter
-gwe check chapter.txt
+inkweave check chapter.txt
 
 # Read from stdin
-cat chapter.txt | gwe -
+cat chapter.txt | inkweave -
 
 # JSON output
-gwe --json chapter.txt > report.json
+inkweave --json chapter.txt > report.json
 ```
 
 ### Library Usage
 
 ```typescript
-import { createEngineWithKB, MockProvider } from 'gwe-engine';
+import { createEngineWithKB, MockProvider } from 'inkweave';
 
 const { engine } = createEngineWithKB(new MockProvider());
 
@@ -74,7 +74,7 @@ const warnings = context.getCrossChapterWarnings();
 ### With LLM
 
 ```typescript
-import { createEngineWithKB, OpenAICompatibleProvider } from 'gwe-engine';
+import { createEngineWithKB, OpenAICompatibleProvider } from 'inkweave';
 
 const provider = new OpenAICompatibleProvider({
   apiKey: 'your-api-key',
@@ -134,7 +134,7 @@ const stream = await engine.writeChapter({
 
 ## Cross-Chapter Analysis
 
-GWE doesn't just check individual chapters — it tracks patterns across your entire book:
+InkWeave doesn't just check individual chapters — it tracks patterns across your entire book:
 
 - **Opening Pattern Detection**: 3 consecutive chapters with "single-word sensory" openings? It'll flag you on chapter 4 to switch it up.
 - **Ending Pattern Detection**: Overusing "not X. It was Y." endings? It'll suggest suspense questions or action closings instead.
@@ -146,7 +146,7 @@ GWE doesn't just check individual chapters — it tracks patterns across your en
 ## Architecture
 
 ```
-gwe-engine/
+inkweave/
 ├── src/
 │   ├── index.ts              # Public API
 │   ├── types.ts              # Type definitions + defaults
@@ -178,7 +178,7 @@ gwe-engine/
 
 ## Roadmap
 
-GWE is evolving from a **quality checker** into a **writing intelligence agent**:
+InkWeave is evolving from a **quality checker** into a **writing intelligence agent**:
 
 | Milestone | Focus | Status |
 |-----------|-------|--------|

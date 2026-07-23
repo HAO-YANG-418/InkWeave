@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InkWeave 墨织 — 网文写作智能引擎</title>
-<meta name="description" content="InkWeave（墨织）是网文写作智能引擎。7维雷达评分、35项质量规则、9项专项检测、跨章分析，零依赖，离线可用，帮你写出不被划走的网文。">
+<meta name="description" content="InkWeave（墨织）是网文写作智能引擎。规则引擎+LLM双驱动，AI负责写，引擎负责判，帮你写出不被划走的网文。">
 <style>
 :root {
   --bg: #08080d;
@@ -555,18 +555,18 @@ footer .copy {
   <div class="container">
     <div class="hero-badge">v3.4.0 · 开源 MIT</div>
     <h1>以墨为线<br><span class="accent">编织故事</span></h1>
-    <p class="subtitle">InkWeave（墨织）是网文写作智能引擎。7维雷达评分、35项质量规则、9项专项检测、跨章分析，帮你在3秒内抓住读者。零依赖，离线可用，浏览器/Node.js/CLI 全平台。</p>
+    <p class="subtitle">InkWeave（墨织）是网文写作智能引擎。规则引擎 + LLM 双驱动——AI 负责写，引擎负责判，不达标自动重写，直到写出高质量网文。对接 DeepSeek/GPT/Claude，零依赖离线可用。</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <a href="#demo" class="btn btn-primary">在线试用 →</a>
-      <a href="#install" class="btn btn-ghost">CLI 安装</a>
+      <a href="#demo" class="btn btn-primary">在线体验 →</a>
+      <a href="#install" class="btn btn-ghost">npm install -g inkweave</a>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="num">35</div><div class="label">检测规则</div></div>
-      <div class="hero-stat"><div class="num">9</div><div class="label">专项检测</div></div>
-      <div class="hero-stat"><div class="num">7</div><div class="label">评分维度</div></div>
+      <div class="hero-stat"><div class="num">LLM + 规则</div><div class="label">双驱动</div></div>
+      <div class="hero-stat"><div class="num">35</div><div class="label">网文规则</div></div>
+      <div class="hero-stat"><div class="num">7</div><div class="label">写作维度</div></div>
       <div class="hero-stat"><div class="num">22</div><div class="label">配置节点</div></div>
       <div class="hero-stat"><div class="num">18</div><div class="label">内置预设</div></div>
-      <div class="hero-stat"><div class="num">&lt;10ms</div><div class="label">检测速度</div></div>
+      <div class="hero-stat"><div class="num">&lt;10ms</div><div class="label">规则响应</div></div>
     </div>
   </div>
 </section>
@@ -574,48 +574,48 @@ footer .copy {
 <section id="features">
   <div class="container">
     <div class="section-label">核心能力</div>
-    <h2 class="section-title">不是语法检查，是追读力检查</h2>
-    <p class="section-desc">普通写作工具检查错别字和语法，InkWeave 检查的是读者会不会划走。每一个评分维度都对应一个真实的读者流失点。</p>
+    <h2 class="section-title">给 AI 装上懂网文的"大脑"</h2>
+    <p class="section-desc">AI 能写，但不懂网文。InkWeave 把 35 条网文专属规则注入到写作流程中——AI 负责生成，引擎负责质检，不达标自动重写。</p>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>3秒停留检测</h3>
-        <p>首句字数、开篇300字内容、假钩子识别。读者划走只需要3秒，InkWeave 能在发布前发现这些致命问题。</p>
+        <div class="feature-icon">🧠</div>
+        <h3>智能写作引擎</h3>
+        <p>对接 DeepSeek/GPT/Claude，根据大纲和前文自动生成章节。引擎实时监控质量，7维雷达评分，不达标自动迭代重写。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🎯</div>
         <h3>身体锚点三级制</h3>
-        <p>套路反应（瞳孔一缩）×0.2，普通反应（心跳加速）×1.0，高质量生理反应（胃猛地一缩）×1.8。不是所有反应都叫爽点。</p>
+        <p>套路反应（瞳孔一缩）×0.2，普通反应（心跳加速）×1.0，高质量生理反应（胃猛地一缩）×1.8。引擎在生成时主动避开套路，优先使用高质量锚点。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📊</div>
-        <h3>7维雷达评分</h3>
-        <p>身体反应/感官信号/动作推进/情绪张力/信息推进/转折密度/章末钩子。一眼看出你的章节哪里弱。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔍</div>
-        <h3>9项专项检测</h3>
-        <p>角色台词辨识度、动作点名册、感官密度、句群波形、数据锚点、感叹号配额、禁用字、不是X是Y模式、逗号链。比AI更懂网文。</p>
+        <h3>7维写作雷达</h3>
+        <p>身体反应/感官信号/动作推进/情绪张力/信息推进/转折密度/章末钩子。哪项弱了，引擎自动引导 AI 补上。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📖</div>
-        <h3>跨章分析</h3>
-        <p>开头/结尾模式重复检测、超期伏笔警告、场景衔接提示。不只看单章，更是全书写作的守护者。</p>
+        <h3>跨章记忆</h3>
+        <p>追踪全书上下文。开头/结尾模式重复？自动提醒。伏笔超期未回收？自动警告。场景衔接不顺？自动引导。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🤖</div>
         <h3>AI水文识别</h3>
-        <p>精准识别"宛如泼墨山水画""美不胜收"等AI常用成语堆砌、空洞写景、比喻过密、填充词泛滥。</p>
+        <p>精准识别"美不胜收""波光粼粼"等AI常用成语堆砌、空洞写景、比喻过密。生成时自动过滤。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>9项专项检测</h3>
+        <p>角色台词辨识度、动作点名册、感官密度、句群波形、数据锚点、感叹号配额、禁用字、不是X是Y模式、逗号链。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🔧</div>
         <h3>22节点可配置</h3>
-        <p>平台（起点/番茄/七猫/晋江）、题材（仙侠/都市/科幻/悬疑等11类）、视角、节奏、语调……每一项都可以精细调节。</p>
+        <p>平台（起点/番茄/七猫/晋江/飞卢）、题材（仙侠/都市/科幻/悬疑等11类）、视角、节奏、语调……精细调节。</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🚀</div>
         <h3>零依赖 · 极速</h3>
-        <p>纯 TypeScript 实现，无 NLP 库、无模型依赖。检测3000字 < 10ms。不需要 API Key，不需要联网，完全离线。</p>
+        <p>纯 TypeScript 实现，规则层无模型依赖。检测 3000字 < 10ms。不需要 API Key，不需要联网，完全离线。</p>
       </div>
     </div>
   </div>
@@ -763,7 +763,7 @@ footer .copy {
       <a href="#demo">在线Demo</a>
       <a href="https://www.npmjs.com/package/inkweave" target="_blank">NPM</a>
     </div>
-    <p class="copy">InkWeave 墨织 v3.4.0 · MIT License · 以墨为线，编织故事</p>
+    <p class="copy">InkWeave 墨织 v3.4.0 · MIT License · 以墨为线，编织故事 · 规则引擎 + LLM 双驱动写作引擎</p>
   </div>
 </footer>
 

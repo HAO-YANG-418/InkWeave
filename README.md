@@ -45,10 +45,6 @@ InkWeave 是一个**规则引擎 + LLM 双驱动**的写作系统：
 
 ## 快速开始
 
-### 30秒体验
-
-打开 [在线 Demo](https://hao-yang-418.github.io/inkweave)，粘贴你的章节，立刻看到引擎分析结果。
-
 ### CLI 命令行
 
 ```bash

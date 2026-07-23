@@ -45,10 +45,6 @@ Your outline/idea → InkWeave Engine → High-quality chapter
 
 ## Quick Start
 
-### 30-Second Demo
-
-Open the [online demo](https://hao-yang-418.github.io/inkweave), paste a chapter, see the engine's analysis instantly.
-
 ### CLI
 
 ```bash

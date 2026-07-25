@@ -158,14 +158,15 @@ export class CreativeLeap {
     source: string,
     context: string,
     count = 3,
-    types?: LeapType[]
+    types?: LeapType[],
+    storyContext?: import('./types').StoryContext
   ): Promise<LeapResult[]> {
     if (!hasLLM(this.llm)) {
       return this.generateMultiple(source, context, count)
     }
 
     const useTypes = types || this.config.enabledTypes.slice(0, count)
-    const results = await this.generateMultipleLeapsWithLLM(source, context, useTypes.slice(0, count))
+    const results = await this.generateMultipleLeapsWithLLM(source, context, useTypes.slice(0, count), storyContext)
 
     if (results.length === 0) {
       return this.generateMultiple(source, context, count)
@@ -390,8 +391,8 @@ export class CreativeLeap {
   private textSimilarity(a: string, b: string): number {
     const wordsA = new Set(a.split(''))
     const wordsB = new Set(b.split(''))
-    const intersection = new Set([...wordsA].filter(x => wordsB.has(x)))
-    const union = new Set([...wordsA, ...wordsB])
+    const intersection = new Set(Array.from(wordsA).filter(x => wordsB.has(x)))
+    const union = new Set([...Array.from(wordsA), ...Array.from(wordsB)])
     return intersection.size / union.size
   }
 
@@ -446,6 +447,9 @@ export class CreativeLeap {
       ? `\n\n约束条件：\n${knowledge.constraints.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n生成方向：\n${knowledge.directions.map((d, i) => `${i + 1}. ${d}`).join('\n')}\n参考示例：\n${knowledge.examples.map((e, i) => `${i + 1}. ${e}`).join('\n')}\n评分标准：\n- 新颖度：${knowledge.scoring.novelty}\n- 相关性：${knowledge.scoring.relevance}\n- 冲击力：${knowledge.scoring.impact}`
       : ''
 
+    // v11.0: 构建结构化故事上下文
+    const storyContextBlock = this.buildStoryContextBlock(request)
+
     const systemPrompt = `${knowledgePrompt}
 
 当前需要生成的是【${typeInfo.name}】类型的创意跳跃。
@@ -471,8 +475,7 @@ ${constraintsText}
     const userPrompt = `源概念：「${request.source}」
 目标域：${request.targetDomain || '故事上下文本身'}
 
-故事上下文（最近内容）：
-${(request.context || '').slice(0, 1500)}
+${storyContextBlock}
 
 请生成一个${typeInfo.name}类型的创意跳跃。`
 
@@ -499,10 +502,79 @@ ${(request.context || '').slice(0, 1500)}
     }
   }
 
+  /**
+   * v11.0: 从结构化故事上下文构建prompt块
+   * 如果提供了storyContext，生成精确的上下文描述；否则降级为纯文本
+   */
+  private buildStoryContextBlock(request: LeapRequest): string {
+    const sc = request.storyContext
+    if (!sc) {
+      // 降级：使用纯文本上下文
+      return `故事上下文（最近内容）：
+${(request.context || '').slice(0, 1500)}`
+    }
+
+    const lines: string[] = ['【结构化故事上下文】']
+
+    // 章节意图 + 情绪基调
+    lines.push(`\n📖 本章意图：${sc.chapterIntent}`)
+    lines.push(`🎭 情绪基调：${sc.emotionalTone}`)
+
+    // 角色
+    if (sc.characters.length > 0) {
+      lines.push(`\n👤 出场角色：`)
+      for (const ch of sc.characters.slice(0, 6)) {
+        const roleLabel = { protagonist: '主角', supporting: '配角', antagonist: '对手', minor: '龙套' }[ch.role]
+        lines.push(`  - ${ch.name}（${roleLabel}）：${ch.currentState} | 目标：${ch.currentGoal}`)
+      }
+    }
+
+    // 活跃情节线程
+    if (sc.activeThreads.length > 0) {
+      lines.push(`\n🧵 活跃情节线程：`)
+      for (const t of sc.activeThreads.slice(0, 4)) {
+        lines.push(`  - ${t.name}：${t.description}`)
+      }
+    }
+
+    // 近期事件
+    if (sc.recentEvents.length > 0) {
+      lines.push(`\n📅 近期关键事件：`)
+      for (const e of sc.recentEvents.slice(0, 5)) {
+        lines.push(`  - ${e}`)
+      }
+    }
+
+    // 未回收伏笔
+    if (sc.unresolvedForeshadowing.length > 0) {
+      lines.push(`\n🔮 未回收伏笔：`)
+      for (const fs of sc.unresolvedForeshadowing.slice(0, 5)) {
+        const importanceLabel = fs.importance >= 3 ? '🔥重要' : fs.importance >= 2 ? '⚠️中等' : '💡轻微'
+        lines.push(`  - [${importanceLabel}] ${fs.keyword}：${fs.description}（第${fs.plantedIn}章埋设）`)
+      }
+    }
+
+    // 世界规则
+    if (sc.worldRules.length > 0) {
+      lines.push(`\n🌍 世界设定规则：`)
+      for (const r of sc.worldRules.slice(0, 5)) {
+        lines.push(`  - ${r}`)
+      }
+    }
+
+    // 当前章节摘要
+    if (sc.currentChapterSummary) {
+      lines.push(`\n📝 当前章节摘要：${sc.currentChapterSummary}`)
+    }
+
+    return lines.join('\n')
+  }
+
   private async generateMultipleLeapsWithLLM(
     source: string,
     context: string,
-    types: LeapType[]
+    types: LeapType[],
+    storyContext?: import('./types').StoryContext
   ): Promise<LeapResult[]> {
     const typeDescs = types.map(t => {
       const info = this.TYPE_LABELS[t]
@@ -513,6 +585,11 @@ ${(request.context || '').slice(0, 1500)}
     }).join('\n')
 
     const knowledgePrompt = generateLeapPrompt()
+
+    // v11.0: 构建结构化/纯文本上下文
+    const contextBlock = storyContext
+      ? this.buildStoryContextBlock({ storyContext, context, source, targetDomain: '', type: types[0] } as LeapRequest)
+      : `故事上下文：\n${context.slice(0, 1500)}`
 
     const systemPrompt = `${knowledgePrompt}
 
@@ -543,8 +620,7 @@ ${typeDescs}
 
     const userPrompt = `源概念：「${source}」
 
-故事上下文：
-${context.slice(0, 1500)}
+${contextBlock}
 
 请为以上每种类型各生成一个创意跳跃。`
 

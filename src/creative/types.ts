@@ -21,10 +21,46 @@ export interface LeapRequest {
   source: string
   /** 目标域 */
   targetDomain: string
-  /** 上下文 */
+  /** 上下文（文本形式，向后兼容） */
   context: string
   /** 约束条件 */
   constraints?: string[]
+  /** v11.0: 结构化故事上下文 */
+  storyContext?: StoryContext
+}
+
+/** v11.0: 结构化故事上下文 — 用于创意跳跃的精确生成 */
+export interface StoryContext {
+  /** 当前章节内容摘要 */
+  currentChapterSummary: string
+  /** 出场角色及其状态 */
+  characters: Array<{
+    name: string
+    role: 'protagonist' | 'supporting' | 'antagonist' | 'minor'
+    currentState: string
+    currentGoal: string
+  }>
+  /** 活跃的情节线程 */
+  activeThreads: Array<{
+    name: string
+    status: 'active' | 'dormant' | 'resolved'
+    description: string
+  }>
+  /** 近期关键事件（最近3章） */
+  recentEvents: string[]
+  /** 未回收的重要伏笔 */
+  unresolvedForeshadowing: Array<{
+    keyword: string
+    description: string
+    plantedIn: number
+    importance: 1 | 2 | 3
+  }>
+  /** 世界设定规则 */
+  worldRules: string[]
+  /** 本章意图 */
+  chapterIntent: string
+  /** 情绪基调 */
+  emotionalTone: string
 }
 
 /** 创意跳跃结果 */

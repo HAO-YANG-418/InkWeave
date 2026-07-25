@@ -3,6 +3,7 @@
 // ============================================================
 
 import type { CoolingStorage } from './cooling-system';
+import { logWarn } from '../logger';
 
 const STORAGE_KEY = 'gwe_cooling_state';
 
@@ -19,6 +20,7 @@ export class LocalStorageCoolingStorage implements CoolingStorage {
       const raw = localStorage.getItem(this.key);
       return raw ? JSON.parse(raw) : null;
     } catch {
+      logWarn('CoolingStorage', `冷却数据加载失败（key: ${this.key}），已重置`);
       return null;
     }
   }
@@ -28,7 +30,7 @@ export class LocalStorageCoolingStorage implements CoolingStorage {
     try {
       localStorage.setItem(this.key, JSON.stringify(data));
     } catch {
-      // storage full or unavailable
+      logWarn('CoolingStorage', `冷却数据保存失败（key: ${this.key}），可能存储已满`);
     }
   }
 

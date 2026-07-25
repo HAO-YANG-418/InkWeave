@@ -5,6 +5,7 @@
 // ============================================================
 
 import type { LLMProvider } from './types';
+import { logWarn } from './logger';
 
 export interface LLMChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -41,7 +42,11 @@ export async function llmJson<T>(
       return JSON.parse(jsonStr) as T;
     } catch {
       // 重试一次
-      if (attempt === 0) continue;
+      if (attempt === 0) {
+        logWarn('LLM', `JSON解析失败，正在重试（第${attempt + 1}次）`);
+        continue;
+      }
+      logWarn('LLM', 'JSON解析失败，已重试，返回null');
       return null;
     }
   }
@@ -67,6 +72,7 @@ export async function llmText(
     });
     return result.content.trim();
   } catch {
+    logWarn('LLM', '纯文本调用失败，返回null');
     return null;
   }
 }

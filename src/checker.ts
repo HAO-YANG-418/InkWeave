@@ -13,6 +13,7 @@ import type {
 } from './types';
 import { detectAnchors, calculateAnchorDensity, calculateMaxAnchorGap } from './anchor-detector';
 import { detectFillers } from './filler-words';
+import { logWarn } from './logger';
 import { calculateRadar, calculateWeightedScore, countSensoryMentions } from './radar';
 import { checkCharacterVoice, checkActionRollcall, checkSenseDensity, checkSentenceWaveform, checkDataAnchor, checkExclamationQuota, checkForbiddenChar, checkNotShiPattern, checkCommaChain } from './checks/index';
 
@@ -106,7 +107,7 @@ export function check(
           });
         }
       } catch {
-        // 正则无效，跳过
+        logWarn('Checker', `规则 "${rule.name}" 的正则表达式无效，已跳过`);
       }
     }
 
@@ -118,7 +119,7 @@ export function check(
           violations.push(result);
         }
       } catch {
-        // 检查函数执行失败，跳过
+        logWarn('Checker', `规则 "${rule.name}" 的自定义检查函数执行失败，已跳过`);
       }
     }
   }

@@ -32,6 +32,7 @@ import { validate } from './validator';
 import { check } from './checker';
 import { buildSystemPrompt, buildUserMessage } from './prompt-builder';
 import { MockProvider } from './llm-provider';
+import { logWarn } from './logger';
 
 // ============================================================
 // GWEEngine 主类
@@ -586,7 +587,7 @@ export class GWEEngine {
         }
       }
     } catch {
-      // ignore parse errors
+      logWarn('GWE', '解析用户预设存储失败，已重置');
     }
   }
 
@@ -599,7 +600,7 @@ export class GWEEngine {
       const data = Array.from(this.userPresets.values());
       localStorage.setItem('gwe_user_presets', JSON.stringify(data));
     } catch {
-      // ignore storage errors
+      logWarn('GWE', '保存用户预设到localStorage失败（可能存储已满）');
     }
   }
 

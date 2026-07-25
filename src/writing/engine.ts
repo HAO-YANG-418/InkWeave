@@ -8,6 +8,8 @@ import { MockProvider } from '../llm-provider';
 import type { CheckResult } from '../types';
 import { BookContext } from '../book-context';
 import { checkBook, extractChapterSnapshot } from '../book-checker';
+import { CoolingSystem, MemoryCoolingStorage } from '../cooling/cooling-system';
+import type { CoolingRecommendation } from '../cooling/cooling-system';
 import type { BookCheckResult } from '../book-checker';
 
 import type {
@@ -119,6 +121,12 @@ export interface GWEWritingEngine {
 
   /** v10.0: 设置LLM Provider（用于反模式分析） */
   setLLMProvider(llm: LLMProvider | null): void;
+
+  /** v11.0: 获取冷却系统警告（同步，关键词匹配） */
+  getCoolingWarnings(): string[];
+
+  /** v11.0: 获取冷却系统警告（异步，LLM语义检测） */
+  getCoolingWarningsAsync(chapterContent: string): Promise<string[]>;
 }
 
 /** v10.0: 反模式分析结果 */
@@ -178,6 +186,10 @@ export function createWritingEngine(): GWEWritingEngine {
   const conflictDiversityCheck = new ConflictDiversityCheck();
   const templateComposer = new TemplateComposer();
   let llmProvider: LLMProvider | null = null;
+
+  // v11.0: 初始化冷却系统
+  const coolingSystem = new CoolingSystem(new MemoryCoolingStorage());
+  coolingSystem.load(0);
 
   // 初始化空上下文
   let context: WritingContext = createEmptyContext({ title: '未命名作品', genre: '通用' });
@@ -259,6 +271,7 @@ export function createWritingEngine(): GWEWritingEngine {
         selectedText: context.selection?.text,
         speakerId: params?.speakerId as string | undefined,
         bookContext,  // v7.0: 传递跨章上下文
+        coolingWarnings: getCoolingWarningsSync(),  // v11.0: 注入冷却警告
       });
     },
 
@@ -289,6 +302,9 @@ export function createWritingEngine(): GWEWritingEngine {
       // 将章节加入BookContext进行跨章分析
       const snap = extractChapterSnapshot(ch.content, ch.number - 1, ch.title);
       bookContext.addChapter(snap);
+
+      // v11.0: 推进冷却系统章节计数
+      coolingSystem.advanceChapter(ch.number);
 
       // v6.2: 写后反馈分析（走旁路，不影响核心链路）
       const chapterContent = ch.content;
@@ -440,17 +456,17 @@ export function createWritingEngine(): GWEWritingEngine {
 
       const provider = llm || llmProvider;
 
-      // 1. 章类型检测
-      const chapterTypeResult = await chapterTypeTracker.detectChapterType(
-        ch.content, ch.number, ch.title, provider || undefined,
-      );
+      // v11.0: 1+2 并行执行 — 章类型检测和冲突多样性检测互不依赖
+      const [chapterTypeResult, conflictResult] = await Promise.all([
+        chapterTypeTracker.detectChapterType(
+          ch.content, ch.number, ch.title, provider || undefined,
+        ),
+        conflictDiversityCheck.analyzeConflict(
+          ch.content, ch.number, provider || undefined,
+        ),
+      ]);
 
-      // 2. 冲突多样性检测
-      const conflictResult = await conflictDiversityCheck.analyzeConflict(
-        ch.content, ch.number, provider || undefined,
-      );
-
-      // 3. 模板组合推荐
+      // 3. 模板组合推荐（依赖前两步结果，必须在并行完成后执行）
       const recentComboIds = context.templateComboHistory?.map(h => h.comboId) || [];
       templateComposer.setComboHistory(recentComboIds);
 
@@ -524,7 +540,58 @@ export function createWritingEngine(): GWEWritingEngine {
         cooldownStatus: templateComposer.getCooldownStatus(),
       };
     },
+
+    // v11.0: 冷却系统接口
+
+    getCoolingWarnings() {
+      return getCoolingWarningsSync();
+    },
+
+    async getCoolingWarningsAsync(chapterContent) {
+      if (!chapterContent || !chapterContent.trim()) return [];
+      const result = await coolingSystem.detectAllSmart(chapterContent);
+      return result.recommendations
+        .filter(r => r.severity === 'high' || r.severity === 'medium')
+        .map(r => `[${r.severity === 'high' ? '禁止' : '注意'}] ${r.message} → ${r.suggestion}`);
+    },
   };
+
+  /**
+   * v11.0: 同步获取冷却警告（关键词匹配，不依赖LLM）
+   * 从当前上下文中提取最近的章节内容进行检测
+   */
+  function getCoolingWarningsSync(): string[] {
+    const warnings: string[] = [];
+
+    // 获取最近完成章节的内容
+    const doneChapters = context.chapters
+      .filter(c => c.status === 'done' && c.content)
+      .sort((a, b) => b.number - a.number)
+      .slice(0, 3);
+
+    if (doneChapters.length === 0) return warnings;
+
+    // 合并最近章节内容
+    const recentContent = doneChapters.map(c => c.content).join('\n');
+
+    // 使用关键词匹配检测
+    const patterns = coolingSystem.detectAndRecordPatterns(recentContent);
+    const templates = coolingSystem.detectPlotTemplate(recentContent);
+
+    for (const p of patterns) {
+      if (p.count >= 2) {
+        warnings.push(`[套路] ${p.pattern.name}：已使用${p.count}次，建议替换：${p.alternative}`);
+      }
+    }
+
+    for (const t of templates) {
+      if (t.isOnCooldown) {
+        warnings.push(`[模板冷却] ${t.template.name}：仍处于冷却期（剩余${t.remainingCooldown}章），禁止使用`);
+      }
+    }
+
+    return warnings;
+  }
 }
 
 // 导出类型

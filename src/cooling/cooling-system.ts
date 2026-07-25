@@ -17,6 +17,7 @@ import {
 } from '../knowledge/cooling-patterns'
 import type { LLMProvider } from '../types'
 import { llmJson, hasLLM, type LLMChatMessage } from '../llm-helper'
+import { logWarn } from '../logger'
 
 /** 存储接口：浏览器用localStorage，Node用fs，默认内存 */
 export interface CoolingStorage {
@@ -49,6 +50,52 @@ export interface CoolingConfig {
 }
 
 // === 冷却系统 ===
+
+/** v11.0: 智能检测结果 */
+export interface SmartDetectionResult {
+  /** 套路模式检测结果 */
+  patterns: Array<{
+    pattern: PatternEntry
+    count: number
+    matchedTriggers: string[]
+    cooldownUntil: number
+    alternative: string
+    source: 'llm' | 'keyword'
+  }>
+  /** 情节模板检测结果 */
+  templates: Array<{
+    template: PlotTemplate
+    matchedSignals: string[]
+    isOnCooldown: boolean
+    remainingCooldown: number
+    source: 'llm' | 'keyword'
+  }>
+  /** 冷却建议 */
+  recommendations: CoolingRecommendation[]
+  /** 检测摘要 */
+  summary: {
+    totalDetected: number
+    onCooldown: number
+    available: number
+    llmDetected: number
+    keywordDetected: number
+    usedLLM: boolean
+  }
+}
+
+/** v11.0: 冷却建议 */
+export interface CoolingRecommendation {
+  type: 'pattern' | 'template'
+  id: string
+  name: string
+  category: string
+  severity: 'high' | 'medium' | 'low'
+  message: string
+  suggestion: string
+  chaptersLeft: number
+  source: 'llm' | 'keyword'
+}
+
 export class CoolingSystem {
   private records: Map<string, CoolingRecord> = new Map();
   private config: CoolingConfig;
@@ -84,6 +131,7 @@ export class CoolingSystem {
         this.version = (data.version as number) || 0;
       }
     } catch {
+      logWarn('Cooling', '冷却状态持久化数据加载失败，已重置');
       this.records = new Map();
     }
   }
@@ -171,7 +219,7 @@ export class CoolingSystem {
   advanceChapter(chapter: number): void {
     this.currentChapter = chapter;
     const expired: string[] = [];
-    for (const [key, record] of this.records) {
+    for (const [key, record] of Array.from(this.records.entries())) {
       if (chapter >= record.cooldown_until) expired.push(key);
     }
     for (const key of expired) this.records.delete(key);
@@ -319,19 +367,24 @@ ${templateList}
     alternative: string;
     source: 'llm' | 'keyword';
   }>> {
-    // 先尝试 LLM 语义检测
+    // v11.0: LLM语义检测 + 关键词检测并行执行（互不依赖）
     if (hasLLM(this.llm)) {
-      const llmResult = await this.detectPatternsAsync(text);
-      if (llmResult !== null && llmResult.length > 0) {
-        const results: Array<{
-          pattern: PatternEntry;
-          count: number;
-          matchedTriggers: string[];
-          cooldownUntil: number;
-          alternative: string;
-          source: 'llm' | 'keyword';
-        }> = [];
+      const [llmResult, keywordResult] = await Promise.all([
+        this.detectPatternsAsync(text),
+        Promise.resolve(this.detectAndRecordPatterns(text)),
+      ]);
 
+      // 合并：LLM结果为主，关键词结果补充（防止漏检）
+      const results: Array<{
+        pattern: PatternEntry;
+        count: number;
+        matchedTriggers: string[];
+        cooldownUntil: number;
+        alternative: string;
+        source: 'llm' | 'keyword';
+      }> = [];
+
+      if (llmResult && llmResult.length > 0) {
         for (const det of llmResult) {
           const pattern = getPatternById(det.patternId);
           if (!pattern) continue;
@@ -356,17 +409,16 @@ ${templateList}
             source: 'llm',
           });
         }
-
-        // LLM 检测成功，再补充关键词检测（防止LLM漏检）
-        const keywordResult = this.detectAndRecordPatterns(text);
-        for (const kr of keywordResult) {
-          if (!results.find(r => r.pattern.id === kr.pattern.id)) {
-            results.push({ ...kr, source: 'keyword' });
-          }
-        }
-
-        return results;
       }
+
+      // 关键词结果补充（去重）
+      for (const kr of keywordResult) {
+        if (!results.find(r => r.pattern.id === kr.pattern.id)) {
+          results.push({ ...kr, source: 'keyword' });
+        }
+      }
+
+      return results;
     }
 
     // 降级到关键词匹配
@@ -385,18 +437,23 @@ ${templateList}
     remainingCooldown: number;
     source: 'llm' | 'keyword';
   }>> {
-    // 先尝试 LLM
+    // v11.0: LLM语义检测 + 关键词检测并行执行
     if (hasLLM(this.llm)) {
-      const llmResult = await this.detectPlotTemplateAsync(text);
-      if (llmResult !== null && llmResult.length > 0) {
-        const results: Array<{
-          template: PlotTemplate;
-          matchedSignals: string[];
-          isOnCooldown: boolean;
-          remainingCooldown: number;
-          source: 'llm' | 'keyword';
-        }> = [];
+      const [llmResult, keywordResult] = await Promise.all([
+        this.detectPlotTemplateAsync(text),
+        Promise.resolve(this.detectPlotTemplate(text)),
+      ]);
 
+      // 合并：LLM结果为主，关键词结果补充
+      const results: Array<{
+        template: PlotTemplate;
+        matchedSignals: string[];
+        isOnCooldown: boolean;
+        remainingCooldown: number;
+        source: 'llm' | 'keyword';
+      }> = [];
+
+      if (llmResult && llmResult.length > 0) {
         for (const det of llmResult) {
           const template = PLOT_TEMPLATES.find(t => t.id === det.templateId);
           if (!template) continue;
@@ -413,21 +470,137 @@ ${templateList}
             source: 'llm',
           });
         }
-
-        // 补充关键词检测
-        const keywordResult = this.detectPlotTemplate(text);
-        for (const kr of keywordResult) {
-          if (!results.find(r => r.template.id === kr.template.id)) {
-            results.push({ ...kr, source: 'keyword' });
-          }
-        }
-
-        return results;
       }
+
+      // 关键词结果补充（去重）
+      for (const kr of keywordResult) {
+        if (!results.find(r => r.template.id === kr.template.id)) {
+          results.push({ ...kr, source: 'keyword' });
+        }
+      }
+
+      return results;
     }
 
     // 降级
     return this.detectPlotTemplate(text).map(r => ({ ...r, source: 'keyword' as const }));
+  }
+
+  /**
+   * v11.0: 智能检测 — 统一入口
+   * LLM可用时走语义检测（主路径），关键词匹配作为补充（防止漏检）
+   * LLM不可用时自动降级到关键词匹配
+   * 同时检测套路模式和情节模板，并行执行
+   *
+   * @returns 检测结果 + 冷却建议
+   */
+  async detectAllSmart(text: string): Promise<SmartDetectionResult> {
+    // 并行执行套路检测和情节模板检测
+    const [patternResult, templateResult] = await Promise.all([
+      this.detectAndRecordPatternsAsync(text),
+      this.detectPlotTemplateAsyncWithFallback(text),
+    ])
+
+    // 生成冷却建议
+    const recommendations = this.generateCoolingRecommendations(patternResult, templateResult)
+
+    // 统计
+    const patternCount = patternResult.length
+    const templateCount = templateResult.filter(t => !t.isOnCooldown).length
+    const onCooldownCount = templateResult.filter(t => t.isOnCooldown).length
+    const llmDetected = patternResult.filter(p => p.source === 'llm').length +
+      templateResult.filter(t => t.source === 'llm').length
+    const keywordDetected = patternResult.filter(p => p.source === 'keyword').length +
+      templateResult.filter(t => t.source === 'keyword').length
+
+    return {
+      patterns: patternResult,
+      templates: templateResult,
+      recommendations,
+      summary: {
+        totalDetected: patternCount + templateCount,
+        onCooldown: onCooldownCount,
+        available: templateCount,
+        llmDetected,
+        keywordDetected,
+        usedLLM: hasLLM(this.llm),
+      },
+    }
+  }
+
+  /**
+   * v11.0: 生成冷却建议
+   * 基于检测结果，生成人类可读的冷却建议
+   */
+  private generateCoolingRecommendations(
+    patterns: Array<{
+      pattern: PatternEntry
+      count: number
+      matchedTriggers: string[]
+      cooldownUntil: number
+      alternative: string
+      source: 'llm' | 'keyword'
+    }>,
+    templates: Array<{
+      template: PlotTemplate
+      matchedSignals: string[]
+      isOnCooldown: boolean
+      remainingCooldown: number
+      source: 'llm' | 'keyword'
+    }>,
+  ): CoolingRecommendation[] {
+    const recommendations: CoolingRecommendation[] = []
+
+    // 套路模式建议
+    for (const p of patterns) {
+      const chaptersLeft = p.cooldownUntil - this.currentChapter
+      recommendations.push({
+        type: 'pattern',
+        id: p.pattern.id,
+        name: p.pattern.name,
+        category: getCategoryLabel(p.pattern.category),
+        severity: p.count >= 3 ? 'high' : p.count >= 2 ? 'medium' : 'low',
+        message: `检测到套路「${p.pattern.name}」${p.count}次（触发词：${p.matchedTriggers.slice(0, 3).join('、')}）`,
+        suggestion: `替换建议：${p.alternative}`,
+        chaptersLeft,
+        source: p.source,
+      })
+    }
+
+    // 情节模板建议
+    for (const t of templates) {
+      if (t.isOnCooldown) {
+        recommendations.push({
+          type: 'template',
+          id: t.template.id,
+          name: t.template.name,
+          category: '情节模板',
+          severity: 'high',
+          message: `情节模板「${t.template.name}」仍在冷却中（剩余${t.remainingCooldown}章）`,
+          suggestion: `严禁使用！建议尝试其他模板或变化写法`,
+          chaptersLeft: t.remainingCooldown,
+          source: t.source,
+        })
+      } else {
+        recommendations.push({
+          type: 'template',
+          id: t.template.id,
+          name: t.template.name,
+          category: '情节模板',
+          severity: 'medium',
+          message: `检测到情节模板「${t.template.name}」的影子（${t.matchedSignals.slice(0, 3).join('→')}）`,
+          suggestion: `可以考虑但需注意变化。避免完全照搬模板步骤`,
+          chaptersLeft: 0,
+          source: t.source,
+        })
+      }
+    }
+
+    // 按严重程度排序
+    return recommendations.sort((a, b) => {
+      const severityOrder = { high: 0, medium: 1, low: 2 }
+      return severityOrder[a.severity] - severityOrder[b.severity]
+    })
   }
 
   /**
@@ -604,7 +777,7 @@ ${templateList}
       const label = getCategoryLabel(cat);
       // 统计该类别下正在冷却的套路数
       let activeCount = 0;
-      for (const [key, record] of this.records) {
+      for (const [key, record] of Array.from(this.records.entries())) {
         if (key.startsWith('pattern:') && this.currentChapter < record.cooldown_until) {
           // 需要检查该pattern是否属于此category
           // 从key中提取pattern id

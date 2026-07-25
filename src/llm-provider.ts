@@ -9,6 +9,7 @@ import type {
   LLMUsage,
   StreamCallbacks,
 } from './types';
+import { logWarn } from './logger';
 
 // ============================================================
 // OpenAI兼容 Provider
@@ -141,7 +142,8 @@ export class OpenAICompatibleProvider implements LLMProvider {
               callbacks.onToken(delta);
             }
           } catch {
-            // 忽略无法解析的行
+            // 忽略无法解析的SSE行
+            logWarn('LLM', 'SSE流解析失败，跳过该行');
           }
         }
       }

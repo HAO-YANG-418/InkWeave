@@ -38,6 +38,8 @@ export interface ContextBuildOptions {
   params?: CapabilityParams;
   /** v7.0: 跨章上下文，用于生成跨章警告 */
   bookContext?: BookContext;
+  /** v11.0: 预计算的冷却警告（同步），用于注入到生成Prompt */
+  coolingWarnings?: string[];
 }
 
 const DEFAULT_MAX_CHARS = 8000;
@@ -675,13 +677,27 @@ export function buildWritingMessages(
   const templateComboWarning = buildTemplateComboWarning(context);
   if (templateComboWarning) { sections.push(templateComboWarning); sections.push(''); }
 
-  // v7.0: 跨章警告 — 从 BookContext 提取开头/结尾重复、伏笔超期、场景衔接等问题
+  // v7.0 & v11.0: 跨章追踪 — 从 BookContext 提取正向指导 + 反向警告
   if (opts.bookContext) {
-    const crossChapterWarnings = opts.bookContext.getCrossChapterWarnings();
-    if (crossChapterWarnings.length > 0) {
-      sections.push(`【跨章警告 - 重要】\n${crossChapterWarnings.map(w => `- ${w}`).join('\n')}`);
+    // v11.0: 正向指导 — 告诉LLM应该做什么（角色承接、伏笔推进、场景衔接）
+    const guidance = opts.bookContext.getGenerationGuidance();
+    if (guidance.summary && guidance.summary !== '跨章追踪正常，无特殊指导。') {
+      sections.push(`【跨章追踪指导 - 本章必须遵守】\n${guidance.summary}`);
       sections.push('');
     }
+
+    // v7.0: 反向警告 — 告诉LLM不要做什么（开头/结尾重复、伏笔超期）
+    const crossChapterWarnings = opts.bookContext.getCrossChapterWarnings();
+    if (crossChapterWarnings.length > 0) {
+      sections.push(`【跨章警告 - 避免重复套路】\n${crossChapterWarnings.map(w => `- ${w}`).join('\n')}`);
+      sections.push('');
+    }
+  }
+
+  // v11.0: 冷却系统警告 — 预计算的套路/模板冷却状态
+  if (opts.coolingWarnings && opts.coolingWarnings.length > 0) {
+    sections.push(`【冷却系统警告 - 避免套路化】\n${opts.coolingWarnings.map(w => `- ${w}`).join('\n')}`);
+    sections.push('');
   }
 
   // 章节衔接

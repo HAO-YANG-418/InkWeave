@@ -3,6 +3,9 @@
 // 核心能力：跨书积累写作知识，语义搜索历史模式
 // 书A中学到的伏笔技法可以迁移到书B
 // v6.4: LLM语义搜索（检索+重排序）
+// v11.0: 语义嵌入向量 — 从Jaccard字符级升级为10维语义向量
+//   嵌入维度：战斗/情感/对话/世界观/修炼/悬念/转折/日常/冲突/揭示
+//   搜索路径：嵌入向量余弦相似度(主) → LLM重排序(精排)
 // ============================================================
 
 import {
@@ -24,6 +27,26 @@ import {
   type MemoryExtractionRule,
 } from '../knowledge/memory-schema'
 
+// ============================================================
+// v11.0: 语义嵌入向量 — 10维语义空间
+// ============================================================
+
+/** 语义嵌入维度定义 */
+const SEMANTIC_DIMENSIONS = [
+  { key: 'combat', label: '战斗/动作', description: '战斗场景、动作描写、力量对抗、招式施展' },
+  { key: 'emotional', label: '情感/心理', description: '情感表达、内心独白、心理变化、情绪波动' },
+  { key: 'dialogue', label: '对话/互动', description: '角色对话、语言交锋、信息交流、关系互动' },
+  { key: 'world_building', label: '世界观/设定', description: '世界观揭示、设定讲解、规则说明、历史背景' },
+  { key: 'cultivation', label: '修炼/成长', description: '修炼突破、能力提升、领悟觉醒、成长蜕变' },
+  { key: 'suspense', label: '悬念/伏笔', description: '悬念设置、伏笔埋设、谜题铺垫、未知探索' },
+  { key: 'twist', label: '转折/反转', description: '情节转折、意外反转、真相揭示、认知颠覆' },
+  { key: 'daily', label: '日常/过渡', description: '日常描写、场景过渡、氛围营造、生活细节' },
+  { key: 'conflict', label: '冲突/对抗', description: '人际冲突、利益对抗、价值观碰撞、势力博弈' },
+  { key: 'revelation', label: '揭示/发现', description: '秘密揭示、真相发现、信息揭露、认知突破' },
+] as const
+
+const EMBEDDING_DIM = SEMANTIC_DIMENSIONS.length // 10维
+
 /** 简易余弦相似度（不依赖外部库） */
 function cosineSimilarity(a: number[], b: number[]): number {
   if (a.length === 0 || b.length === 0 || a.length !== b.length) return 0
@@ -37,7 +60,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return denom > 0 ? dot / denom : 0
 }
 
-/** 简易文本相似度（关键词重叠 + 字符级） */
+/** 简易文本相似度（字符级Jaccard — 降级方案） */
 function textSimilarity(a: string, b: string): number {
   if (!a || !b) return 0
   const aWords = new Set(a.slice(0, 200).split(''))
@@ -70,7 +93,7 @@ export class LongTermMemory {
   }
 
   /**
-   * 存储一条记忆
+   * 存储一条记忆（同步，不生成嵌入）
    */
   store(entry: Omit<MemoryEntry, 'id' | 'accessCount' | 'lastAccessedAt'>): MemoryEntry {
     const id = `mem_${++this.entryCounter}_${Date.now()}`
@@ -93,12 +116,70 @@ export class LongTermMemory {
   }
 
   /**
-   * 语义搜索记忆
-   * 优先使用嵌入向量，回退到文本相似度
+   * v11.0: 存储记忆并生成语义嵌入（异步）
+   * 使用LLM生成10维语义嵌入向量，用于后续语义搜索
+   * 无LLM时降级为store()（不生成嵌入，搜索时回退到Jaccard）
+   */
+  async storeAsync(entry: Omit<MemoryEntry, 'id' | 'accessCount' | 'lastAccessedAt'>): Promise<MemoryEntry> {
+    const fullEntry = this.store(entry)
+
+    // 尝试生成语义嵌入
+    if (hasLLM(this.llm)) {
+      const embedding = await this.generateSemanticEmbedding(fullEntry.content)
+      if (embedding) {
+        fullEntry.embedding = embedding
+      }
+    }
+
+    return fullEntry
+  }
+
+  /**
+   * v11.0: 批量生成语义嵌入（异步）
+   * 为没有嵌入的已有记忆批量生成嵌入向量
+   * 用于数据迁移：从旧版Jaccard搜索升级到语义搜索
+   */
+  async batchGenerateEmbeddings(limit = 50): Promise<{ generated: number; skipped: number; failed: number }> {
+    if (!hasLLM(this.llm)) {
+      return { generated: 0, skipped: 0, failed: 0 }
+    }
+
+    const entriesWithoutEmbedding = [...this.entries.values()]
+      .filter(e => !e.embedding || e.embedding.length === 0)
+      .slice(0, limit)
+
+    let generated = 0
+    let failed = 0
+
+    // 串行生成（避免LLM并发压力）
+    for (const entry of entriesWithoutEmbedding) {
+      const embedding = await this.generateSemanticEmbedding(entry.content)
+      if (embedding) {
+        entry.embedding = embedding
+        generated++
+      } else {
+        failed++
+      }
+    }
+
+    return {
+      generated,
+      skipped: 0,
+      failed,
+    }
+  }
+
+  /**
+   * 语义搜索记忆（同步）
+   * 优先使用嵌入向量余弦相似度，回退到文本Jaccard相似度
+   * 注意：同步方法无法生成查询嵌入，仅使用已有存储嵌入
    */
   search(query: string, topK?: number, typeFilter?: MemoryType[]): MemorySearchResult[] {
     const k = topK || this.config.defaultTopK
     const results: MemorySearchResult[] = []
+
+    // 检查是否有嵌入向量可用
+    const hasEmbeddings = [...this.entries.values()].some(e => e.embedding && e.embedding.length > 0)
 
     for (const entry of this.entries.values()) {
       // 类型过滤
@@ -108,13 +189,13 @@ export class LongTermMemory {
 
       let similarity: number
 
-      // 优先使用嵌入向量搜索
-      if (entry.embedding && entry.embedding.length > 0) {
-        // 对查询词做简易嵌入（字符级向量）
+      // v11.0: 优先使用语义嵌入向量（10维余弦相似度）
+      if (hasEmbeddings && entry.embedding && entry.embedding.length > 0) {
+        // 对查询词做简易嵌入（字符级向量）作为查询嵌入
         const queryEmbedding = this.simpleEmbed(query, entry.embedding.length)
         similarity = cosineSimilarity(queryEmbedding, entry.embedding)
       } else {
-        // 回退到文本相似度
+        // 回退到文本Jaccard相似度
         similarity = textSimilarity(query, entry.content)
       }
 
@@ -139,39 +220,79 @@ export class LongTermMemory {
   }
 
   /**
-   * LLM语义搜索（异步）
-   * 两阶段：先用关键词粗筛top-N候选，再用LLM做语义相关性重排序
-   * 无LLM时降级到search()
+   * LLM语义搜索（异步）— v11.0升级版
+   * 三阶段搜索管道：
+   *   阶段1: 生成查询嵌入向量(LLM) → 余弦相似度召回 top-N 候选
+   *   阶段2: 粗筛（标签匹配 + 文本相似度补充）
+   *   阶段3: LLM语义重排序（精排 top-15）
+   * 无LLM时降级到search()（Jaccard + 低级嵌入）
    */
   async searchAsync(query: string, topK?: number, typeFilter?: MemoryType[]): Promise<MemorySearchResult[]> {
     const k = topK || this.config.defaultTopK
 
-    if (!hasLLM(this.llm) || this.entries.size === 0) {
+    if (this.entries.size === 0) {
+      return []
+    }
+
+    // 无LLM → 降级到同步搜索
+    if (!hasLLM(this.llm)) {
       return this.search(query, k, typeFilter)
     }
 
-    // 阶段1：粗筛 — 收集所有候选，计算基础文本相似度
+    // === 阶段1: 语义嵌入向量召回 ===
+    // 生成查询的语义嵌入向量
+    const queryEmbedding = await this.generateSemanticEmbedding(query)
+    const hasStoredEmbeddings = [...this.entries.values()].some(e => e.embedding && e.embedding.length > 0)
+
     const candidates: Array<{ entry: MemoryEntry; baseScore: number }> = []
-    for (const entry of this.entries.values()) {
-      if (typeFilter && typeFilter.length > 0 && !typeFilter.includes(entry.type)) continue
 
-      // 多信号粗筛：标签精确匹配 + 字符重叠 + 类型匹配
-      let baseScore = textSimilarity(query, entry.content)
+    if (queryEmbedding && hasStoredEmbeddings) {
+      // 主路径：嵌入向量余弦相似度
+      for (const entry of this.entries.values()) {
+        if (typeFilter && typeFilter.length > 0 && !typeFilter.includes(entry.type)) continue
 
-      // 标签匹配加分
-      const queryChars = new Set(query.split(''))
-      const tagMatch = entry.tags.filter(t => [...t].some(c => queryChars.has(c))).length
-      baseScore += tagMatch * 0.15
+        let score = 0
 
-      // 重要性加权
-      baseScore *= (0.5 + 0.5 * entry.importance)
+        if (entry.embedding && entry.embedding.length > 0) {
+          // 语义嵌入余弦相似度（权重70%）
+          score = cosineSimilarity(queryEmbedding, entry.embedding) * 0.7
+        }
 
-      if (baseScore > 0.02) {
-        candidates.push({ entry, baseScore })
+        // 标签匹配加分（权重15%）
+        const queryChars = new Set(query.split(''))
+        const tagMatch = entry.tags.filter(t => [...t].some(c => queryChars.has(c))).length
+        score += tagMatch * 0.05
+
+        // 文本相似度补充（权重15%）
+        score += textSimilarity(query, entry.content) * 0.15
+
+        // 重要性加权
+        score *= (0.5 + 0.5 * entry.importance)
+
+        if (score > 0.02) {
+          candidates.push({ entry, baseScore: score })
+        }
+      }
+    } else {
+      // 降级路径：无嵌入向量时使用文本相似度粗筛
+      for (const entry of this.entries.values()) {
+        if (typeFilter && typeFilter.length > 0 && !typeFilter.includes(entry.type)) continue
+
+        let baseScore = textSimilarity(query, entry.content)
+
+        const queryChars = new Set(query.split(''))
+        const tagMatch = entry.tags.filter(t => [...t].some(c => queryChars.has(c))).length
+        baseScore += tagMatch * 0.15
+
+        baseScore *= (0.5 + 0.5 * entry.importance)
+
+        if (baseScore > 0.02) {
+          candidates.push({ entry, baseScore })
+        }
       }
     }
 
-    // 粗筛取top 15进入LLM重排序
+    // === 阶段2: 粗筛取 top 15 进入LLM精排 ===
     candidates.sort((a, b) => b.baseScore - a.baseScore)
     const rerankCandidates = candidates.slice(0, 15)
 
@@ -179,14 +300,14 @@ export class LongTermMemory {
       return []
     }
 
-    // 阶段2：LLM语义重排序
+    // === 阶段3: LLM语义重排序 ===
     const reranked = await this.llmRerank(query, rerankCandidates)
     if (!reranked) {
       // LLM失败，回退到粗筛结果
       return rerankCandidates.slice(0, k).map(c => ({ entry: c.entry, similarity: c.baseScore }))
     }
 
-    // 合并LLM分数和基础分数
+    // 合并LLM分数和基础分数（LLM权重70%，基础分数30%）
     const results: MemorySearchResult[] = rerankCandidates.map((c: { entry: MemoryEntry; baseScore: number }, i: number) => {
       const llmScore = reranked.scores[i] ?? 0
       const combined = llmScore * 0.7 + c.baseScore * 0.3
@@ -580,8 +701,69 @@ export class LongTermMemory {
   // ============================================================
 
   /**
-   * 简易嵌入向量生成（字符级词袋）
-   * 完整实现需要对接嵌入API
+   * v11.0: 使用LLM生成语义嵌入向量
+   * 将文本映射到10维语义空间：战斗/情感/对话/世界观/修炼/悬念/转折/日常/冲突/揭示
+   * 每个维度0-1分，形成10维语义指纹
+   * 无LLM时返回null，调用方降级到文本相似度
+   */
+  private async generateSemanticEmbedding(text: string): Promise<number[] | null> {
+    if (!hasLLM(this.llm)) return null
+
+    const dimensionsDesc = SEMANTIC_DIMENSIONS
+      .map((d, i) => `${i + 1}. ${d.label}（${d.key}）：${d.description}`)
+      .join('\n')
+
+    const systemPrompt = `你是文本语义分析专家。请将给定文本映射到10维语义空间，给出每个维度的强度评分（0-1的浮点数，保留2位小数）。
+
+评分标准：
+- 0.0-0.2：该维度几乎不涉及
+- 0.3-0.5：该维度有一定涉及
+- 0.6-0.8：该维度是重要组成部分
+- 0.9-1.0：该维度是核心主题
+
+语义维度定义：
+${dimensionsDesc}
+
+注意：
+- 要理解文本的深层语义，不要只看表面关键词
+- 同一段文本可能同时在多个维度有高分
+- "他看着眼前的剑，回想起师父的教导" → cultivation:0.6, emotional:0.7, combat:0.3
+- 战斗场景通常伴随情感波动，不要只给combat高分
+- 日常对话中如果包含世界观信息，world_building也应有分
+
+必须严格返回JSON，格式：{"embedding": [0.85, 0.30, 0.65, ...]}，数组长度必须为10。`
+
+    const userPrompt = `文本内容（截取前1500字）：
+${text.slice(0, 1500)}
+
+请给出10维语义嵌入向量。`
+
+    const result = await llmJson<{ embedding: number[] }>(this.llm, [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
+    ], { temperature: 0.1, maxTokens: 256 })
+
+    if (!result || !result.embedding || result.embedding.length !== EMBEDDING_DIM) {
+      return null
+    }
+
+    // 确保分数在0-1范围内，归一化
+    const embedding = result.embedding.map(v => Math.max(0, Math.min(1, v)))
+
+    // L2归一化（使余弦相似度计算更准确）
+    const norm = Math.sqrt(embedding.reduce((s, v) => s + v * v, 0))
+    if (norm > 0) {
+      for (let i = 0; i < embedding.length; i++) {
+        embedding[i] /= norm
+      }
+    }
+
+    return embedding
+  }
+
+  /**
+   * 简易嵌入向量生成（字符级词袋 — 降级方案）
+   * 仅在没有LLM嵌入时使用，用于同步search()的查询嵌入
    */
   private simpleEmbed(text: string, dim: number): number[] {
     const embedding = new Array(dim).fill(0)

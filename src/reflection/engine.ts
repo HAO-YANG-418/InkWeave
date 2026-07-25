@@ -494,28 +494,86 @@ ${input.content.slice(0, 3000)}
   private checkEmotionalImpact(input: ReflectionInput): QualityConcern {
     const content = input.content
     const intentEmotion = input.intent.emotionalTone
+    let severity = 0
+    const issues: string[] = []
+    const suggestions: string[] = []
 
-    // 检查情绪词密度
+    // === 1. 情绪词密度 vs 意图 ===
     const emotionCount = (content.match(/泪|痛|心|颤抖|拥抱|怒|恐惧|绝望|希望|喜悦|悲伤|震撼|温暖|冷|笑|哭|沉默|叹息/g) || []).length
 
-    let severity = 0
-    let description = ''
-
     if (intentEmotion.intensity > 0.7 && emotionCount < 5) {
-      severity = 0.5
-      description = `意图要求高情绪强度（${Math.round(intentEmotion.intensity * 100)}%），但内容情绪标记不足`
+      severity += 0.4
+      issues.push(`意图要求高情绪强度（${Math.round(intentEmotion.intensity * 100)}%），但内容情绪标记不足`)
+      suggestions.push('增加情绪描写：身体反应、内心独白、环境映衬')
     } else if (intentEmotion.intensity < 0.4 && emotionCount > 15) {
-      severity = 0.3
-      description = '意图要求低情绪强度，但内容情绪标记过多，可能显得用力过猛'
-    } else {
-      description = '情绪强度与意图匹配'
+      severity += 0.25
+      issues.push('意图要求低情绪强度，但内容情绪标记过多，可能显得用力过猛')
+      suggestions.push('减少情绪词的直接使用，用含蓄的方式表达情绪')
+    }
+
+    // === 2. 情绪层次检测 ===
+    // 情绪不应是单一的，应有起伏
+    const positiveEmotions = (content.match(/喜|乐|笑|愉快|高兴|兴奋|期待|温暖|感动|欣慰|安心|释然|轻松/g) || []).length
+    const negativeEmotions = (content.match(/悲|怒|恐|惧|痛|苦|忧|愁|恨|厌|憎|恶|绝望|沮丧|失落|沉重|压抑/g) || []).length
+
+    if (content.length > 500) {
+      // 情绪过于单一
+      if (positiveEmotions > 10 && negativeEmotions === 0) {
+        severity += 0.15
+        issues.push('情绪过于单一（纯正向），缺少情感层次和对比')
+        suggestions.push('在正向情绪中埋入隐忧，制造情感张力')
+      } else if (negativeEmotions > 10 && positiveEmotions === 0) {
+        severity += 0.15
+        issues.push('情绪过于单一（纯负向），持续压抑可能让读者疲劳')
+        suggestions.push('在负向情绪中插入一丝希望或温暖，制造情感起伏')
+      }
+    }
+
+    // === 3. 情绪表达方式多样性 ===
+    // 身体反应 / 内心独白 / 环境映衬 / 对话表达
+    const bodyReactions = (content.match(/颤抖|发冷|发热|心跳|呼吸|手心|后背|额头|瞳孔|脸色|嘴唇|手指|膝盖|腿|胃|胸口|喉咙/g) || []).length
+    const innerMonologue = (content.match(/心想|暗想|默念|心道|心中|心里|内心|心底|灵魂深处|脑海/g) || []).length
+    const envMirror = (content.match(/风|雨|雪|雷|云|雾|天|夜|月|星|光|暗|影|冷|热|寒|暖|阴|晴/g) || []).length
+    const dialogueExpression = (content.match(/[「」"'].*?(?:泪|痛|怒|笑|哭|叹|哼|冷笑|怒吼|咆哮|低语|喃喃|哽咽|嘶吼|颤抖)[^「」"']*?[「」"']/g) || []).length
+
+    const expressionTypes = [bodyReactions, innerMonologue, envMirror, dialogueExpression]
+      .filter(c => c > 0).length
+
+    if (emotionCount > 8 && expressionTypes < 2) {
+      severity += 0.15
+      issues.push('情绪表达方式单一，仅依赖一种表达渠道')
+      suggestions.push('多样化情绪表达：身体反应 + 内心独白 + 环境映衬 + 对话表达')
+    }
+
+    // === 4. 情绪节奏 ===
+    // 检查情绪是否有"起→伏→起"的节奏，而非平铺
+    const paragraphs = content.split(/\n\n|\n(?=[^ ])/).filter(p => p.trim())
+    if (paragraphs.length > 5) {
+      const emotionInParagraphs = paragraphs.map(p => {
+        const pos = (p.match(/喜|乐|笑|愉快|高兴|兴奋|期待|温暖|感动|欣慰|安心|释然|轻松/g) || []).length
+        const neg = (p.match(/悲|怒|恐|惧|痛|苦|忧|愁|恨|厌|憎|恶|绝望|沮丧|失落|沉重|压抑/g) || []).length
+        return pos - neg // 正值=偏正向，负值=偏负向
+      })
+      // 检查情绪变化次数
+      let emotionChanges = 0
+      for (let i = 1; i < emotionInParagraphs.length; i++) {
+        if (Math.sign(emotionInParagraphs[i]) !== Math.sign(emotionInParagraphs[i - 1])
+          && emotionInParagraphs[i] !== 0 && emotionInParagraphs[i - 1] !== 0) {
+          emotionChanges++
+        }
+      }
+      if (emotionChanges === 0 && emotionCount > 5) {
+        severity += 0.1
+        issues.push('情绪缺少起伏变化，整章情绪平铺')
+        suggestions.push('制造情绪波动：在关键节点制造情绪转折，让读者情绪跟着起伏')
+      }
     }
 
     return {
       dimension: 'emotional_impact',
-      severity,
-      description,
-      suggestion: severity > 0.3 ? '调整情绪描写的密度和强度，使其与章节意图匹配' : '保持当前情绪表达',
+      severity: Math.min(severity, 1),
+      description: issues.length > 0 ? issues.join('；') : '情绪表达与意图匹配',
+      suggestion: suggestions.length > 0 ? suggestions.join('；') : '保持当前情绪表达',
     }
   }
 
@@ -605,7 +663,7 @@ ${input.content.slice(0, 3000)}
     const uniqueTags = new Set(tagWords)
     if (dialogueMatches.length > 5 && uniqueTags.size < 3) {
       severity += 0.3
-      issues.push(`对话引导词单一（仅${[...uniqueTags].join('、')}），缺乏变化`)
+      issues.push(`对话引导词单一（仅${Array.from(uniqueTags).join('、')}），缺乏变化`)
     }
 
     // 检测4：情感副词堆砌 — "愤怒地说""温柔地回答"
@@ -628,29 +686,74 @@ ${input.content.slice(0, 3000)}
   private checkInformationDensity(input: ReflectionInput): QualityConcern {
     const content = input.content
     const suggestedPacing = input.intent.suggestedPacing
+    let severity = 0
+    const issues: string[] = []
+    const suggestions: string[] = []
 
-    // 简化：用句子数/总字数估算信息密度
     const sentences = content.split(/[。！？]/).filter(s => s.trim())
     const wordsPerSentence = content.length / Math.max(sentences.length, 1)
 
-    let severity = 0
-    let description = ''
-
+    // === 1. 基础信息密度 vs 意图 ===
     if (suggestedPacing.infoDensity === 'high' && wordsPerSentence < 20) {
-      severity = 0.3
-      description = '建议高信息密度，但句子偏短，可能信息量不足'
+      severity += 0.25
+      issues.push(`建议高信息密度，实际平均句长${Math.round(wordsPerSentence)}字，信息量不足`)
+      suggestions.push('增加每句的信息承载量：加入更多具体细节、因果链、或世界观信息')
     } else if (suggestedPacing.infoDensity === 'low' && wordsPerSentence > 50) {
-      severity = 0.3
-      description = '建议低信息密度，但句子偏长，可能信息过载'
-    } else {
-      description = '信息密度与意图匹配'
+      severity += 0.2
+      issues.push(`建议低信息密度，实际平均句长${Math.round(wordsPerSentence)}字，可能信息过载`)
+      suggestions.push('拆分长句，给读者消化信息的时间')
+    }
+
+    // === 2. 新信息引入率（专属名词/新概念密度） ===
+    const namedEntities = content.match(/[\u4e00-\u9fa5]{2,4}(?:殿|阁|楼|城|村|镇|山|岭|谷|原|野|林|海|河|湖|洞|室|厅|院|坊|街|巷|道|路|塔|庙|寺|观|宫|府|宅|店|铺|场|台|崖|壁|渊|潭|峰|顶|剑|刀|枪|斧|锤|鞭|弓|弩|盾|甲|袍|铠|丹|药|术|法|诀|阵|符|印|兽|虫|鸟|鱼|龙|凤|虎|狼|蛇|猿|象)/g) || []
+    const newConceptPatterns = content.match(/所谓|名为|称之为|称作|唤作|一种|某种|一种名为|一种被称为|被称作|谓之/g) || []
+    const entityDensity = namedEntities.length / (content.length / 500) // 每500字的新实体数
+    const conceptDensity = newConceptPatterns.length / (content.length / 500)
+
+    if (entityDensity > 8 && conceptDensity > 3) {
+      severity += 0.2
+      issues.push(`新概念/实体引入过快（每500字${entityDensity.toFixed(1)}个实体），读者可能信息过载`)
+      suggestions.push('放缓新概念引入节奏，先让读者消化已有设定再引入新元素')
+    }
+
+    // === 3. 描述vs行动比例 ===
+    const actionVerbs = (content.match(/攻击|爆发|冲向|斩|轰|碎|破|杀|全力|赌上|闪|躲|挡|格|踢|踹|砸|劈|刺|削|砍|挥|舞|跃|跳|跑|冲|退|进|转|翻|滚|爬|站|坐|蹲|跪|躺/g) || []).length
+    const descriptionMarkers = (content.match(/的|地|得|着|了|过|在|是|有|像|如|似|般|仿佛|宛如|恍若/g) || []).length
+    const totalLen = content.length
+    const actionRatio = actionVerbs / (totalLen / 100)
+    const descRatio = descriptionMarkers / (totalLen / 100)
+
+    // 极端情况检测
+    if (actionRatio > 15 && descRatio < 5) {
+      severity += 0.15
+      issues.push('动作密度过高，描写/说明不足，可能变成"打斗流水账"')
+      suggestions.push('在动作间隙加入环境描写、心理活动、或战术思考')
+    } else if (descRatio > 15 && actionRatio < 3) {
+      severity += 0.15
+      issues.push('描写/说明比例过高，行动推进不足，节奏可能拖沓')
+      suggestions.push('增加具体事件/行动来推进情节，减少静态描写')
+    }
+
+    // === 4. 段落空信息检测 ===
+    const paragraphs = content.split(/\n\n|\n(?=[^ ])/).filter(p => p.trim())
+    const emptyParagraphs = paragraphs.filter(p => {
+      const trimmed = p.trim()
+      // 纯描述性段落没有新事件、新信息、新人物
+      const hasAction = /攻击|爆发|冲向|斩|轰|碎|破|杀|说|道|问|答|喊|叫|发现|看到|感觉|知道|明白|想到|决定|开始|突然|忽然|竟然|原来/.test(trimmed)
+      const hasNewInfo = /新的|另外|此外|还有|没想到|才知|才明白|原来|其实|真相|秘密/.test(trimmed)
+      return !hasAction && !hasNewInfo && trimmed.length > 100
+    })
+    if (emptyParagraphs.length > paragraphs.length * 0.3 && paragraphs.length > 5) {
+      severity += 0.15
+      issues.push(`约${Math.round(emptyParagraphs.length / paragraphs.length * 100)}%的段落缺乏事件推进或新信息`)
+      suggestions.push('确保每个段落都有推进作用：要么推进情节，要么揭示信息，要么塑造角色')
     }
 
     return {
       dimension: 'information_density',
-      severity,
-      description,
-      suggestion: severity > 0.2 ? '调整句子的信息承载量' : '保持当前信息密度',
+      severity: Math.min(severity, 1),
+      description: issues.length > 0 ? issues.join('；') : '信息密度与意图匹配',
+      suggestion: suggestions.length > 0 ? suggestions.join('；') : '保持当前信息密度',
     }
   }
 
@@ -700,38 +803,89 @@ ${input.content.slice(0, 3000)}
     const content = input.content
     const dialogueMatches = content.match(/[「」"'].*?[「」"']/g) || []
     const dialogueCount = dialogueMatches.length
-
     let severity = 0
-    let description = ''
+    const issues: string[] = []
+    const suggestions: string[] = []
 
     if (dialogueCount === 0) {
-      // 不是所有场景都需要对话
-      description = '本章无对话内容'
-    } else {
-      // 检查对话是否有"说"之外的引导词
-      const dialogueTags = content.match(/说|道|问|答|喊|叫|吼|骂|笑|冷|淡|轻|沉|缓|急|怒|惊|喜|叹|喃喃|低声|高声|冷冷/g) || []
-      const tagVariety = new Set(dialogueTags).size
-
-      if (tagVariety < 3 && dialogueCount > 5) {
-        severity = 0.3
-        description = '对话引导词单一，缺乏变化'
-      } else {
-        description = '对话质量良好'
+      return {
+        dimension: 'dialogue_quality',
+        severity: 0,
+        description: '本章无对话内容',
+        suggestion: '',
       }
+    }
+
+    // === 1. 对话引导词多样性 ===
+    const dialogueTags = content.match(/说|道|问|答|喊|叫|吼|骂|笑|冷|淡|轻|沉|缓|急|怒|惊|喜|叹|喃喃|低声|高声|冷冷/g) || []
+    const tagVariety = new Set(dialogueTags).size
+    if (tagVariety < 3 && dialogueCount > 5) {
+      severity += 0.25
+      issues.push(`对话引导词单一（仅${tagVariety}种），缺乏变化`)
+      suggestions.push('丰富对话引导词，用动作和神态替代"说"')
+    }
+
+    // === 2. 对话-叙述比例 ===
+    const dialogueText = dialogueMatches.join('')
+    const dialogueRatio = dialogueText.length / Math.max(content.length, 1)
+    if (dialogueRatio > 0.6) {
+      severity += 0.2
+      issues.push(`对话占比过高（${Math.round(dialogueRatio * 100)}%），叙述/描写/动作被挤压`)
+      suggestions.push('在对话中穿插动作描写、环境描写、心理活动，避免"对话流水账"')
+    } else if (dialogueRatio < 0.05 && dialogueCount > 0) {
+      severity += 0.1
+      issues.push('对话占比过低，人物互动可能不足')
+    }
+
+    // === 3. 对话功能性检查 ===
+    const dialogueContents = dialogueMatches.map(d => d.replace(/[「」"']/g, ''))
+    // 纯应答/确认型对话比例
+    const fillerDialogues = dialogueContents.filter(d => {
+      const text = d.trim()
+      return text.length <= 3 && /^[嗯哦啊是好的行对吧可以没问题]{1,4}$/.test(text)
+    })
+    if (fillerDialogues.length > dialogueCount * 0.3 && dialogueCount > 4) {
+      severity += 0.2
+      issues.push(`${Math.round(fillerDialogues.length / dialogueCount * 100)}%的对话为纯应答（"嗯""好的"等），缺乏信息量和推进作用`)
+      suggestions.push('减少无意义应答，让每句对话都有推进作用（推进情节/揭示信息/塑造角色/建立关系）')
+    }
+
+    // === 4. 对话长度多样性 ===
+    const dialogueLengths = dialogueContents.map(d => d.length)
+    const avgDialogueLen = dialogueLengths.reduce((s, l) => s + l, 0) / dialogueLengths.length
+    const dVar = dialogueLengths.reduce((s, l) => s + (l - avgDialogueLen) ** 2, 0) / dialogueLengths.length
+    const dStdDev = Math.sqrt(dVar)
+    if (dialogueCount > 5 && dStdDev < avgDialogueLen * 0.3 && avgDialogueLen > 5) {
+      severity += 0.15
+      issues.push('对话长度过于均匀，不同角色说话长度接近，缺少个性')
+      suggestions.push('不同角色应有不同的说话节奏：急性子短句，沉稳者长句，智者引经据典')
+    }
+
+    // === 5. 潜台词检测 ===
+    const subtextCount = (content.match(/嘴上.{1,10}心里|嘴上.{1,10}却|虽然.{1,10}但.{1,10}眼神|说.{1,10}但.{1,10}心想|话虽.{1,10}可|嘴上不说|没说.{1,10}但|没说话.{1,10}却/g) || []).length
+    const totalDialogueLines = dialogueCount
+    if (totalDialogueLines > 8 && subtextCount === 0) {
+      // 对话多但没有潜台词，可能过于直白
+      severity += 0.1
+      issues.push('对话缺少潜台词，角色表达过于直白')
+      suggestions.push('让角色"嘴上说一套，心里想一套"，增加对话层次感')
     }
 
     return {
       dimension: 'dialogue_quality',
-      severity,
-      description,
-      suggestion: severity > 0.2 ? '丰富对话引导词，用动作和神态替代"说"' : '保持当前对话质量',
+      severity: Math.min(severity, 1),
+      description: issues.length > 0 ? issues.join('；') : '对话质量良好',
+      suggestion: suggestions.length > 0 ? suggestions.join('；') : '保持当前对话质量',
     }
   }
 
   private checkProseQuality(input: ReflectionInput): QualityConcern {
     const content = input.content
+    let severity = 0
+    const issues: string[] = []
+    const suggestions: string[] = []
 
-    // 检查重复词
+    // === 1. 高频重复词检测 ===
     const words = content.replace(/[，。！？、：""「」『』\n]/g, ' ').split(/\s+/).filter(w => w.length >= 2)
     const wordFreq: Record<string, number> = {}
     for (const w of words) {
@@ -741,23 +895,110 @@ ${input.content.slice(0, 3000)}
       .filter(([, count]) => count > 8)
       .map(([word]) => word)
 
-    let severity = 0
-    let description = '文字质量良好'
-
     if (repeatedWords.length > 5) {
-      severity = 0.3
-      description = `高频重复词较多：${repeatedWords.slice(0, 5).join('、')}等`
+      severity += 0.25
+      issues.push(`高频重复词较多：${repeatedWords.slice(0, 5).join('、')}等`)
+      suggestions.push(`考虑替换高频词：${repeatedWords.slice(0, 3).join('、')}`)
     } else if (repeatedWords.length > 2) {
-      severity = 0.15
-      description = `存在少量重复词：${repeatedWords.slice(0, 3).join('、')}`
+      severity += 0.1
+      issues.push(`存在少量重复词：${repeatedWords.slice(0, 3).join('、')}`)
+    }
+
+    // === 2. 句子长度多样性 ===
+    const sentences = content.split(/[。！？]/).filter(s => s.trim())
+    const sentLengths = sentences.map(s => s.length)
+    const avgLen = sentLengths.reduce((s, l) => s + l, 0) / Math.max(sentLengths.length, 1)
+    const variance = sentLengths.reduce((s, l) => s + (l - avgLen) ** 2, 0) / Math.max(sentLengths.length, 1)
+    const stdDev = Math.sqrt(variance)
+
+    // 句子长度标准差过小 → 句式单调
+    if (sentLengths.length > 10 && stdDev < avgLen * 0.4) {
+      severity += 0.2
+      issues.push('句子长度过于均匀，缺少长短变化，节奏单调')
+      suggestions.push('交替使用短句（加速/强调）和长句（展开/沉浸），制造节奏变化')
+    }
+
+    // 连续短句（≤8字）过多 → 碎片化
+    const shortSentStreak = this.findLongestStreak(sentLengths, l => l <= 8)
+    if (shortSentStreak >= 6) {
+      severity += 0.15
+      issues.push(`连续${shortSentStreak}个短句（≤8字），碎片化严重，可读性下降`)
+      suggestions.push('在连续短句中穿插一个中长句，打破碎片化节奏')
+    }
+
+    // 连续长句（≥40字）过多 → 阅读疲劳
+    const longSentStreak = this.findLongestStreak(sentLengths, l => l >= 40)
+    if (longSentStreak >= 4) {
+      severity += 0.15
+      issues.push(`连续${longSentStreak}个长句（≥40字），容易造成阅读疲劳`)
+      suggestions.push('在连续长句中穿插短句，给读者"呼吸"空间')
+    }
+
+    // === 3. 句式结构多样性 ===
+    const sentenceStarts = sentences.map(s => s.trim().slice(0, 2))
+    const startFreq: Record<string, number> = {}
+    for (const start of sentenceStarts) {
+      startFreq[start] = (startFreq[start] || 0) + 1
+    }
+    const dominantStart = Object.entries(startFreq).sort((a, b) => b[1] - a[1])[0]
+    if (dominantStart && dominantStart[1] > sentences.length * 0.3 && sentences.length > 10) {
+      severity += 0.2
+      issues.push(`句子开头过于单一，"${dominantStart[0]}"开头占比${Math.round(dominantStart[1] / sentences.length * 100)}%`)
+      suggestions.push('变换句子开头方式：用时间、地点、动作、感官等不同元素开头')
+    }
+
+    // === 4. 形容词/副词密度 ===
+    const adjCount = (content.match(/的/g) || []).length
+    const advCount = (content.match(/地/g) || []).length
+    const adjDensity = adjCount / (content.length / 100) // 每百字
+    const advDensity = advCount / (content.length / 100)
+
+    if (adjDensity > 8) {
+      severity += 0.15
+      issues.push(`形容词密度过高（每百字${adjDensity.toFixed(1)}个"的"），描写可能过于堆砌`)
+      suggestions.push('减少形容词修饰，用动作和细节替代直接形容')
+    }
+    if (advDensity > 4) {
+      severity += 0.1
+      issues.push(`副词密度过高（每百字${advDensity.toFixed(1)}个"地"），动作描写可能过于依赖副词修饰`)
+      suggestions.push('用更精准的动词替代"副词+动词"结构')
+    }
+
+    // === 5. 段落节奏 ===
+    const paragraphs = content.split(/\n\n|\n(?=[^ ])/).filter(p => p.trim())
+    const paraLengths = paragraphs.map(p => p.length)
+    if (paraLengths.length > 3) {
+      const avgParaLen = paraLengths.reduce((s, l) => s + l, 0) / paraLengths.length
+      const paraVariance = paraLengths.reduce((s, l) => s + (l - avgParaLen) ** 2, 0) / paraLengths.length
+      const paraStdDev = Math.sqrt(paraVariance)
+      if (paraStdDev < avgParaLen * 0.3 && avgParaLen > 100) {
+        severity += 0.1
+        issues.push('段落长度均匀，缺少节奏变化')
+        suggestions.push('偶尔使用极短段落（1-2句话）制造冲击力')
+      }
     }
 
     return {
       dimension: 'prose_quality',
-      severity,
-      description,
-      suggestion: repeatedWords.length > 2 ? `考虑替换高频词：${repeatedWords.slice(0, 3).join('、')}` : '保持当前文字质量',
+      severity: Math.min(severity, 1),
+      description: issues.length > 0 ? issues.join('；') : '文字质量良好',
+      suggestion: suggestions.length > 0 ? suggestions.slice(0, 3).join('；') : '保持当前文字质量',
     }
+  }
+
+  /** 辅助：找到连续满足条件的最长序列长度 */
+  private findLongestStreak<T>(arr: T[], predicate: (item: T) => boolean): number {
+    let maxStreak = 0
+    let currentStreak = 0
+    for (const item of arr) {
+      if (predicate(item)) {
+        currentStreak++
+        maxStreak = Math.max(maxStreak, currentStreak)
+      } else {
+        currentStreak = 0
+      }
+    }
+    return maxStreak
   }
 
   private checkContinuity(input: ReflectionInput): QualityConcern {
@@ -770,28 +1011,87 @@ ${input.content.slice(0, 3000)}
       }
     }
 
-    // 简化：检查是否有明显的衔接断裂
-    const prevEnd = input.previousContent.slice(-200)
-    const currStart = input.content.slice(0, 200)
-
-    // 检查时间/空间跳跃是否有说明
-    const hasTransition = /第.*天|.*后|.*前|与此同时|画面一转|镜头切换|场景转换|转场/.test(currStart)
-    const prevLocation = prevEnd.match(/在([\u4e00-\u9fa5]{2,6}[殿阁楼城村镇山岭谷原野林海河湖洞])/)?.[1]
-    const currLocation = currStart.match(/在([\u4e00-\u9fa5]{2,6}[殿阁楼城村镇山岭谷原野林海河湖洞])/)?.[1]
-
+    const prevEnd = input.previousContent.slice(-300)
+    const currStart = input.content.slice(0, 300)
+    const content = input.content
     let severity = 0
-    let description = '连续性良好'
+    const issues: string[] = []
+    const suggestions: string[] = []
 
-    if (prevLocation && currLocation && prevLocation !== currLocation && !hasTransition) {
-      severity = 0.4
-      description = `场景从"${prevLocation}"跳转到"${currLocation}"，缺少过渡说明`
+    // === 1. 场景/地点连续性 ===
+    const hasTransition = /第.*天|.*后|.*前|与此同时|画面一转|镜头切换|场景转换|转场|片刻之?后|须臾|转眼|不久|须臾之间|时光流转|光阴/.test(currStart)
+    const locationPattern = /在([\u4e00-\u9fa5]{2,8}(?:殿|阁|楼|城|村|镇|山|岭|谷|原|野|林|海|河|湖|洞|室|厅|院|坊|街|巷|道|路|塔|庙|寺|观|宫|府|宅|店|铺|场|台|崖|壁|渊|潭|峰|顶))/g
+    const prevLocations = Array.from(prevEnd.matchAll(locationPattern)).map(m => m[1])
+    const currLocations = Array.from(currStart.matchAll(locationPattern)).map(m => m[1])
+    const prevUnique = Array.from(new Set(prevLocations))
+    const currUnique = Array.from(new Set(currLocations))
+
+    if (prevUnique.length > 0 && currUnique.length > 0) {
+      const overlap = prevUnique.filter(l => currUnique.includes(l))
+      if (overlap.length === 0 && !hasTransition) {
+        severity += 0.35
+        issues.push(`场景从"${prevUnique.join('、')}"跳转到"${currUnique.join('、')}"，缺少过渡说明`)
+        suggestions.push('在场景切换处加入时间/空间过渡描述')
+      }
+    }
+
+    // === 2. 人物连续性 ===
+    const namePattern = /[\u4e00-\u9fa5]{2,4}(?:道|说|问|答|喊|叫|吼|骂|笑|冷|淡|轻|沉|缓|急|怒|惊|喜|叹|喃喃|低声|高声|冷冷|心想|暗想|默念|心道)/g
+    const prevNames = Array.from(new Set(Array.from(prevEnd.matchAll(namePattern)).map(m => {
+      const full = m[0]
+      return full.replace(/[道说问答喊叫吼骂笑冷淡轻沉缓急怒惊喜叹喃喃低声高声冷冷心想暗想默念心道]/g, '')
+    }).filter(n => n.length >= 2)))
+    const currNames = Array.from(new Set(Array.from(currStart.matchAll(namePattern)).map(m => {
+      const full = m[0]
+      return full.replace(/[道说问答喊叫吼骂笑冷淡轻沉缓急怒惊喜叹喃喃低声高声冷冷心想暗想默念心道]/g, '')
+    }).filter(n => n.length >= 2)))
+
+    if (prevNames.length >= 2 && currNames.length >= 1) {
+      const continuityNames = prevNames.filter(n => currNames.includes(n))
+      if (continuityNames.length === 0) {
+        severity += 0.25
+        issues.push(`上章出场人物（${prevNames.slice(0, 3).join('、')}）在本章开头均未出现`)
+        suggestions.push('确保至少一个上章出场角色在本章开头出现，或明确说明去向')
+      }
+    }
+
+    // === 3. 时间线连续性 ===
+    const timeJumps = currStart.match(/第[一二三四五六七八九十\d]+[天日月年]|[一二三四五六七八九十\d]+[天日月年][前后]|数[天日月年]|半月|一月|数月|多年|许久|很久|不久|片刻|须臾/) || []
+    const prevTimeIndicators = prevEnd.match(/第[一二三四五六七八九十\d]+[天日月年]|[一二三四五六七八九十\d]+[天日月年][前后]/) || []
+    if (timeJumps.length > 0 && prevTimeIndicators.length === 0) {
+      // 有时间跳跃但前文没有时间锚点，可能造成读者困惑
+      // 这本身不是大问题但需要关注
+      const hasTimeContext = /天[已已经]|距[离]|自[从]|从[那]|上[一]次|之[前]|之[后]/.test(currStart)
+      if (!hasTimeContext) {
+        severity += 0.15
+        issues.push(`时间跳跃"${timeJumps[0]}"缺少与上章的时间参照`)
+        suggestions.push('用"自上次……已过X天"等句式建立时间参照')
+      }
+    }
+
+    // === 4. 状态连续性（受伤/能力/物品） ===
+    const prevInjury = prevEnd.match(/受[伤了]|伤势|伤口|流血|骨折|内伤|重创|昏迷|虚弱|力竭|消耗|灵气?耗|体力不|法力不/)
+    const currRecovered = currStart.match(/恢复|痊愈|愈合|完好|恢复如初|精神抖擞|精力充沛|满状态|完好无损|气血充盈/)
+    if (prevInjury && currRecovered && !hasTransition) {
+      severity += 0.2
+      issues.push('上章结尾有受伤/消耗状态，本章开头直接恢复，缺少恢复过程说明')
+      suggestions.push('加入恢复过程的简短描述，或说明时间流逝/丹药治疗')
+    }
+
+    // === 5. 情绪连续性 ===
+    const prevEmotion = prevEnd.match(/怒|悲|恐|绝望|崩溃|狂喜|震惊|愤怒|悲伤|恐惧|绝望|痛哭|颤抖|沉默|低落|消沉|颓然|瘫坐|跪倒/)
+    const currEmotion = currStart.match(/平静|淡定|从容|微笑|轻松|愉快|兴奋|期待|冷静|镇定|淡然|若无其事|谈笑|闲聊/)
+    if (prevEmotion && currEmotion && !hasTransition) {
+      severity += 0.15
+      issues.push('上章结尾情绪与本章开头情绪反差过大，缺少情绪过渡')
+      suggestions.push('加入情绪转换的过渡描写，或通过时间跳跃说明')
     }
 
     return {
       dimension: 'continuity',
-      severity,
-      description,
-      suggestion: severity > 0.3 ? '在场景切换处加入明确的过渡描述' : '保持当前连续性',
+      severity: Math.min(severity, 1),
+      description: issues.length > 0 ? issues.join('；') : '连续性良好',
+      suggestion: suggestions.length > 0 ? suggestions.join('；') : '保持当前连续性',
     }
   }
 

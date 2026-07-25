@@ -93,6 +93,18 @@ export function getRegisteredChecks(): CheckEntry[] {
   return Array.from(registry.values());
 }
 
+export function getAllChecks(): CheckEntry[] {
+  return getRegisteredChecks();
+}
+
+export function getCheck(id: string): CheckEntry | undefined {
+  return registry.get(id);
+}
+
+export function getChecksByPriority(priority: CheckEntry['priority']): CheckEntry[] {
+  return Array.from(registry.values()).filter((e) => e.priority === priority);
+}
+
 export function getCheckCount(): number {
   return registry.size;
 }
@@ -103,4 +115,20 @@ export function getCheckStats(): Record<string, number> {
     stats[entry.priority] = (stats[entry.priority] || 0) + 1;
   }
   return stats;
+}
+
+// === 便捷运行函数（兼容旧接口） ===
+export function runChecks(params: CheckParams): void {
+  const { text, stats, thresholds, vocabulary, violations } = params;
+  const entries = Array.from(registry.values())
+    .sort((a, b) => (priorityOrder[a.priority] ?? 9) - (priorityOrder[b.priority] ?? 9));
+
+  for (const entry of entries) {
+    try {
+      const result = entry.fn({ text, stats, thresholds, vocabulary, violations: [] });
+      violations.push(...result);
+    } catch (err) {
+      console.warn(`[CheckerRegistry] 检测项 "${entry.id}" 执行失败:`, err);
+    }
+  }
 }

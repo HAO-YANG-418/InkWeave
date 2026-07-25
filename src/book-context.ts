@@ -520,4 +520,185 @@ export class BookContext {
 
     return warnings;
   }
+
+  /**
+   * v11.0: 生成章节写作指导（跨章追踪集成到生成流程）
+   * 与 getCrossChapterWarnings() 不同，本方法提供的是**正向指导**
+   * （告诉LLM应该做什么），而非反向警告（告诉LLM不要做什么）
+   *
+   * 包含：
+   * - 人物连续性要求：哪些角色必须在/应该在本章出现
+   * - 伏笔推进要求：哪些伏笔需要在本章推进或回收
+   * - 场景衔接指导：从上章结尾场景如何过渡
+   * - 情绪连续性：上章结尾的情绪状态如何延续
+   * - 情节线程状态：活跃情节线程的推进建议
+   */
+  getGenerationGuidance(): {
+    characterContinuity: string[]
+    foreshadowToAdvance: string[]
+    sceneTransition: string | null
+    emotionalContinuity: string | null
+    plotThreadGuidance: string[]
+    summary: string
+  } {
+    const guidance = {
+      characterContinuity: [] as string[],
+      foreshadowToAdvance: [] as string[],
+      sceneTransition: null as string | null,
+      emotionalContinuity: null as string | null,
+      plotThreadGuidance: [] as string[],
+      summary: '',
+    }
+
+    if (this.chapters.length === 0) {
+      guidance.summary = '这是第一章，无跨章追踪信息。'
+      return guidance
+    }
+
+    const lastCh = this.chapters[this.chapters.length - 1]
+    const nextChapterIndex = lastCh.index + 1
+
+    // === 1. 人物连续性指导 ===
+    if (lastCh.characterStates.size > 0) {
+      const lastChars = [...lastCh.characterStates.entries()]
+      // 最近出场的主要角色（按最后出场章节排序）
+      const recentChars = lastChars
+        .filter(([, state]) => nextChapterIndex - state.lastChapter <= 3)
+        .map(([name, state]) => ({ name, lastAction: state.lastAction, lastLocation: state.lastLocation }))
+
+      if (recentChars.length > 0) {
+        guidance.characterContinuity.push(
+          `必须承接的角色：${recentChars.slice(0, 3).map(c => `${c.name}（最后状态：${c.lastAction}）`).join('、')}`
+        )
+      }
+
+      // 检查是否有角色多章未出现
+      const absentChars = [...this.globalCharacterStates.entries()]
+        .filter(([, state]) => nextChapterIndex - state.lastChapter > 5)
+        .map(([name]) => name)
+
+      if (absentChars.length > 0) {
+        guidance.characterContinuity.push(
+          `长期未出场角色（建议安排出场）：${absentChars.slice(0, 3).join('、')}`
+        )
+      }
+    }
+
+    // === 2. 伏笔推进指导 ===
+    const currentChapterIndex = lastCh.index
+    const urgentForeshadows = this.allForeshadowing
+      .filter(fs => !fs.resolved)
+      .map(fs => ({
+        ...fs,
+        gap: currentChapterIndex - fs.plantedIn,
+      }))
+      .filter(fs => (fs.importance >= 3 && fs.gap >= 4) || (fs.importance >= 2 && fs.gap >= 8))
+      .sort((a, b) => b.importance * 10 + b.gap - (a.importance * 10 + a.gap))
+
+    for (const fs of urgentForeshadows.slice(0, 3)) {
+      const urgency = fs.gap >= 8 ? '【紧急回收】' : fs.gap >= 5 ? '【建议推进】' : '【可以提及】'
+      guidance.foreshadowToAdvance.push(
+        `${urgency}伏笔"${fs.keyword}"：${fs.description}（第${fs.plantedIn + 1}章埋设，已过${fs.gap}章）`
+      )
+    }
+
+    // 最近的伏笔（轻度提醒）
+    const recentForeshadows = this.allForeshadowing
+      .filter(fs => !fs.resolved && fs.importance >= 2 && currentChapterIndex - fs.plantedIn <= 3)
+      .slice(0, 2)
+
+    for (const fs of recentForeshadows) {
+      if (!guidance.foreshadowToAdvance.some(f => f.includes(fs.keyword))) {
+        guidance.foreshadowToAdvance.push(
+          `【近期伏笔】"${fs.keyword}"：${fs.description}（第${fs.plantedIn + 1}章埋设，可适当提及）`
+        )
+      }
+    }
+
+    // === 3. 场景衔接指导 ===
+    if (lastCh.closingScene) {
+      guidance.sceneTransition = `上章结尾场景：${lastCh.closingScene}。本章开头应自然承接此场景，如需转场请加入过渡描述。`
+    }
+
+    // === 4. 情绪连续性指导 ===
+    // 从人物状态推断情绪基调
+    const lastActions = [...lastCh.characterStates.values()].map(s => s.lastAction)
+    const emotionalActions = lastActions.filter(a =>
+      /怒|悲|惊|恐惧|绝望|狂喜|激动|沉默|低落|消沉|颓然|颤抖|瘫坐|跪倒|狂笑|泪|哭|叹|吼|骂|咆哮/.test(a)
+    )
+    if (emotionalActions.length > 0) {
+      guidance.emotionalContinuity = `上章结尾情绪状态：${emotionalActions.slice(0, 2).join('；')}。本章开头需延续此情绪基调，或给予合理的情绪转折。`
+    }
+
+    // === 5. 情节线程指导 ===
+    // 检测最近章节的设定规则（暗示活跃的情节线程）
+    const recentRules = this.allSettingRules
+      .filter(r => currentChapterIndex - r.establishedIn <= 5)
+      .slice(0, 3)
+
+    if (recentRules.length > 0) {
+      guidance.plotThreadGuidance.push(
+        `近期建立的设定规则：${recentRules.map(r => `"${r.rule}"（第${r.establishedIn + 1}章）`).join('；')}。注意后续内容不得违反这些规则。`
+      )
+    }
+
+    // 检测章节类型分布，避免重复
+    const recentOpenings = this.chapters.slice(-5).map(c => c.openingPattern.type)
+    const recentEndings = this.chapters.slice(-5).map(c => c.endingPattern.type)
+    const openingTypeCount = recentOpenings.filter(o => o === recentOpenings[recentOpenings.length - 1]).length
+    const endingTypeCount = recentEndings.filter(e => e === recentEndings[recentEndings.length - 1]).length
+
+    if (openingTypeCount >= 3) {
+      const typeLabels: Record<string, string> = {
+        'single-sensory': '单字感官',
+        'dialogue': '对话',
+        'action': '动作',
+        'description': '叙述描写',
+        'internal-thought': '内心独白',
+      }
+      const currentType = typeLabels[recentOpenings[recentOpenings.length - 1]] || recentOpenings[recentOpenings.length - 1]
+      guidance.plotThreadGuidance.push(
+        `开头类型变化：已连续${openingTypeCount}章使用"${currentType}"开头，本章必须换一种开头方式（建议：${this.suggestAlternativeOpening(recentOpenings[recentOpenings.length - 1])}）`
+      )
+    }
+
+    if (endingTypeCount >= 3) {
+      const typeLabels: Record<string, string> = {
+        'reveal': '揭示',
+        'cliffhanger': '悬念',
+        'dialogue': '对话',
+        'action': '动作',
+        'emotion': '情感',
+      }
+      const currentType = typeLabels[recentEndings[recentEndings.length - 1]] || recentEndings[recentEndings.length - 1]
+      guidance.plotThreadGuidance.push(
+        `结尾类型变化：已连续${endingTypeCount}章使用"${currentType}"结尾，本章建议换一种结尾方式`
+      )
+    }
+
+    // === 汇总 ===
+    const parts: string[] = []
+    if (guidance.characterContinuity.length > 0) parts.push('角色：' + guidance.characterContinuity.join('；'))
+    if (guidance.foreshadowToAdvance.length > 0) parts.push('伏笔：' + guidance.foreshadowToAdvance.join('；'))
+    if (guidance.sceneTransition) parts.push('场景：' + guidance.sceneTransition)
+    if (guidance.emotionalContinuity) parts.push('情绪：' + guidance.emotionalContinuity)
+    if (guidance.plotThreadGuidance.length > 0) parts.push('节奏：' + guidance.plotThreadGuidance.join('；'))
+    guidance.summary = parts.length > 0 ? parts.join('\n') : '跨章追踪正常，无特殊指导。'
+
+    return guidance
+  }
+
+  /**
+   * 建议替代开头类型
+   */
+  private suggestAlternativeOpening(currentType: string): string {
+    const alternatives: Record<string, string> = {
+      'single-sensory': '对话或动作开头',
+      'dialogue': '动作或感官描写开头',
+      'action': '对话或内心独白开头',
+      'description': '动作或对话开头',
+      'internal-thought': '动作或感官描写开头',
+    }
+    return alternatives[currentType] || '动作或对话开头'
+  }
 }

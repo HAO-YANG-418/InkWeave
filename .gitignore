@@ -6,21 +6,9 @@ test-chapter.txt
 .npmrc
 docs/
 
-# 私有模块（不公开发布）
+# 核心模块（不公开发布）
 src/anti-pattern/
-src/reflection/
-src/intent/
-src/cooling/
-src/creative/
-src/learning/
-src/memory/
-src/planning/
 src/super/
-src/technique/
-src/writing/
-src/knowledge/
-src/kb/base-prompt-layered.ts
-src/llm-helper.ts
 
 # 测试与验证
 tests/

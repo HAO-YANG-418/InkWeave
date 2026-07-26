@@ -189,16 +189,74 @@ export function styleToPrompt(style: StyleConfig): string {
   return parts.length > 0 ? `【风格要求】${parts.join('；')}。` : '';
 }
 
+/**
+ * v12.10: 从角色元数据推导语音风格
+ * 当角色没有显式 speechStyle 时，根据角色身份、标签、描述自动生成
+ * 确保LLM能获得具体的角色声音差异化指引
+ */
+function deriveVoiceStyle(ch: Character): string {
+  if (ch.speechStyle) return ch.speechStyle
+
+  const traits: string[] = []
+
+  // 基于角色身份推导
+  if (ch.role === 'protagonist') {
+    traits.push('说话直接有力，少废话，关键时刻有一句定乾坤的台词')
+  } else if (ch.role === 'antagonist') {
+    traits.push('说话带着压迫感或轻蔑，喜欢用反问和短句制造压力')
+  } else if (ch.role === 'supporting') {
+    traits.push('说话有鲜明的个人习惯——可能是口头禅、特定句式、或对某类话题的敏感')
+  }
+
+  // 基于标签推导
+  if (ch.tags?.length) {
+    const tagStr = ch.tags.join(' ')
+    if (/老|年长|前辈|师父|长老/.test(tagStr)) traits.push('语气沉稳，爱说教，喜欢用"当年""你可知"开头')
+    if (/少年|年轻|师妹|师弟|徒弟/.test(tagStr)) traits.push('语气急切，常用短句，偶尔冲动失言')
+    if (/冷酷|冷漠|杀手|无情/.test(tagStr)) traits.push('惜字如金，每句不超过15字，从不解释')
+    if (/豪爽|粗犷|莽/.test(tagStr)) traits.push('嗓门大，说话直来直去，喜欢用"他娘的""老子"等粗口')
+    if (/神秘|隐藏|伪装/.test(tagStr)) traits.push('说话留三分，从不把话说满，常用"也许""或许""不一定"')
+    if (/贵族|高贵|优雅|公主/.test(tagStr)) traits.push('说话文雅，多用敬语和书面语，从不使用粗俗词汇')
+    if (/商人|掌柜|精明/.test(tagStr)) traits.push('说话圆滑，喜欢绕弯子，每句话都在计算利益')
+    if (/疯|狂|癫/.test(tagStr)) traits.push('说话跳跃，逻辑断裂，但疯话中藏着真相')
+  }
+
+  // 基于描述推导
+  if (ch.description) {
+    if (/沉默|寡言|不爱说话/.test(ch.description)) traits.push('极少主动开口，一旦开口必是重要信息')
+    if (/暴躁|易怒|冲动/.test(ch.description)) traits.push('说话带火药味，容易激动，常用感叹句')
+    if (/温柔|温和|善良/.test(ch.description)) traits.push('说话轻声细语，多用商量语气，从不咄咄逼人')
+    if (/骄傲|自负|傲慢/.test(ch.description)) traits.push('说话居高临下，喜欢用"你懂什么""不过是"等蔑视句式')
+    if (/自卑|怯懦|胆小/.test(ch.description)) traits.push('说话结巴或犹豫，常用"那个……""可能……""对不起"')
+    if (/狡猾|心机|城府/.test(ch.description)) traits.push('说话滴水不漏，从不暴露真实想法，善于用问题回答问题')
+  }
+
+  if (traits.length === 0) {
+    traits.push('说话风格自然，避免与其他角色雷同的句式')
+  }
+
+  return traits.join('；')
+}
+
 export function formatCharacters(chars: Character[]): string {
   if (chars.length === 0) return '';
   const lines = chars.map(ch => {
     let line = `- ${ch.name}（${roleLabel(ch.role)}）`;
     if (ch.tags?.length) line += `，身份：${ch.tags.join('、')}`;
     if (ch.description) line += `，${ch.description}`;
-    if (ch.speechStyle) line += `，说话风格：${ch.speechStyle}`;
+    const voice = deriveVoiceStyle(ch);
+    line += `，说话风格：${voice}`;
     return line;
   });
-  return `【相关角色】\n${lines.join('\n')}`;
+
+  // v12.10: 多角色时追加差异化要求
+  let extra = '';
+  if (chars.length >= 2) {
+    const names = chars.map(c => c.name).join('、');
+    extra = `\n\n【角色声音差异化 - 必须遵守】\n- 本章涉及角色：${names}\n- 每位角色的对话必须能从语气/用词/句式上区分开来，读者不看名字也能分辨谁在说话\n- 禁止所有角色使用相同的句式、语气词、或对话节奏\n- 每个角色至少有一句标志性的、只有TA会说的话`;
+  }
+
+  return `【相关角色】\n${lines.join('\n')}${extra}`;
 }
 
 export function formatSettings(settings: Setting[]): string {

@@ -1,16 +1,19 @@
 // ============================================================
-// GWE V3.2 - CLI 命令行工具
-// 用法: gwe check <file> | gwe - | gwe --json <file>
+// GWE V12.0 - CLI 命令行工具
+// 用法: gwe check <file> | gwe book <file> | gwe write | gwe -
 // ============================================================
 import fs from 'fs';
 import path from 'path';
 import { createEngineWithKB } from './kb-loader';
-import { MockProvider } from './llm-provider';
+import { createLLMProvider, getLLMConfig } from './config';
 import type { CheckResult } from './types';
 import { checkBook } from './book-checker';
 import type { BookIssue } from './book-context';
+import { WritingAgent } from './writing/agent';
+import type { WritingSession } from './writing/agent';
+import { createEmptyContext } from './writing/context-builder';
 
-const VERSION = '3.3.0';
+const VERSION = '12.0.0';
 
 // 颜色
 const colors = {
@@ -31,19 +34,31 @@ function colorize(text: string, color: keyof typeof colors): string {
 
 function printHelp(): void {
   console.log(`
-${colorize('GWE - Generic Web-novel Engine 网文追读力引擎', 'bold')} v${VERSION}
+${colorize('GWE - Generic Web-novel Engine 网文写作引擎', 'bold')} v${VERSION}
 
 ${colorize('用法:', 'cyan')}
   gwe check <file>        检测单个章节文件
   gwe book <file>         全书检测（多章连贯性/套路化/伏笔）
+  gwe write [options]     智能写作：根据意图生成章节
   gwe -                   从标准输入读取文本并检测
   gwe --json <file>       输出JSON格式结果（用于程序集成）
   gwe --help, -h          显示帮助
   gwe --version, -v       显示版本
 
+${colorize('写作命令 (write):', 'cyan')}
+  gwe write --number <n> --title <标题> [--intent <意图>] [--outline <大纲文件>]
+  gwe write --number <n> --title <标题> --instruction <用户指令>
+  
+  意图类型: advance_plot, reveal_secret, build_relationship, create_conflict,
+            show_growth, build_atmosphere, plant_foreshadow, resolve_foreshadow,
+            transition, climax, emotional_impact, world_building, character_intro,
+            raise_stakes, breather
+
 ${colorize('示例:', 'cyan')}
   gwe check chapter.txt
   gwe book novel.txt
+  gwe write --number 1 --title "觉醒" --intent show_growth
+  gwe write --number 3 --title "决战" --intent climax --outline outline.txt
   cat chapter.txt | gwe -
   gwe --json chapter.txt > report.json
 
@@ -53,13 +68,6 @@ ${colorize('评分说明:', 'cyan')}
   ≥75分 ⚠  及格，需要修改
   ≥60分 ⚠  较多问题，建议重写
   <60分 ✗ 质量不达标
-
-${colorize('评分维度:', 'cyan')}
-  身体反应  感官信号  动作推进  情绪张力
-  信息推进  转折密度  章末钩子
-
-${colorize('全书检测:', 'cyan')}
-  检测开头/结尾套路重复、章节衔接断裂、设定违反、伏笔未回收
 `);
 }
 
@@ -68,10 +76,11 @@ function printVersion(): void {
 }
 
 // 全局引擎实例
-let _engine: ReturnType<typeof createEngineWithKB>['engine'] | null = null;
-function getEngine() {
+let _engine: Awaited<ReturnType<typeof createEngineWithKB>>['engine'] | null = null;
+async function getEngine() {
   if (_engine) return _engine;
-  const { engine, result } = createEngineWithKB(new MockProvider());
+  const llm = createLLMProvider();
+  const { engine, result } = await createEngineWithKB(llm);
   if (result.errors.length > 0) {
     console.error(colorize(`KB加载警告: ${result.errors.length}个错误`, 'yellow'));
     for (const err of result.errors) console.error(colorize(`  - ${err}`, 'gray'));
@@ -80,8 +89,8 @@ function getEngine() {
   return engine;
 }
 
-function runCheck(text: string, filePath?: string, outputJson = false): void {
-  const engine = getEngine();
+async function runCheck(text: string, filePath?: string, outputJson = false): Promise<void> {
+  const engine = await getEngine();
   const result: CheckResult = engine.check(text);
 
   if (outputJson) {
@@ -202,13 +211,11 @@ function runBookCheck(text: string, filePath?: string): void {
 
   const result = checkBook(text);
 
-  // 统计概览
   console.log(colorize('  ─── 全书概览 ───', 'cyan'));
   console.log(`  章节数: ${result.stats.totalChapters}  总字数: ${result.stats.totalChars}字`);
   console.log(`  伏笔总数: ${result.stats.totalForeshadowing}  未回收: ${colorize(String(result.stats.unresolvedForeshadowing), result.stats.unresolvedForeshadowing > 5 ? 'yellow' : 'green')}`);
   console.log('');
 
-  // 开头类型分布
   console.log(colorize('  ─── 开头类型分布 ───', 'cyan'));
   const typeNames: Record<string, string> = {
     'single-sensory': '单字感官',
@@ -224,7 +231,6 @@ function runBookCheck(text: string, filePath?: string): void {
   }
   console.log('');
 
-  // 结尾类型分布
   console.log(colorize('  ─── 结尾类型分布 ───', 'cyan'));
   const endNames: Record<string, string> = {
     'reveal': '否定揭示',
@@ -240,8 +246,136 @@ function runBookCheck(text: string, filePath?: string): void {
   }
   console.log('');
 
-  // 问题列表
   printBookIssues(result.issues);
+}
+
+// ============================================================
+// v12.0: write 命令 — 智能写作
+// ============================================================
+
+async function runWrite(args: string[]): Promise<void> {
+  // 解析参数
+  let chapterNumber = 1;
+  let title = '';
+  let intent: string | undefined;
+  let outlineFile: string | undefined;
+  let instruction: string | undefined;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--number' && args[i + 1]) {
+      chapterNumber = parseInt(args[i + 1], 10);
+      i++;
+    } else if (args[i] === '--title' && args[i + 1]) {
+      title = args[i + 1];
+      i++;
+    } else if (args[i] === '--intent' && args[i + 1]) {
+      intent = args[i + 1];
+      i++;
+    } else if (args[i] === '--outline' && args[i + 1]) {
+      outlineFile = args[i + 1];
+      i++;
+    } else if (args[i] === '--instruction' && args[i + 1]) {
+      instruction = args[i + 1];
+      i++;
+    }
+  }
+
+  if (!title) {
+    console.error(colorize('错误: 请指定章节标题 (--title)', 'red'));
+    console.log('用法: gwe write --number <n> --title <标题> [--intent <意图>] [--outline <大纲文件>]');
+    process.exit(1);
+  }
+
+  if (isNaN(chapterNumber) || chapterNumber < 1) {
+    console.error(colorize('错误: 章节编号必须是正整数', 'red'));
+    process.exit(1);
+  }
+
+  // 读取大纲文件
+  let outline: string | undefined;
+  if (outlineFile) {
+    const resolvedPath = path.resolve(process.cwd(), outlineFile);
+    if (!fs.existsSync(resolvedPath)) {
+      console.error(colorize(`错误: 大纲文件不存在: ${resolvedPath}`, 'red'));
+      process.exit(1);
+    }
+    outline = fs.readFileSync(resolvedPath, 'utf-8').trim();
+  }
+
+  console.log('');
+  console.log(colorize(`  GWE V${VERSION} 智能写作`, 'bold'));
+  console.log('');
+  console.log(colorize(`  章节: 第${chapterNumber}章「${title}」`, 'cyan'));
+  if (intent) console.log(colorize(`  意图: ${intent}`, 'cyan'));
+  if (outline) console.log(colorize(`  大纲: ${outline.slice(0, 100)}${outline.length > 100 ? '...' : ''}`, 'gray'));
+  if (instruction) console.log(colorize(`  指令: ${instruction}`, 'gray'));
+  console.log('');
+
+  // 创建写作智能体
+  const llm = createLLMProvider();
+  const cfg = getLLMConfig();
+  console.log(colorize(`  LLM: ${cfg.provider} / ${cfg.model}`, 'cyan'));
+  console.log('');
+
+  const agent = new WritingAgent({}, llm);
+  agent.createSession('未命名作品', '玄幻');
+
+  console.log(colorize('  ─── 开始写作 ───', 'cyan'));
+  console.log('');
+
+  const validIntents = [
+    'advance_plot', 'reveal_secret', 'build_relationship', 'create_conflict',
+    'show_growth', 'build_atmosphere', 'plant_foreshadow', 'resolve_foreshadow',
+    'transition', 'climax', 'emotional_impact', 'world_building', 'character_intro',
+    'raise_stakes', 'breather',
+  ];
+
+  const startTime = Date.now();
+  const result = await agent.writeChapter(chapterNumber, title, {
+    userIntent: intent && validIntents.includes(intent) ? intent as any : undefined,
+    outline,
+    userInstruction: instruction,
+  });
+
+  const elapsed = Date.now() - startTime;
+  const cr = result.chapterResult;
+
+  console.log(colorize('  ─── 写作结果 ───', 'cyan'));
+  console.log('');
+  console.log(`  质量评分: ${colorize(`${Math.round(cr.qualityScore * 100)}分`, cr.success ? 'green' : 'yellow')}`);
+  console.log(`  字数: ${cr.wordCount}字`);
+  console.log(`  意图: ${cr.intent.primary.type} (置信度 ${Math.round(cr.intent.primary.confidence * 100)}%)`);
+  console.log(`  重写次数: ${cr.rewriteRounds}次`);
+  console.log(`  耗时: ${(elapsed / 1000).toFixed(1)}秒`);
+  console.log('');
+
+  if (cr.reflection.concerns.length > 0) {
+    console.log(colorize('  ─── 质量关注点 ───', 'cyan'));
+    for (const c of cr.reflection.concerns.slice(0, 5)) {
+      console.log(`  [${c.dimension}] ${c.description} (${Math.round(c.severity * 100)}%)`);
+    }
+    console.log('');
+  }
+
+  if (cr.suggestions.length > 0) {
+    console.log(colorize('  ─── 写作建议 ───', 'cyan'));
+    for (const s of cr.suggestions) {
+      console.log(`  ${s}`);
+    }
+    console.log('');
+  }
+
+  // 输出内容
+  console.log(colorize('  ─── 章节内容 ───', 'cyan'));
+  console.log(cr.content);
+  console.log('');
+
+  // 输出会话统计
+  const session = result.session;
+  console.log(colorize('  ─── 会话统计 ───', 'cyan'));
+  console.log(`  总章节: ${session.stats.totalChapters}  总字数: ${session.stats.totalWords}字`);
+  console.log(`  通过率: ${Math.round(session.stats.passRate * 100)}%  平均质量: ${Math.round(session.averageQualityScore * 100)}分`);
+  console.log('');
 }
 
 // 主逻辑
@@ -265,12 +399,12 @@ if (cleanArgs[0] === '-' || cleanArgs[0] === '--stdin') {
   let data = '';
   process.stdin.setEncoding('utf-8');
   process.stdin.on('data', (chunk) => { data += chunk; });
-  process.stdin.on('end', () => {
+  process.stdin.on('end', async () => {
     if (!data.trim()) {
       console.error(colorize('错误: 标准输入为空', 'red'));
       process.exit(1);
     }
-    runCheck(data, undefined, outputJson);
+    await runCheck(data, undefined, outputJson);
   });
 } else if (cleanArgs[0] === 'check') {
   const filePath = cleanArgs[1];
@@ -285,7 +419,7 @@ if (cleanArgs[0] === '-' || cleanArgs[0] === '--stdin') {
     process.exit(1);
   }
   const text = fs.readFileSync(resolvedPath, 'utf-8');
-  runCheck(text, filePath, outputJson);
+  (async () => { await runCheck(text, filePath, outputJson); })();
 } else if (cleanArgs[0] === 'book') {
   const filePath = cleanArgs[1];
   if (!filePath) {
@@ -300,12 +434,17 @@ if (cleanArgs[0] === '-' || cleanArgs[0] === '--stdin') {
   }
   const text = fs.readFileSync(resolvedPath, 'utf-8');
   runBookCheck(text, filePath);
+} else if (cleanArgs[0] === 'write') {
+  runWrite(cleanArgs.slice(1)).catch(err => {
+    console.error(colorize(`错误: ${err.message}`, 'red'));
+    process.exit(1);
+  });
 } else {
   const filePath = cleanArgs[0];
   const resolvedPath = path.resolve(process.cwd(), filePath);
   if (fs.existsSync(resolvedPath)) {
     const text = fs.readFileSync(resolvedPath, 'utf-8');
-    runCheck(text, filePath, outputJson);
+    (async () => { await runCheck(text, filePath, outputJson); })();
   } else {
     console.error(colorize(`错误: 未知命令或文件不存在: ${cleanArgs[0]}`, 'red'));
     console.log('使用 gwe --help 查看帮助');

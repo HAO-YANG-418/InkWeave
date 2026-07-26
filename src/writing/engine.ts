@@ -3,7 +3,6 @@
    整合：质量检测 + 全书连贯性检测 + Prompt构建 + 上下文管理
    ============================================================ */
 
-import { createEngineWithKB } from '../kb-loader';
 import { MockProvider } from '../llm-provider';
 import type { CheckResult } from '../types';
 import { BookContext } from '../book-context';
@@ -167,11 +166,13 @@ export interface ChapterFeedback {
 }
 
 /**
- * 创建GWE写作引擎实例
+ * 创建GWE写作引擎实例（异步）
+ * v12.0: 使用动态导入 kb-loader，避免模块加载时一次性加载95个JSON文件
  */
-export function createWritingEngine(): GWEWritingEngine {
-  // 初始化检测引擎
-  const { engine: checkEngine } = createEngineWithKB(new MockProvider());
+export async function createWritingEngine(): Promise<GWEWritingEngine> {
+  // 初始化检测引擎（动态导入 kb-loader 避免 OOM）
+  const { createEngineWithKB } = await import('../kb-loader');
+  const { engine: checkEngine } = await createEngineWithKB(new MockProvider());
   const bookContext = new BookContext();
 
   // v6.2: 初始化类人认知模块
@@ -194,7 +195,7 @@ export function createWritingEngine(): GWEWritingEngine {
   // 初始化空上下文
   let context: WritingContext = createEmptyContext({ title: '未命名作品', genre: '通用' });
 
-  return {
+  const engine: GWEWritingEngine = {
     getContext() {
       return context;
     },
@@ -592,6 +593,8 @@ export function createWritingEngine(): GWEWritingEngine {
 
     return warnings;
   }
+
+  return engine;
 }
 
 // 导出类型

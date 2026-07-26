@@ -3,6 +3,7 @@
 // 核心能力：写完内容后自我评估，发现质量问题，自动重写改进
 // 这是"思考闭环"的关键：产出 → 评估 → 反思 → 改进 → 再产出
 // v6.4: 接入LLM语义分析，12维度真实评估
+// v12.3: 去除评分偷懒引导，添加S/C级对比示例，均匀度检测降级
 // ============================================================
 
 import {
@@ -16,7 +17,7 @@ import {
 } from './types'
 import type { LLMProvider } from '../types'
 import { llmJson, hasLLM } from '../llm-helper'
-import { REFLECTION_CRITERIA, CLICHE_BLACKLIST, generateReflectionPrompt, getCriterionByKey } from '../knowledge/reflection-criteria'
+import { REFLECTION_CRITERIA, CLICHE_BLACKLIST, getCriterionByKey } from '../knowledge/reflection-criteria'
 
 // ============================================================
 // 质量维度权重 — 从知识库读取
@@ -31,6 +32,21 @@ const ALL_DIMENSIONS: QualityDimension[] = [
   'pacing', 'character_voice', 'information_density', 'sensory_richness',
   'dialogue_quality', 'prose_quality', 'continuity', 'originality',
 ]
+
+// ============================================================
+// v12.9: 维度拆分 — 结构性指标用规则引擎，语义性指标用LLM
+// ============================================================
+
+/** 规则引擎负责的结构性维度（关键词/统计匹配足够准确） */
+const STRUCTURAL_DIMS = new Set<QualityDimension>([
+  'pacing', 'information_density', 'sensory_richness', 'prose_quality', 'continuity',
+])
+
+/** LLM负责的语义维度（需要理解内容含义） */
+const SEMANTIC_DIMS = new Set<QualityDimension>([
+  'intent_alignment', 'opening_strength', 'ending_hook', 'emotional_impact',
+  'character_voice', 'dialogue_quality', 'originality',
+])
 
 // ============================================================
 // 自我反思引擎
@@ -151,44 +167,49 @@ export class SelfReflection {
   }
 
   /**
-   * LLM驱动的语义反思（异步）
-   * 使用LLM进行12维度的深度语义评估，结果比规则引擎更精准
-   * 无LLM时自动降级到规则引擎的reflect()
+   * v12.9: LLM语义评估 + 规则引擎混合模式
+   * 规则引擎负责5个结构性维度（节奏/信息密度/感官/文字/连续性）
+   * LLM负责7个语义维度（意图/开头/钩子/情感/角色声音/对话/原创性）
+   * LLM失败时自动降级，全部使用规则引擎
    */
   async reflectAsync(input: ReflectionInput, round = 0): Promise<ReflectionResult> {
+    // 始终先跑规则引擎，获得完整12维基准线
+    const ruleResult = this.reflect(input, round)
+
     if (!hasLLM(this.llm)) {
-      return this.reflect(input, round)
+      return ruleResult
     }
 
-    const llmResult = await this.evaluateWithLLM(input)
+    // 尝试LLM语义评估
+    const llmResult = await this.evaluateSemanticWithLLM(input)
     if (!llmResult) {
-      return this.reflect(input, round)
+      return ruleResult
     }
 
-    // 将LLM结果转换为QualityConcern数组
-    const concerns: QualityConcern[] = llmResult.dimensions.map(d => ({
-      dimension: d.dimension,
-      severity: 1 - d.score, // LLM给的是0-1分，转成severity
-      description: d.issue,
-      suggestion: d.suggestion,
-      location: d.location,
-    }))
-
-    const dimensionScores = {} as Record<QualityDimension, number>
+    // 混合模式：LLM覆盖语义维度，规则引擎保留结构性维度
+    const dimensionScores = { ...ruleResult.dimensionScores }
     for (const d of llmResult.dimensions) {
-      dimensionScores[d.dimension] = d.score
-    }
-    // 确保所有维度都有分数
-    for (const dim of ALL_DIMENSIONS) {
-      if (dimensionScores[dim] === undefined) {
-        dimensionScores[dim] = 0.7 // LLM未返回的维度给默认分
+      const dim = d.dimension as QualityDimension
+      if (SEMANTIC_DIMS.has(dim)) {
+        dimensionScores[dim] = d.score
       }
     }
 
+    // 构建concerns：LLM语义维度 + 规则引擎结构维度
+    const llmConcerns: QualityConcern[] = llmResult.dimensions.map(d => ({
+      dimension: d.dimension as QualityDimension,
+      severity: 1 - d.score,
+      description: d.issue || '无具体问题',
+      suggestion: d.suggestion || '保持',
+      location: d.location,
+    }))
+    const structConcerns = ruleResult.concerns.filter(c => STRUCTURAL_DIMS.has(c.dimension))
+    const allConcerns = [...llmConcerns, ...structConcerns]
+
     const overallScore = this.calculateOverallScore(dimensionScores)
     const passed = overallScore >= this.config.qualityGate
-    const significantConcerns = concerns.filter(c => c.severity > 0.3).sort((a, b) => b.severity - a.severity)
-    const highlights = llmResult.highlights || this.extractHighlights(input, concerns)
+    const significantConcerns = allConcerns.filter(c => c.severity > 0.3).sort((a, b) => b.severity - a.severity)
+    const highlights = llmResult.highlights?.length > 0 ? llmResult.highlights : ruleResult.highlights
 
     const result: ReflectionResult = {
       overallScore,
@@ -196,7 +217,7 @@ export class SelfReflection {
       dimensionScores,
       concerns: significantConcerns,
       highlights,
-      summary: this.buildSummary(overallScore, passed, concerns),
+      summary: this.buildSummary(overallScore, passed, allConcerns),
       round,
     }
 
@@ -252,31 +273,71 @@ export class SelfReflection {
   }
 
   // ============================================================
-  // LLM评估实现
+  // v12.9: LLM语义评估 — 仅评估7个语义维度
+  // 提示词不再给关键词列表，而是让LLM以读者视角做判断
   // ============================================================
 
-  private async evaluateWithLLM(input: ReflectionInput): Promise<{
+  /**
+   * v12.9: 语义评估提示词 — 去关键词化，以读者感受为核心
+   */
+  private static SEMANTIC_SYSTEM_PROMPT = `你是资深网文编辑。请以读者视角，逐维度评估以下章节的质量。不要用关键词匹配，而是真正理解内容后给出判断。
+
+【7个评估维度】
+
+1. 意图对齐 (intent_alignment)
+   - 本章标注了意图类型。读完后，你觉得它的核心意图实现了吗？
+   - 该推进剧情的，剧情真的推进了吗？该高潮的，情绪真的爆了吗？
+   - 有没有大段内容与核心意图无关？
+
+2. 开头力度 (opening_strength)
+   - 前3句话有没有抓住你？你读完第一段后想继续读吗？
+   - 开头是直接切入冲突/悬念/异常，还是在铺垫背景/日常流程？
+   - 有没有"醒来→吃饭→出门"式的流水账开头？
+
+3. 结尾钩子 (ending_hook)
+   - 读完最后一段，你是否产生"必须翻下一章"的冲动？
+   - 结尾制造了悬念/危机/反转/抉择中的哪一种？
+   - 还是平淡收尾（事情办完→感慨→结束）？
+
+4. 情感冲击 (emotional_impact)
+   - 读这章时你的情绪有没有起伏变化？
+   - 有没有让你屏住呼吸、心跳加速、或眼眶发热的时刻？
+   - 情绪是"展现"出来的（通过行为/细节），还是"告知"的（"他很愤怒"）？
+
+5. 角色声音 (character_voice)
+   - 不同角色说话你能分清谁是谁吗？
+   - 角色的用词、句式、语气是否符合其身份和性格？
+   - 还是所有人说话一个味道？
+
+6. 对话质量 (dialogue_quality)
+   - 对话是在推进剧情/展现性格/制造张力，还是在说废话/堆设定？
+   - 有没有潜台词（角色嘴上说的和心里想的不一样）？
+   - 对话引导词是否多样（不只是"说""道"）？
+
+7. 原创性 (originality)
+   - 有没有读到让你觉得"又是这套"的套路化表达或情节？
+   - 情节发展有没有意料之外但合理的地方？
+   - 描写方式有没有个人特色，还是通用模板？
+
+【评分规则】
+- 0.85-0.95: 优秀，这个维度做得很出色，让人印象深刻
+- 0.70-0.84: 合格，基本达标但还有提升空间
+- 0.50-0.69: 有问题，存在明显不足，影响阅读体验
+- 0.30-0.49: 严重问题，需要重写
+- 分数必须差异化，禁止所有维度分数相同或接近。好的地方大胆给高分，差的地方大胆给低分。
+- issue必须写具体问题，引用原文中的具体句子或段落，禁止写"良好""合格""尚可"等空洞评价。
+
+【输出格式】
+只输出纯JSON，以 { 开头，以 } 结尾。`
+
+  private async evaluateSemanticWithLLM(input: ReflectionInput): Promise<{
     dimensions: Array<{ dimension: QualityDimension; score: number; issue: string; suggestion: string; location?: string }>
     highlights: string[]
     overallComment: string
   } | null> {
     const prevContent = input.previousContent
-      ? `\n【前一章结尾】\n${input.previousContent.slice(-300)}`
+      ? `\n【前一章结尾（用于连续性判断）】\n${input.previousContent.slice(-300)}`
       : ''
-
-    const systemPrompt = generateReflectionPrompt() + `
-
-对每个维度给出：
-- score: 0-1的分数（0.8以上为优秀，0.6-0.8为合格，0.6以下需改进）
-- issue: 具体问题描述（如果score>=0.7，写"良好"即可）
-- suggestion: 具体改进建议（如果score>=0.7，写"保持"即可）
-- location: 问题所在位置（开头/中段/结尾/全章，可留空）
-
-同时给出：
-- highlights: 本章2-3个亮点（写得好的地方）
-- overallComment: 一句话总评
-
-必须严格返回JSON，不要有其他文字。`
 
     const userPrompt = `【章节信息】
 标题：${input.chapterTitle}
@@ -284,44 +345,37 @@ export class SelfReflection {
 本章意图：${input.intent.summary}
 主要意图类型：${input.intent.primary.type}（置信度${Math.round(input.intent.primary.confidence * 100)}%）
 情绪基调：${input.intent.emotionalTone.primary}（强度${Math.round(input.intent.emotionalTone.intensity * 100)}%）
-推荐节奏：句长${input.intent.suggestedPacing.sentenceRhythm}，段落${input.intent.suggestedPacing.paragraphDensity}，信息密度${input.intent.suggestedPacing.infoDensity}
-推荐策略：${input.intent.suggestedStrategies.map(s => s.name).join('、')}
 ${prevContent}
 
 【章节内容】
 ${input.content.slice(0, 3000)}
 
-请返回JSON格式：
-{
-  "dimensions": [
-    {"dimension": "维度名", "score": 0.85, "issue": "具体问题或良好", "suggestion": "建议", "location": "位置"}
-  ],
-  "highlights": ["亮点1", "亮点2"],
-  "overallComment": "总评"
-}`
+请以读者视角评估上述7个维度，返回JSON：
+{"dimensions":[{"dimension":"维度key","score":0.80,"issue":"具体问题（引用原文）","suggestion":"改进建议","location":"相关位置"}],"highlights":["亮点"],"overallComment":"总评（1-2句话）"}`
 
     const result = await llmJson<{
       dimensions: Array<{ dimension: string; score: number; issue: string; suggestion: string; location?: string }>
       highlights: string[]
       overallComment: string
     }>(this.llm, [
-      { role: 'system', content: systemPrompt },
+      { role: 'system', content: SelfReflection.SEMANTIC_SYSTEM_PROMPT },
       { role: 'user', content: userPrompt },
-    ], { temperature: 0.2, maxTokens: 2048 })
+    ], { temperature: 0.3, maxTokens: 4096 })
 
     if (!result || !result.dimensions) return null
 
-    // 验证并过滤维度
-    const validDims = new Set(ALL_DIMENSIONS)
+    // 验证并过滤维度（只保留语义维度）
     const validDimensions = result.dimensions
-      .filter(d => validDims.has(d.dimension as QualityDimension))
+      .filter(d => SEMANTIC_DIMS.has(d.dimension as QualityDimension))
       .map(d => ({
         dimension: d.dimension as QualityDimension,
-        score: Math.max(0, Math.min(1, d.score)),
-        issue: d.issue || '良好',
+        score: Math.max(0.3, Math.min(0.95, d.score)), // 限制在合理范围
+        issue: d.issue || '无具体问题',
         suggestion: d.suggestion || '保持',
         location: d.location,
       }))
+
+    if (validDimensions.length === 0) return null
 
     return {
       dimensions: validDimensions,

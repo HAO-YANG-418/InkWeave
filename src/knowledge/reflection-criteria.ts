@@ -300,7 +300,7 @@ export const REFLECTION_CRITERIA: DimensionCriterion[] = [
   {
     key: 'ending_hook',
     name: '结尾钩子',
-    weight: 0.12,
+    weight: 0.18,
     whatItMeasures: '结尾有没有让读者想看下一章？还是平淡收尾？',
     goodSignals: [
       '结尾制造了悬念/危机/反转/抉择，让读者想知道接下来会怎样',
@@ -708,12 +708,21 @@ export function generateReflectionPrompt(): string {
     const badPatternsText = c.badPatterns
       .map(b => `  - ${b.name}（严重度${b.severity}）：${b.description}\n    信号：${b.signals.join('、')}\n    建议：${b.suggestion}`)
       .join('\n');
+
+    let compText = '';
+    if (c.comparisonExamples) {
+      compText = `
+S级示例：${c.comparisonExamples.sLevel.slice(0, 120)}
+C级示例：${c.comparisonExamples.cLevel.slice(0, 120)}
+差距：${c.comparisonExamples.explanation.slice(0, 80)}`;
+    }
+
     return `【${c.name}】权重${(c.weight * 100).toFixed(0)}%
 评什么：${c.whatItMeasures}
 好的标志：${c.goodSignals.join('；')}
 差的模式：
 ${badPatternsText}
-评分标准：${c.scoringGuide}`;
+评分标准：${c.scoringGuide}${compText}`;
   }).join('\n\n');
 
   return `你是网文写作质量评审专家。请按以下12个维度评估章节质量，每个维度给出0-1的分数和具体问题。

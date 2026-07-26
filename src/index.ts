@@ -62,6 +62,10 @@ export {
 } from './llm-provider';
 export type { OpenAICompatibleConfig, PresetProvider } from './llm-provider';
 
+// LLM 配置（自动检测 .env）
+export { createLLMProvider, getLLMConfig } from './config';
+export type { LLMConfig } from './config';
+
 // KB加载器（浏览器版）
 export { loadKBFromJSON, loadAllKB, createEngineWithKB } from './kb-loader';
 export type { LoadResult } from './kb-loader';
@@ -108,3 +112,47 @@ export { BookContext, detectOpeningPattern, detectEndingPattern, extractSettingR
 export type { ChapterSnapshot, OpeningPattern, EndingPattern, CharacterState, SettingRule, Foreshadow, BookIssue } from './book-context';
 export { checkBook, checkChapterFiles, splitChapters, extractChapterSnapshot } from './book-checker';
 export type { BookCheckResult } from './book-checker';
+
+// v12.0: 写作模块（WritingOrchestrator + WritingAgent + GWEWritingEngine）
+export {
+  WritingOrchestrator,
+  WritingAgent,
+  createWritingEngine,
+  buildWritingMessages,
+  createEmptyContext,
+  updateContextAfterChapter,
+  getCurrentChapter,
+  getPreviousChapter,
+  getRecentChapters,
+  getActiveForeshadows,
+  getRelevantCharacters,
+  getRelevantSettings,
+  getPrefixContext,
+  createLearningBridge,
+} from './writing';
+export type {
+  WriteChapterRequest,
+  WriteChapterResult,
+  OrchestratorConfig,
+  WritingAgentConfig,
+  WritingSession,
+  SessionChapter,
+  AgentWriteResult,
+  GWEWritingEngine,
+  AntiPatternAnalysisResult,
+  AntiPatternStatus,
+  ChapterFeedback,
+  ContextBuildOptions,
+  LearningBridge,
+  WritingContext as WritingModuleContext,
+  ChatMessage as WritingChatMessage,
+  CapabilityId,
+  WritingPreset,
+  Chapter as WritingChapter,
+  Character as WritingCharacter,
+  Setting as WritingSetting,
+  ChapterEndingState,
+  Foreshadow as WritingForeshadow,
+  StyleConfig as WritingStyleConfig,
+  WritingRule,
+} from './writing';

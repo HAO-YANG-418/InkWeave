@@ -1,0 +1,52 @@
+{
+  "preset_id": "preset_infinite_flow",
+  "preset_name": "无限流·V3.1追读版",
+  "preset_description": "无限流V3.1追读版：副本闯关+规则博弈+智斗生存。每个副本独立世界，规则破解是核心看点，反转密度高。",
+  "based_on": "preset_mystery",
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_short",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_concise",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_psychological",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_cold",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_fast",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_mystery",
+    "node_vocab_filler": "opt_filler_strict",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_extreme",
+    "node_strictness": "opt_strict_strict",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_dense",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "无限流V3.1追读版：每个副本开场3段内建立规则和危机感。规则陈述要巧妙——通过角色对话/观察/试探来展示，不要直接念系统提示。智斗是核心看点：主角的推理要有逻辑链条，读者能跟着思考。禁止「主角灵光一闪就解开了谜题」。反转密度高：每章至少1次信息反转——以为安全的队友是卧底/以为的规则有例外/以为的敌人是线索。副本之间有因果联系：上一个副本获得的道具/技能/信息，在后续副本中发挥作用。禁止无脑爽文：主角不能靠运气和光环通关。章末用新信息/新危机/规则反转为钩子，最后一句≤15字。",
+  "extra_constraints": [
+    "每个副本开场3段内必须建立规则和危机感",
+    "规则陈述通过角色行动展示，不要直接念系统提示",
+    "每章至少1次信息反转（规则反转/角色反转/认知反转）",
+    "禁止'主角灵光一闪'式降智通关，推理过程要有逻辑链条",
+    "禁止48个AI套路反应词",
+    "章末用新信息/新危机/规则反转为钩子，最后一句≤15字",
+    "禁止'他不知道接下来会发生什么'式预告钩子"
+  ],
+  "extra_rules": [
+    {
+      "id": "if-deus-ex-machina",
+      "name": "降智通关",
+      "type": "regex",
+      "severity": "warning",
+      "pattern": "灵光一闪|突然想到.{2,10}办法|脑中闪过.{2,10}念头|一瞬间明白了",
+      "maxMatches": 1
+    }
+  ],
+  "tags": ["无限流", "副本", "智斗", "规则", "反转"],
+  "examples": []
+}

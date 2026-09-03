@@ -1,0 +1,30 @@
+{
+  "kb_version": "3.0",
+  "node_id": "node_opening_impact",
+  "option_id": "opt_opening_medium",
+  "option_name": "动作切入（中等冲击）",
+  "option_description": "开头从正在进行的动作或声音切入，比感官轰炸平和但比环境描写强，适合大多数网文场景。",
+  "system_prompt": "你使用中等冲击开头模式。第一句从正在进行的动作或声音切入：一个正在做的动作、一个突然响起的声音、一个意外的触觉。不需要单字轰炸，但第一句必须有人正在做什么或发生了什么具体事件，不能是静态环境描写。",
+  "constraints": [
+    "第一句必须是进行中的动作或突发声音",
+    "第一句必须有具体动词，禁止静态描写",
+    "开头三句内必须出现身体反应",
+    "禁止纯环境/背景/外貌开头"
+  ],
+  "examples": [
+    {
+      "text": "铅笔在纸页上划出沙沙的声响，林深把三十七点二度这个数字记下来，指尖在数字下面顿了顿。",
+      "note": "动作切入：第一句就是正在进行的动作+声音"
+    }
+  ],
+  "threshold_overrides": {
+    "openingImpact": "medium"
+  },
+  "radar_weights": {
+    "bodyReaction": 1.2,
+    "sensorySignal": 1.2,
+    "action": 1.2,
+    "emotion": 1.0,
+    "infoAdvance": 1.0
+  }
+}

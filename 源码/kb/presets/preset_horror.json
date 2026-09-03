@@ -1,0 +1,67 @@
+{
+  "preset_id": "preset_horror",
+  "preset_name": "灵异恐怖·V3.1追读版",
+  "preset_description": "恐怖灵异V3.1追读版：3秒停留不安开头+密集异常反咬+具体恐怖钩子。用五感细节营造不安，安静-不安-爆发节奏循环，不直接写鬼。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_short",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_concise",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_psychological",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_cold",
+    "node_platform": "opt_platform_newmedia",
+    "node_info_density": "opt_info_fast",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_first_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_horror",
+    "node_vocab_filler": "opt_filler_strict",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_extreme",
+    "node_strictness": "opt_strict_strict",
+    "node_ai_creativity": "opt_ai_conservative",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_dense",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_vocab": {
+    "add": {
+      "bodyParts": ["后颈", "脊背", "头皮", "发根", "牙根", "指尖", "胃", "喉咙", "毛孔", "汗毛"],
+      "sensoryVerbs": ["后颈发凉", "头皮发麻", "脊背发寒", "汗毛竖起", "胃一缩", "喉咙发紧", "牙根发酸", "指尖冰凉", "喘不上气", "心脏停跳", "耳朵嗡鸣", "血凉了"],
+      "actionVerbs": ["僵住", "屏住呼吸", "不敢动", "回头", "慢慢转头", "贴墙", "捂住嘴", "不敢出声", "后退", "摸到", "盯着", "咽口水"],
+      "environmentSignals": ["温度骤降", "异响", "水滴声", "脚步停了", "敲门声", "灯闪", "灯灭了", "镜子里", "床底", "门关了", "风停了", "安静得过分", "呼吸声不对", "第三下", "空无一人", "味道不对"]
+    }
+  },
+  "extra_prompt": "灵异恐怖V3.1追读版：\n\n【开头】第一句≤20字直接身体不安信号或具体异常。恐怖文最强开头：「后颈凉了。」「敲门声停了。」「我数了数，宿舍里有五个人。但我们寝室只有四个。」前300字必须：异常信号出现→主角身体恐惧反应（后颈凉/头皮麻/胃缩/呼吸停）→规则/不对劲浮现。禁止写景/交代背景/「我叫XX」开头。\n\n【反咬】每200-300字一次恐怖反咬（恐怖文节奏比爽文更快）：以为没事→还有声音/以为是猫→是人/以为只有一个→满屋子都是/以为跑了→在身后。反咬必须具体：具体什么声音、具体什么位置、具体哪不对、具体少了/多了什么。禁止「似乎有什么东西」「一股不祥预感」假恐怖，必须是看得见摸得着的异常。\n\n【钩子】章末钩子必须是具体恐怖画面：镜子里多了个人/床底露出一只眼睛/手机照片里身后有人/他转头，看见自己的尸体/门外传来第三下敲门但屋里人都在。最后一句≤12字极短句落点，越短越恐怖。\n\n【恐怖原则】不直接写鬼，不解释原理。恐怖来自「不对」：规则违反（敲门声是三下但楼道没人/照片里人眨眼了/朋友说了句他不可能知道的事/死者发了朋友圈）。所有恐怖先落到主角身体（后颈凉/胃缩/指尖凉/呼吸卡），再落到具体异常物件。\n\n【对话】恐怖文中对话要短，人在害怕时话少，甚至不说话只用眼神交流。有人说一句没人接话，最恐怖。",
+  "extra_constraints": [
+    "第一句直接身体不安信号或具体异常，0铺垫",
+    "前300字：异常出现→身体恐惧反应→规则不对劲浮现",
+    "每200-300字一次恐怖反咬，千字≥4个",
+    "恐怖必须具体：看得见摸得着听得到，禁止空泛悬念",
+    "不直接写鬼/不解释原理，靠「不对」制造恐惧",
+    "章末具体恐怖画面钩子，最后一句≤12字极短句",
+    "对话要短，害怕时人不说话",
+    "禁止48个AI套路反应词，恐惧落到身体：后颈凉/头皮麻/胃缩/指尖冰/呼吸卡",
+    "禁止「一股神秘气息/不祥预感/黑暗中有什么」假恐怖"
+  ],
+  "examples": [
+    {
+      "text": "后颈凉了。\n\n我停下刷牙的动作，满嘴泡沫抬头看镜子。卫生间里只有我一个人，排气扇嗡嗡转着。\n\n但那股凉意还在，像有人对着我后颈吹气。\n\n我慢慢转过头。\n\n身后什么都没有。门是关着的，窗户也关着，没有风。\n\n我松了口气，转回来继续刷。\n\n镜子里，我身后站着一个人。",
+      "note": "恐怖V3.1开头示范：第一句「后颈凉了」单字感官→第二句具体场景→第三句身体继续反应→反咬（转头没人）→再反咬（镜子里有人）。最后一句7字极短句落点，恐怖感拉满。"
+    }
+  ],
+  "extra_rules": [
+    {
+      "id": "no_fake_horror",
+      "name": "禁止假恐怖",
+      "description": "禁止使用「一股阴森的气息/一种说不出的恐惧/鬼气森森/阴气逼人」等空泛恐怖形容词，恐怖必须通过具体物件和身体反应展现",
+      "severity": "warning",
+      "pattern": "一股阴森|鬼气森森|阴气逼人|说不出的恐惧|莫名的恐惧",
+      "injectToPrompt": true
+    }
+  ],
+  "tags": ["灵异", "恐怖", "悬疑", "V3.1追读"]
+}

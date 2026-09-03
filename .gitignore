@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.workbuddy/backup/
+_代码归档/_backup/
+旧版_归档/
+*_backup_*/
+docs/历史评审/*backup*
+*.backup
+.inkweave.llm.json
+.env.inkweave.json
+*.fingerprint.json
+.DS_Store

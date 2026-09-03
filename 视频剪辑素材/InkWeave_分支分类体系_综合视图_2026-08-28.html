@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>InkWeave 分支分类体系 · 综合视图</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --card:#ffffff; --ink:#1f2733; --sub:#5b6776; --line:#e3e8ef;
+    --brand:#2f6df0; --brand2:#7b5cf0; --ok:#1f9d57; --warn:#d98a00; --bad:#d9534f;
+    --soft:#eef3fb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    line-height:1.65;font-size:15px}
+  .wrap{max-width:980px;margin:0 auto;padding:28px 22px 60px}
+  header.hero{background:linear-gradient(120deg,#2f6df0,#7b5cf0);color:#fff;border-radius:16px;
+    padding:26px 28px;box-shadow:0 8px 24px rgba(47,109,240,.18)}
+  header.hero h1{margin:0 0 6px;font-size:24px;letter-spacing:.5px}
+  header.hero p{margin:0;opacity:.95;font-size:14.5px}
+  .tag{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+    border-radius:999px;padding:2px 11px;font-size:12.5px;margin:10px 6px 0 0}
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px}
+  nav.toc a{font-size:13px;color:var(--brand);text-decoration:none;background:var(--soft);
+    border:1px solid var(--line);border-radius:8px;padding:5px 12px}
+  nav.toc a:hover{background:var(--brand);color:#fff}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 22px;margin:16px 0;box-shadow:0 2px 8px rgba(20,30,50,.04)}
+  section h2{margin:0 0 4px;font-size:19px;display:flex;align-items:center;gap:9px}
+  section h2 .n{background:var(--brand);color:#fff;border-radius:8px;width:26px;height:26px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+  section .lead{color:var(--sub);margin:2px 0 14px;font-size:13.5px}
+  svg{width:100%;height:auto;display:block}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  .mini{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .mini h4{margin:0 0 6px;font-size:14px;color:var(--brand)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--sub)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  @media(max-width:720px){.cards{grid-template-columns:1fr}}
+  .stat{border-radius:10px;padding:12px 14px;border:1px solid var(--line)}
+  .stat.ok{background:#eafaf0;border-color:#bfe9cd}
+  .stat.warn{background:#fff6e6;border-color:#f3dca6}
+  .stat .t{font-weight:700;font-size:14px;margin-bottom:3px}
+  .stat.ok .t{color:var(--ok)} .stat.warn .t{color:var(--warn)}
+  .stat .d{font-size:12.5px;color:var(--sub)}
+  .flow-row{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .flow-box{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 13px;flex:1;min-width:150px}
+  .flow-box b{display:block;color:var(--brand);font-size:13.5px;margin-bottom:3px}
+  .flow-box span{font-size:12px;color:var(--sub)}
+  .arrow{display:flex;align-items:center;color:var(--brand2);font-weight:700;padding:0 6px}
+  .note{background:#fbfcfe;border-left:4px solid var(--brand);border-radius:0 8px 8px 0;
+    padding:10px 14px;margin-top:12px;font-size:13.5px;color:var(--sub)}
+  .note b{color:var(--ink)}
+  footer{color:var(--sub);font-size:12px;text-align:center;margin-top:24px}
+  .pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600}
+  .pill.ok{background:#eafaf0;color:var(--ok)} .pill.warn{background:#fff6e6;color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>InkWeave 分支分类体系 · 综合视图</h1>
+  <p>大众化、可多选、多分支风格的网文写作系统 —— 一本书 = 选一个预设 → 自动加载 22 维分支风格组合。</p>
+  <div>
+    <span class="tag">1 伞</span>
+    <span class="tag">3 子 skill</span>
+    <span class="tag">22 维 KB 节点 / 95 选项</span>
+    <span class="tag">17 预设</span>
+    <span class="tag">双树检测</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#s1">① 整体架构</a>
+  <a href="#s2">② 书怎么分类</a>
+  <a href="#s3">③ 分支怎么用</a>
+  <a href="#s4">④ 实跑检查</a>
+  <a href="#s5">⑤ 本会话结论对接</a>
+</nav>
+
+<!-- ① 架构 -->
+<section id="s1">
+  <h2><span class="n">1</span>整体架构：多分支从哪来</h2>
+  <p class="lead">InkWeave 不是单一 skill，而是「1 伞 + 3 子 skill + 共享底座」系统。"多分支"的载体是共享底座的 KB 节点树。</p>
+  <svg viewBox="0 0 900 360" role="img" aria-label="InkWeave 架构图">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#2f6df0"/><stop offset="1" stop-color="#7b5cf0"/>
+      </linearGradient>
+    </defs>
+    <!-- 顶层伞 -->
+    <rect x="350" y="20" width="200" height="52" rx="12" fill="url(#g1)"/>
+    <text x="450" y="52" fill="#fff" font-size="18" font-weight="700" text-anchor="middle">InkWeave 写作引擎</text>
+    <line x1="450" y1="72" x2="450" y2="100" stroke="#7b5cf0" stroke-width="2"/>
+
+    <!-- 中层 3 子 skill -->
+    <g font-size="13" text-anchor="middle">
+      <rect x="70" y="100" width="200" height="64" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+      <text x="170" y="128" font-weight="700" fill="#2f6df0">写作工坊</text>
+      <text x="170" y="148" fill="#5b6776" font-size="11.5">生成执行 / 写章</text>
+
+      <rect x="350" y="100" width="200" height="64" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+      <text x="450" y="128" font-weight="700" fill="#2f6df0">大纲创作院</text>
+      <text x="450" y="148" fill="#5b6776" font-size="11.5">大纲推演 / 结构</text>
+
+      <rect x="630" y="100" width="200" height="64" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+      <text x="730" y="128" font-weight="700" fill="#2f6df0">设定工坊</text>
+      <text x="730" y="148" fill="#5b6776" font-size="11.5">世界观 / 角色</text>
+    </g>
+
+    <line x1="170" y1="164" x2="170" y2="190" stroke="#cdd9ee" stroke-width="2"/>
+    <line x1="450" y1="164" x2="450" y2="190" stroke="#cdd9ee" stroke-width="2"/>
+    <line x1="730" y1="164" x2="730" y2="190" stroke="#cdd9ee" stroke-width="2"/>
+    <line x1="170" y1="190" x2="730" y2="190" stroke="#cdd9ee" stroke-width="2"/>
+
+    <!-- 底层共享底座 -->
+    <rect x="60" y="200" width="780" height="130" rx="14" fill="#f3f0ff" stroke="#cabff5"/>
+    <text x="80" y="224" font-weight="700" fill="#7b5cf0" font-size="14">共享底座（三件套，所有子 skill 共用）</text>
+    <g font-size="12.5" text-anchor="middle">
+      <rect x="80" y="238" width="230" height="78" rx="10" fill="#fff" stroke="#cabff5"/>
+      <text x="195" y="264" font-weight="700" fill="#5b3fd0">22 维 KB 节点树</text>
+      <text x="195" y="284" fill="#5b6776" font-size="11">95 个可选分支风格</text>
+      <text x="195" y="301" fill="#5b6776" font-size="11">单一真源 = .kb.json</text>
+
+      <rect x="335" y="238" width="230" height="78" rx="10" fill="#fff" stroke="#cabff5"/>
+      <text x="450" y="264" font-weight="700" fill="#5b3fd0">17 个命名预设</text>
+      <text x="450" y="284" fill="#5b6776" font-size="11">如「起点V3.1」</text>
+      <text x="450" y="301" fill="#5b6776" font-size="11">「番茄2026追读版」</text>
+
+      <rect x="590" y="238" width="230" height="78" rx="10" fill="#fff" stroke="#cabff5"/>
+      <text x="705" y="264" font-weight="700" fill="#5b3fd0">双树检测引擎</text>
+      <text x="705" y="284" fill="#5b6776" font-size="11">生成树(源码) + CLI树</text>
+      <text x="705" y="301" fill="#5b6776" font-size="11">门禁 + 教练双路</text>
+    </g>
+  </svg>
+  <div class="note"><b>一句话：</b>用户开一本书，先选 <b>预设</b> → 系统按预设加载 22 维节点里的对应分支 → 风格自动成型，不需要用户懂写作理论。</div>
+</section>
+
+<!-- ② 分类 -->
+<section id="s2">
+  <h2><span class="n">2</span>书怎么分类：22 维交叉</h2>
+  <p class="lead">分两大块：① 书类型主轴（平台 × 题材 = 77 种）；② 风格味道（20 维风格分支决定）。</p>
+  <div class="grid2">
+    <div class="mini">
+      <h4>① 书类型主轴（2 维）</h4>
+      <p style="margin:4px 0;font-size:13px;color:var(--sub)"><b style="color:var(--ink)">平台适配（7）</b>：番茄 / 起点 / 晋江 / 七猫 / 飞卢 / 新媒体 / 通用</p>
+      <p style="margin:4px 0;font-size:13px;color:var(--sub)"><b style="color:var(--ink)">题材词汇（11）</b>：玄幻 / 西幻 / 科幻 / 悬疑 / 历史 / 军事 / 电竞 / 都市 / 日常 / 灵异 / 通用</p>
+      <div class="chips">
+        <span class="chip">7 × 11 = 77 种书型</span>
+        <span class="chip">例：起点×玄幻</span>
+        <span class="chip">番茄×悬疑</span>
+      </div>
+    </div>
+    <div class="mini">
+      <h4>② 风格分支（20 维）</h4>
+      <div class="chips">
+        <span class="chip">视角</span><span class="chip">语调</span><span class="chip">句式节奏</span>
+        <span class="chip">段落密度</span><span class="chip">描写</span><span class="chip">修辞</span>
+        <span class="chip">战斗</span><span class="chip">情感</span><span class="chip">对话</span>
+        <span class="chip">锚点密度</span><span class="chip">开头力度</span><span class="chip">转折频率</span>
+        <span class="chip">结尾钩子</span><span class="chip">爽点频率</span><span class="chip">信息密度</span>
+        <span class="chip">目标字数</span><span class="chip">严格度</span><span class="chip">AI创意</span>
+        <span class="chip">AI续写长度</span><span class="chip">填充词</span>
+      </div>
+      <p style="margin:8px 0 0;font-size:12.5px;color:var(--sub)">20 维 × 各档选项 → 调出"味道"；与书型主轴交叉，形成完整一本书的风格签名。</p>
+    </div>
+  </div>
+  <svg viewBox="0 0 900 150" style="margin-top:14px" role="img" aria-label="分类交叉图">
+    <rect x="20" y="40" width="200" height="70" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+    <text x="120" y="68" text-anchor="middle" font-weight="700" fill="#2f6df0" font-size="14">平台(7)</text>
+    <text x="120" y="90" text-anchor="middle" fill="#5b6776" font-size="12">×</text>
+    <rect x="240" y="40" width="200" height="70" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+    <text x="340" y="68" text-anchor="middle" font-weight="700" fill="#2f6df0" font-size="14">题材(11)</text>
+    <text x="340" y="90" text-anchor="middle" fill="#5b6776" font-size="12">= 77 书型</text>
+    <text x="470" y="62" text-anchor="middle" fill="#7b5cf0" font-size="22" font-weight="700">+</text>
+    <rect x="500" y="40" width="380" height="70" rx="10" fill="#f3f0ff" stroke="#cabff5"/>
+    <text x="690" y="66" text-anchor="middle" font-weight="700" fill="#5b3fd0" font-size="14">20 维风格分支</text>
+    <text x="690" y="88" text-anchor="middle" fill="#5b6776" font-size="12">调出"味道" → 完整风格签名</text>
+    <text x="450" y="140" text-anchor="middle" fill="#5b6776" font-size="12.5">书型主轴(2维) + 风格分支(20维) = 22 维交叉分类体系</text>
+  </svg>
+</section>
+
+<!-- ③ 机制 -->
+<section id="s3">
+  <h2><span class="n">3</span>分支怎么用：选预设 → 自动加载</h2>
+  <p class="lead">机制核心：每个节点的 <code>threshold_overrides</code> 双路消费、单一真源在 <code>.kb.json</code>。</p>
+  <div class="flow-row">
+    <div class="flow-box"><b>① 选预设</b><span>用户在大纲阶段挑一个命名风格（如「玄幻修仙-起点V3.1」）</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><b>② 生成 config</b><span>产出 {项目}/书籍配置/{书名}.config.md，含 22 节点选择表</span></div>
+    <div class="arrow">→</div>
+    <div class="flow-box"><b>③ 写章加载</b><span>写每一章时只加载被选中节点，风格自现</span></div>
+  </div>
+  <svg viewBox="0 0 900 180" style="margin-top:14px" role="img" aria-label="阈值双路消费机制">
+    <rect x="40" y="30" width="220" height="70" rx="10" fill="#fff" stroke="#cabff5"/>
+    <text x="150" y="58" text-anchor="middle" font-weight="700" fill="#5b3fd0" font-size="13">.kb.json 节点</text>
+    <text x="150" y="78" text-anchor="middle" fill="#5b6776" font-size="11.5">threshold_overrides</text>
+
+    <line x1="260" y1="65" x2="320" y2="65" stroke="#7b5cf0" stroke-width="2"/>
+    <line x1="320" y1="65" x2="320" y2="40" stroke="#7b5cf0" stroke-width="2"/>
+    <line x1="320" y1="40" x2="400" y2="40" stroke="#7b5cf0" stroke-width="2"/>
+
+    <rect x="400" y="10" width="240" height="56" rx="10" fill="#eafaf0" stroke="#bfe9cd"/>
+    <text x="520" y="32" text-anchor="middle" font-weight="700" fill="#1f9d57" font-size="12.5">config-merger 第4层</text>
+    <text x="520" y="50" text-anchor="middle" fill="#5b6776" font-size="11">合并进 Thresholds → 门禁</text>
+
+    <line x1="320" y1="65" x2="320" y2="120" stroke="#7b5cf0" stroke-width="2"/>
+    <line x1="320" y1="120" x2="400" y2="120" stroke="#7b5cf0" stroke-width="2"/>
+    <rect x="400" y="92" width="240" height="56" rx="10" fill="#eef3fb" stroke="#cdd9ee"/>
+    <text x="520" y="114" text-anchor="middle" font-weight="700" fill="#2f6df0" font-size="12.5">compile-kb.ts</text>
+    <text x="520" y="132" text-anchor="middle" fill="#5b6776" font-size="11">渲染成 .md → 写作教练</text>
+
+    <line x1="640" y1="38" x2="700" y2="38" stroke="#1f9d57" stroke-width="2"/>
+    <line x1="640" y1="120" x2="700" y2="120" stroke="#2f6df0" stroke-width="2"/>
+    <rect x="700" y="55" width="170" height="60" rx="10" fill="#f3f0ff" stroke="#cabff5"/>
+    <text x="785" y="80" text-anchor="middle" font-weight="700" fill="#5b3fd0" font-size="12.5">写章 / 检测</text>
+    <text x="785" y="98" text-anchor="middle" fill="#5b6776" font-size="11">同参数双消费</text>
+  </svg>
+  <div class="note"><b>切换预设 = 重新生成 config</b>，所有节点全切；双路走同一份 <code>.kb.json</code>，不会"教练说 A、门禁说 B"。</div>
+</section>
+
+<!-- ④ 检查 -->
+<section id="s4">
+  <h2><span class="n">4</span>实跑检查结论（非照文档）</h2>
+  <p class="lead">我已真身核过磁盘与构建产物，下面 4 项属实、2 项待修。</p>
+  <div class="cards">
+    <div class="stat ok"><div class="t">✅ 22 维 / 95 选项</div><div class="d">nodes 目录实点：22 个维度目录、95 个 .kb.json 选项，全部存在。</div></div>
+    <div class="stat ok"><div class="t">✅ 17 预设齐全</div><div class="d">知识库/预设/索引.md 列出 17 个命名风格预设，无缺漏。</div></div>
+    <div class="stat ok"><div class="t">✅ 双树计数属实</div><div class="d">生成树 + CLI 树检测器结构稳定，与历史记录一致。</div></div>
+    <div class="stat ok"><div class="t">✅ 编译产物已生成</div><div class="d">知识库/节点/ 下 22 维 .md 已由 compile-kb 渲染产出。</div></div>
+    <div class="stat warn"><div class="t">⚠ 关键约束</div><div class="d">threshold_overrides 是 Record&lt;string,number&gt;，<b>字符串（如主角名）塞不进</b>——这正是 ② 接 kb 走 project.json 的根因。</div></div>
+    <div class="stat warn"><div class="t">⚠ 待修债</div><div class="d">CLI 树执行器只传 fn(text,stats)、不传 thresholds，吃硬编码 → <b>双树阈值分家</b>。</div></div>
+  </div>
+</section>
+
+<!-- ⑤ 结论对接 -->
+<section id="s5">
+  <h2><span class="n">5</span>本会话结论对接 + 下一步</h2>
+  <p class="lead">前面 v2 / Item1 / 降噪 / ② 接 kb 四条线，最终都指向同一落点——这套 22 维 KB 节点树。</p>
+  <div class="mini" style="margin-bottom:12px">
+    <h4>关键洞察（已坐实）</h4>
+    <p style="margin:6px 0;font-size:13.5px;color:var(--sub)">① 我前轮"不盲放宽全局常量"是对的：把"凉"的合法复用归到 <b>题材/风格节点校准</b>，才是降噪的精准落点。</p>
+    <p style="margin:6px 0;font-size:13.5px;color:var(--sub)">② "消双树分家"最小动作 = 让 CLI 树也走已验证的 <code>config-merger</code> 管道。</p>
+    <p style="margin:6px 0;font-size:13.5px;color:var(--sub)">③ 两条都指向同一件事：<b>把检测树接进 KB 分支树</b>。</p>
+  </div>
+  <div class="cards">
+    <div class="stat"><div class="t" style="color:var(--brand)">① 检测树吃 KB 阈值</div><div class="d">最小贯通：复用 config-merger 第4层，让 CLI 树也吃节点阈值。零新架构风险，顺带消双树分家 + 给降噪精准落点。<span class="pill ok">推荐</span></div></div>
+    <div class="stat"><div class="t" style="color:var(--brand)">② 题材节点级校准</div><div class="d">如把"凉"的复用归到仙侠/玄幻节点，平台/题材各自的质感阈值分开标定。</div></div>
+    <div class="stat"><div class="t" style="color:var(--brand)">③ 收工</div><div class="d">整条验证链已交付，分类体系检查完毕，可暂告一段落。</div></div>
+  </div>
+  <div class="note"><b>下一步你拍：</b>① 检测树吃 KB 阈值最小贯通 ／ ② 题材节点级校准 ／ ③ 收工。我会照铁律先备份、再动刀、真身跑回归。</div>
+</section>
+
+<footer>本报告由代码方整合呈现 · 数据均来自真身磁盘核证与构建产物 · 2026-08-28</footer>
+</div>
+</body>
+</html>

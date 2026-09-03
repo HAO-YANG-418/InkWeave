@@ -1,0 +1,42 @@
+{
+  "preset_id": "preset_esports",
+  "preset_name": "游戏竞技·V3.1追读版",
+  "preset_description": "电竞V3.1追读版：3秒停留比赛现场开头+操作反咬+翻盘钩子。比赛紧张操作细节到位，队友互动有趣。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_short",
+    "node_paragraph_density": "opt_dense_high",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_minimal",
+    "node_battle_style": "opt_battle_atmosphere",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_playful",
+    "node_platform": "opt_platform_qidian",
+    "node_info_density": "opt_info_fast",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_esports",
+    "node_vocab_filler": "opt_filler_relaxed",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_dense",
+    "node_strictness": "opt_strict_lenient",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_dense",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "电竞/网游V3.1追读版：第一句直接比赛现场/关键操作/危机瞬间（「最后三秒，他的手停在键盘上。」「水晶只剩50血。」「队友全死了，对面五个满血。」），禁止「XX年，电竞圈……」式开头。每250-350字一次操作反咬（以为要输→神操作/以为赢了→被反杀/以为队友菜→是伏笔/以为是失误→是算计）。比赛中操作要具体（技能名/走位/血量/CD/经济差），赛后/日常队友互怼要自然有趣。章末翻盘/绝杀/新对手钩子，最后一句≤15字。对话自然，可以有吐槽和游戏黑话但要让读者看懂。手速/心跳/掌心出汗/眼睛发酸是电竞核心身体锚点。禁止48个AI套路反应词。",
+  "extra_constraints": [
+    "第一句直接比赛现场/关键操作/危机，0背景铺垫",
+    "前300字进入比赛/冲突",
+    "每250-350字一次操作反咬/局势反转",
+    "比赛操作具体到技能/血量/CD/走位",
+    "章末翻盘/绝杀/新对手钩子",
+    "身体锚点：手速/心跳/掌心出汗/眼睛发酸/手指僵硬",
+    "禁止开篇大段电竞圈/游戏介绍",
+    "禁止48个AI套路反应词"
+  ],
+  "tags": ["游戏", "竞技", "电竞", "V3.1追读"]
+}

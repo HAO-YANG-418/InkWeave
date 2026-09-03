@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InkWeave v4.9 更新日志</title>
+<style>
+:root {
+  --bg: #0f1117; --bg2: #1a1d27; --ink: #e4e6eb; --muted: #8b8fa3;
+  --rule: #2a2d3a; --accent: #5b9bd5; --accent2: #a78bfa; --pass: #2ecc71;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--ink); line-height: 1.75; font-size: 15px; }
+.container { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+.hero { text-align: center; padding: 2rem 0 1.5rem; border-bottom: 1px solid var(--rule); margin-bottom: 2rem; }
+.hero .badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; background: var(--accent); color: #fff; margin-bottom: 0.8rem; }
+.hero h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+.hero .sub { color: var(--muted); font-size: 0.85rem; }
+
+h2 { font-size: 1.1rem; margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 0.95rem; color: var(--accent); margin: 1.2rem 0 0.5rem; }
+
+.card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem; }
+.card .tag { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 8px; display: inline-block; margin-bottom: 0.5rem; }
+.tag.core { background: var(--accent2); color: #fff; }
+.tag.detect { background: var(--accent); color: #fff; }
+.tag.tool { background: var(--pass); color: #000; }
+
+ul { padding-left: 1.2rem; }
+li { font-size: 0.85rem; color: var(--muted); margin: 0.3rem 0; }
+li strong { color: var(--ink); }
+
+.section { margin-bottom: 1.5rem; }
+.section h3 { margin: 0 0 0.6rem; }
+
+.files { margin-top: 2rem; }
+.files table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.files th { color: var(--accent); text-align: left; padding: 0.4rem 0.8rem; border-bottom: 1px solid var(--rule); font-size: 0.7rem; text-transform: uppercase; }
+.files td { padding: 0.4rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem; }
+.files td code { font-size: 0.8rem; }
+
+footer { border-top: 1px solid var(--rule); margin-top: 2.5rem; padding-top: 1.2rem; color: var(--muted); font-size: 0.75rem; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="badge">v4.9</div>
+  <h1>InkWeave 更新日志</h1>
+  <p class="sub">反向闭环 v2 硬约束 + 轻量模式升级 &middot; 2026-08-18</p>
+</div>
+
+<h2>核心改动</h2>
+
+<div class="card">
+  <span class="tag core">#2 反向闭环 v2</span>
+  <div class="section">
+    <h3>反例原句 + 正例模板</h3>
+    <ul>
+      <li>上章排比问题的<strong>原文截断样本</strong>自动注入本章禁忌（从 <code>rawViolations[].fixes[].before</code> 提取）</li>
+      <li>每类违规附带<strong>正例替代写法</strong>（分镜式、动作+感官+环境回应）</li>
+      <li>风格契约总量控制在 ≤400 字，避免 prompt 膨胀</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h3>感官密度进禁忌</h3>
+    <ul>
+      <li><code>sense_density_balance</code> 从"其他参考"升级为<strong>独立 🔴 硬约束</strong></li>
+      <li>含正例：每场景至少 1 处非视觉感官（听觉/触觉/嗅觉）</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h3>风格契约合并</h3>
+    <ul>
+      <li>step0 预设配方 + fingerprint 禁忌合并为<strong>单一"第0步：本章风格契约"</strong></li>
+      <li>消除信号分裂——LLM 不再只看一段忽略另一段</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <span class="tag detect">#2 新增检测器</span>
+  <div class="section">
+    <h3>crossChapterRepeat — 跨章重复句式检测</h3>
+    <ul>
+      <li>读取上章 fingerprint 的 verbStacking 句式，在<strong>本章叙事段中匹配同构模式</strong></li>
+      <li><strong>对话白名单</strong>自动过滤（角色口头禅/伏笔呼应不标记）</li>
+      <li>连续 2 章同构句式报 warning</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h3>checkSenseDensityWithPrev — 感官闭环升级</h3>
+    <ul>
+      <li>上章感官 error → 本章感官违规 <strong>severity 升一级</strong>（warning→error）</li>
+      <li>形成"检测-反馈-约束"正向增强循环</li>
+    </ul>
+  </div>
+</div>
+
+<div class="card">
+  <span class="tag tool">#3 轻量模式升级</span>
+  <div class="section">
+    <h3>quick-write 接入 step0 风格配方</h3>
+    <ul>
+      <li>输出含<strong>预设 + 22 节点 + 多样性指令</strong>（章号自动轮换非视觉感官/修辞变奏/镜头侧重）</li>
+      <li>保留原有 3 门禁（破折号/字数/本章禁忌），结构清晰</li>
+    </ul>
+  </div>
+  <div class="section">
+    <h3>pre-analysis 模块化</h3>
+    <ul>
+      <li><code>resolveProjectDir</code> / <code>step0StyleRecipe</code> 导出供复用</li>
+      <li>import 时<strong>不触发完整 main() 分析流程</strong>，只跑 quick-write 自身逻辑</li>
+    </ul>
+  </div>
+</div>
+
+<h2>改动文件</h2>
+
+<div class="files">
+<table>
+  <thead><tr><th>文件</th><th>改动</th><th>行数</th></tr></thead>
+  <tbody>
+    <tr><td><code>pre-analysis.ts</code></td><td>injectFingerprint 重构（反例+正例+感官禁忌）；main() 合并风格契约；导出 step0 函数；import 守卫</td><td>~30 行新增</td></tr>
+    <tr><td><code>checkers.ts</code></td><td>新增 crossChapterRepeat + checkSenseDensityWithPrev</td><td>~80 行新增</td></tr>
+    <tr><td><code>quick-write.ts</code></td><td>v4.8→v4.9；接入 step0StyleRecipe（预设+节点+多样性指令）</td><td>~10 行新增</td></tr>
+    <tr><td><code>VERSION.md</code></td><td>v4.9 条目</td><td>1 行</td></tr>
+    <tr><td><code>inkweave.mjs</code></td><td>无需改动（quick-write 已注册）</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<footer>
+  InkWeave v4.9 &middot; 反向闭环 v2 硬约束 + 轻量模式升级 &middot; 2026-08-18
+</footer>
+
+</div>
+</body>
+</html>

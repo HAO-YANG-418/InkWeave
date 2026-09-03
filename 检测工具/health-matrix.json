@@ -1,0 +1,2490 @@
+[
+  {
+    "chapter": "第10章 密会",
+    "wordCount": 3035,
+    "dialogueRatio": 0.009,
+    "sensoryMentions": {
+      "visual": 116,
+      "auditory": 17,
+      "tactile": 14,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 105,
+    "fillerCount": 232,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "fragmented_sentences": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "dialogue_overload_moderate": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 18,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第11章 余念",
+    "wordCount": 2843,
+    "dialogueRatio": 0.01,
+    "sensoryMentions": {
+      "visual": 93,
+      "auditory": 22,
+      "tactile": 16,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 62,
+    "fillerCount": 185,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 2,
+        "info": 17
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 31,
+    "cliTreeTotal": 10
+  },
+  {
+    "chapter": "第12章 赵明远",
+    "wordCount": 3013,
+    "dialogueRatio": 0.021,
+    "sensoryMentions": {
+      "visual": 98,
+      "auditory": 14,
+      "tactile": 11,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 82,
+    "fillerCount": 201,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 13,
+    "cliTreeTotal": 2
+  },
+  {
+    "chapter": "第13章 戒痕",
+    "wordCount": 2833,
+    "dialogueRatio": 0.014,
+    "sensoryMentions": {
+      "visual": 78,
+      "auditory": 9,
+      "tactile": 5,
+      "olfactory": 1,
+      "gustatory": 1
+    },
+    "anchorCount": 72,
+    "fillerCount": 200,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "dialogue_overload_severe": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 23,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第14章 溯源",
+    "wordCount": 3519,
+    "dialogueRatio": 0.009,
+    "sensoryMentions": {
+      "visual": 68,
+      "auditory": 23,
+      "tactile": 35,
+      "olfactory": 13,
+      "gustatory": 13
+    },
+    "anchorCount": 117,
+    "fillerCount": 245,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "short_sentence_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 13,
+    "cliTreeTotal": 1
+  },
+  {
+    "chapter": "第15章 裂日",
+    "wordCount": 2688,
+    "dialogueRatio": 0.006,
+    "sensoryMentions": {
+      "visual": 86,
+      "auditory": 12,
+      "tactile": 12,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 64,
+    "fillerCount": 170,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 3
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 19,
+    "cliTreeTotal": 3
+  },
+  {
+    "chapter": "第16章 共振",
+    "wordCount": 2730,
+    "dialogueRatio": 0.013,
+    "sensoryMentions": {
+      "visual": 33,
+      "auditory": 20,
+      "tactile": 33,
+      "olfactory": 3,
+      "gustatory": 8
+    },
+    "anchorCount": 91,
+    "fillerCount": 221,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 8,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第17章 第三中学",
+    "wordCount": 2729,
+    "dialogueRatio": 0.021,
+    "sensoryMentions": {
+      "visual": 20,
+      "auditory": 13,
+      "tactile": 29,
+      "olfactory": 2,
+      "gustatory": 4
+    },
+    "anchorCount": 72,
+    "fillerCount": 191,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "sentence_waveform": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 18,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第18章 网眼",
+    "wordCount": 2676,
+    "dialogueRatio": 0.016,
+    "sensoryMentions": {
+      "visual": 32,
+      "auditory": 11,
+      "tactile": 18,
+      "olfactory": 14,
+      "gustatory": 20
+    },
+    "anchorCount": 92,
+    "fillerCount": 217,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 16,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第19章 据点",
+    "wordCount": 2545,
+    "dialogueRatio": 0.023,
+    "sensoryMentions": {
+      "visual": 39,
+      "auditory": 10,
+      "tactile": 23,
+      "olfactory": 12,
+      "gustatory": 25
+    },
+    "anchorCount": 53,
+    "fillerCount": 214,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 1,
+        "warning": 1,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 17,
+    "cliTreeTotal": 3
+  },
+  {
+    "chapter": "第1章 正常的一天",
+    "wordCount": 2756,
+    "dialogueRatio": 0.014,
+    "sensoryMentions": {
+      "visual": 45,
+      "auditory": 12,
+      "tactile": 2,
+      "olfactory": 0,
+      "gustatory": 1
+    },
+    "anchorCount": 98,
+    "fillerCount": 195,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 5,
+        "warning": 0,
+        "info": 0
+      },
+      "simile_density_global": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "style_stacking_name": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 17,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第20章 收网",
+    "wordCount": 2129,
+    "dialogueRatio": 0.016,
+    "sensoryMentions": {
+      "visual": 81,
+      "auditory": 5,
+      "tactile": 18,
+      "olfactory": 3,
+      "gustatory": 3
+    },
+    "anchorCount": 70,
+    "fillerCount": 183,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 14,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第21章 广播",
+    "wordCount": 2140,
+    "dialogueRatio": 0.019,
+    "sensoryMentions": {
+      "visual": 38,
+      "auditory": 23,
+      "tactile": 9,
+      "olfactory": 1,
+      "gustatory": 1
+    },
+    "anchorCount": 40,
+    "fillerCount": 205,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "simile_density_global": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 1,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 15,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第22章 出发",
+    "wordCount": 2855,
+    "dialogueRatio": 0.019,
+    "sensoryMentions": {
+      "visual": 39,
+      "auditory": 11,
+      "tactile": 30,
+      "olfactory": 2,
+      "gustatory": 3
+    },
+    "anchorCount": 91,
+    "fillerCount": 232,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 14,
+    "cliTreeTotal": 7
+  },
+  {
+    "chapter": "第23章 旧厂区",
+    "wordCount": 2252,
+    "dialogueRatio": 0.018,
+    "sensoryMentions": {
+      "visual": 46,
+      "auditory": 12,
+      "tactile": 15,
+      "olfactory": 2,
+      "gustatory": 11
+    },
+    "anchorCount": 55,
+    "fillerCount": 194,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 1,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 10,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第24章 职高",
+    "wordCount": 2162,
+    "dialogueRatio": 0.02,
+    "sensoryMentions": {
+      "visual": 35,
+      "auditory": 5,
+      "tactile": 18,
+      "olfactory": 5,
+      "gustatory": 20
+    },
+    "anchorCount": 73,
+    "fillerCount": 182,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 10,
+    "cliTreeTotal": 4
+  },
+  {
+    "chapter": "第25章 县城",
+    "wordCount": 2151,
+    "dialogueRatio": 0.018,
+    "sensoryMentions": {
+      "visual": 80,
+      "auditory": 7,
+      "tactile": 21,
+      "olfactory": 5,
+      "gustatory": 2
+    },
+    "anchorCount": 46,
+    "fillerCount": 207,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dash_count": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 3,
+        "warning": 0,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 19,
+    "cliTreeTotal": 7
+  },
+  {
+    "chapter": "第26章 收种",
+    "wordCount": 2713,
+    "dialogueRatio": 0.013,
+    "sensoryMentions": {
+      "visual": 40,
+      "auditory": 17,
+      "tactile": 16,
+      "olfactory": 1,
+      "gustatory": 1
+    },
+    "anchorCount": 49,
+    "fillerCount": 223,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "sentence_waveform": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 15,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第2章 食堂",
+    "wordCount": 3257,
+    "dialogueRatio": 0.011,
+    "sensoryMentions": {
+      "visual": 115,
+      "auditory": 13,
+      "tactile": 19,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 133,
+    "fillerCount": 256,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 1,
+        "info": 9
+      },
+      "style_stacking_verb": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 29,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第3章 后厨",
+    "wordCount": 2648,
+    "dialogueRatio": 0.007,
+    "sensoryMentions": {
+      "visual": 68,
+      "auditory": 11,
+      "tactile": 27,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 105,
+    "fillerCount": 239,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "short_sentence_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "opening_weak_adverbial": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 1,
+        "info": 3
+      },
+      "style_stacking_name": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 27,
+    "cliTreeTotal": 7
+  },
+  {
+    "chapter": "第4章 不在名单上",
+    "wordCount": 2606,
+    "dialogueRatio": 0.011,
+    "sensoryMentions": {
+      "visual": 85,
+      "auditory": 12,
+      "tactile": 12,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 82,
+    "fillerCount": 223,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 5
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_verb": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 19,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第5章 共鸣",
+    "wordCount": 3145,
+    "dialogueRatio": 0.011,
+    "sensoryMentions": {
+      "visual": 98,
+      "auditory": 8,
+      "tactile": 14,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 100,
+    "fillerCount": 242,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "fragmented_sentences": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 5
+      },
+      "scene_count_moderate": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_verb": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 24,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第6章 机房",
+    "wordCount": 3082,
+    "dialogueRatio": 0.012,
+    "sensoryMentions": {
+      "visual": 129,
+      "auditory": 15,
+      "tactile": 16,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 97,
+    "fillerCount": 251,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 3,
+        "warning": 0,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 21,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第7章 第三种选择",
+    "wordCount": 3544,
+    "dialogueRatio": 0.012,
+    "sensoryMentions": {
+      "visual": 183,
+      "auditory": 9,
+      "tactile": 24,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 127,
+    "fillerCount": 305,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 13,
+    "cliTreeTotal": 3
+  },
+  {
+    "chapter": "第8章 赵明远",
+    "wordCount": 3357,
+    "dialogueRatio": 0.013,
+    "sensoryMentions": {
+      "visual": 97,
+      "auditory": 31,
+      "tactile": 23,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 121,
+    "fillerCount": 291,
+    "violationCounts": {
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_dialogue_continuous": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "reader_burden_para": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 15,
+    "cliTreeTotal": 5
+  },
+  {
+    "chapter": "第9章 觉醒者",
+    "wordCount": 2990,
+    "dialogueRatio": 0.014,
+    "sensoryMentions": {
+      "visual": 107,
+      "auditory": 7,
+      "tactile": 12,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 95,
+    "fillerCount": 219,
+    "violationCounts": {
+      "word_count_below": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_too_long": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "cliche_reaction": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "dialogue_conflict": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "golden_300": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "character_voice": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 6
+      },
+      "action_rollcall": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "dialogue_overload_moderate": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 23,
+    "cliTreeTotal": 9
+  }
+]

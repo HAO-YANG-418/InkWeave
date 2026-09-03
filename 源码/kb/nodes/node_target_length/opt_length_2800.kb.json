@@ -1,0 +1,39 @@
+{
+  "kb_version": "2.0",
+  "node_id": "node_target_length",
+  "option_id": "opt_length_2800",
+  "option_name": "2800字标准（默认）",
+  "option_description": "单章目标字数2800字左右的章节，兼顾节奏和内容量，作为默认推荐选项。",
+  "system_prompt": "你以2800字左右为单章目标字数写作。这是网文常用的章节长度，适合大多数平台和题材。一章可以包含一个完整的小场景或半个大场景，有起承转合的空间。开头可以有简短的环境/情绪铺垫（不超过200字），中间充分发展，结尾留钩子或给出小满足感。2800字大约是10分钟阅读时间，可以容纳对话、描写、动作、心理的平衡搭配。节奏不要太赶也不要太拖，让读者读完一章有“刚刚好”的满足感同时又想继续看。",
+  "constraints": [
+    "单章字数控制在2500-3100字之间",
+    "开头铺垫不超过200字就要进入正题",
+    "一章包含一个完整的小场景或半个大场景",
+    "对话、描写、动作、心理比例均衡",
+    "单段不超过150字",
+    "结尾留钩子或给出小高潮满足感",
+    "避免过于紧凑（像赶剧情）或过于松散（像凑字数）"
+  ],
+  "examples": [
+    {
+      "text": "2800字标准章结构示例：\n- 开头（200字）：简短环境/情绪铺垫，承接上章\n- 发展（1800字）：场景展开，对话+动作+描写均衡推进\n- 高潮/转折（500字）：本章核心事件爆发或反转\n- 结尾（300字）：收束+钩子，引导下一章",
+      "note": "标准章结构：适度铺垫，均衡推进，高潮+钩子"
+    }
+  ],
+  "threshold_overrides": {
+    "maxParagraphLength": 150,
+    "targetParagraphLength": 70,
+    "minParagraphCount": 22,
+    "maxExpositionContinuous": 300,
+    "infoPointsPerThousand": 3,
+    "shortSentenceRatio": 0.4,
+    "targetSentenceLength": 22
+  },
+  "radar_weights": {
+    "bodyReaction": 1.0,
+    "sensorySignal": 1.0,
+    "action": 1.0,
+    "emotion": 1.0,
+    "infoAdvance": 1.0
+  }
+}

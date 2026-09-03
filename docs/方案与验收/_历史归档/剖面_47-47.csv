@@ -1,0 +1,2 @@
+chapter,word_count,target_words,cli_error_total,cli_warn_total,cli_sense_density_low,cli_texture_variety_warn,cli_paibei_stack_err,cli_word_count_short,cli_liang_fp,src_error_total,src_warn_total,src_cliche_reaction,src_simile_density,src_fake_reactions,src_other_ai_flavor,u2_numeric_tunable,u2_wordlist_only
+47,2026,3000,0,5,0,0,0,1,3,0,7,0,0,0,0,0,3

@@ -1,0 +1,55 @@
+{
+  "preset_id": "preset_scifi_hardcore",
+  "preset_name": "科幻·硬核V3.1追读版",
+  "preset_description": "硬核科幻V3.1追读版：3秒停留异常开头+科学反咬+发现钩子。技术细节准确，逻辑自洽，但仍遵守追读力铁则。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_clinical",
+    "node_battle_style": "opt_battle_detail",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_cold",
+    "node_platform": "opt_platform_qidian",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_3",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_scifi",
+    "node_vocab_filler": "opt_filler_strict",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_dense",
+    "node_strictness": "opt_strict_strict",
+    "node_ai_creativity": "opt_ai_conservative",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_vocab": {
+    "add": {
+      "bodyParts": ["太阳穴", "后颈", "指尖", "耳膜", "鼻腔", "胃", "脊背", "虎口"],
+      "sensoryVerbs": ["耳膜嗡鸣", "指尖发麻", "胃里翻涌", "后颈发凉", "呼吸凝滞", "视线模糊", "金属味", "电流感"],
+      "actionVerbs": ["扫描", "检测", "计算", "校准", "启动", "关闭", "锁定", "闪避", "接入", "断开", "记录", "分析"],
+      "environmentSignals": ["警报响", "红灯闪", "气压降", "温度升", "辐射超标", "信号断", "屏幕花", "舱门响", "金属扭曲声", "空气稀薄"]
+    }
+  },
+  "extra_prompt": "硬核科幻V3.1追读版：\n\n【开头】第一句≤20字直接写正在发生的异常/危机/发现。科幻文最强开头：「警报响的时候，他正在写遗书。」「舱外温度在三分钟内升高了两百度。」前300字：异常信号出现→主角身体在场→一个不对劲的科学细节。禁止大段世界观/科技设定开头，背景通过危机自然展现。\n\n【反咬】每400-500字一次科学反咬：以为是故障→是未知现象/以为计算正确→数据矛盾/以为安全→读数异常/以为信号是干扰→是通讯。反咬必须有科学依据：具体数值、具体读数、具体仪器异常，不能凭空反转。\n\n【钩子】章末钩子是新发现/新危机/新数据颠覆之前判断：「读数归零了。但探测器还在震动。」「信号源距离：零米。在舱内。」最后一句≤15字短句落点。\n\n【科幻质感】技术细节准确可信，科学概念通过角色操作和观察自然展现。不科普、不说教、不解释原理，直接写效果和异常。所有科幻异常先落到主角身体反应（耳膜嗡鸣/指尖发麻/胃翻涌），再落到仪器读数。\n\n【身体】情绪仍落到肉身，禁止AI套路反应。",
+  "extra_constraints": [
+    "第一句直接异常/危机/发现，0铺垫",
+    "前300字出现异常信号+身体反应+第一个不对劲的细节",
+    "每400-500字一次科学反咬（数据矛盾/读数异常/计算错误）",
+    "反咬必须有具体数值/读数/仪器依据，不能凭空反转",
+    "章末新发现/新数据颠覆判断钩子，最后一句≤15字",
+    "不科普不说教，技术概念通过角色操作展现",
+    "禁止48个AI套路反应词，情绪落到肉身"
+  ],
+  "examples": [
+    {
+      "text": "警报响的时候，他正在写遗书。\n\n红色灯光在舱壁上旋转，耳膜被高频警报刺得发疼。陈默抬手按掉主控台的蜂鸣，扫了一眼屏幕。\n\n舱外温度：237°C。\n\n三分钟前还是零下172度。\n\n不对。这个轨道位置不可能有这个温度。他快速调取热成像数据，屏幕上的图像让他后颈一凉。\n\n热源在靠近。\n\n速度：每秒47米。\n\n不是陨石。陨石不会减速。",
+      "note": "科幻V3.1开头：第一句直接危机（警报响+写遗书）→身体反应（耳膜刺疼）→具体数据反咬（温度从-172升到237度）→再反咬（热源在靠近/会减速，不是陨石）。"
+    }
+  ],
+  "tags": ["科幻", "硬核", "太空", "V3.1追读"]
+}

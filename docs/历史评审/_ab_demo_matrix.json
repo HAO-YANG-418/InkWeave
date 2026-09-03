@@ -1,0 +1,301 @@
+[
+  {
+    "chapter": "第11章 余念",
+    "wordCount": 1650,
+    "dialogueRatio": 0,
+    "sensoryMentions": {
+      "visual": 39,
+      "auditory": 18,
+      "tactile": 10,
+      "olfactory": 4,
+      "gustatory": 3
+    },
+    "anchorCount": 36,
+    "fillerCount": 131,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_dash_count": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "twist_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 3,
+        "warning": 0,
+        "info": 0
+      },
+      "simile_density_global": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "short_sentence_fragment": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "beat_break": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_verb": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 17,
+    "cliTreeTotal": 8
+  },
+  {
+    "chapter": "第2章 食堂",
+    "wordCount": 2577,
+    "dialogueRatio": 0,
+    "sensoryMentions": {
+      "visual": 81,
+      "auditory": 12,
+      "tactile": 18,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 119,
+    "fillerCount": 172,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "sight_ratio": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 4
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "texture_variety": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 17,
+    "cliTreeTotal": 6
+  },
+  {
+    "chapter": "第3章 后厨",
+    "wordCount": 2375,
+    "dialogueRatio": 0,
+    "sensoryMentions": {
+      "visual": 64,
+      "auditory": 11,
+      "tactile": 26,
+      "olfactory": 0,
+      "gustatory": 0
+    },
+    "anchorCount": 104,
+    "fillerCount": 204,
+    "violationCounts": {
+      "word_count_short": {
+        "error": 2,
+        "warning": 0,
+        "info": 0
+      },
+      "min_anchors": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "anchors_per_words": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_anchor_gap": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_paragraph_length": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      },
+      "max_sentence_length": {
+        "error": 0,
+        "warning": 3,
+        "info": 0
+      },
+      "opening_no_body": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "simile_density": {
+        "error": 1,
+        "warning": 0,
+        "info": 0
+      },
+      "sense_density": {
+        "error": 0,
+        "warning": 1,
+        "info": 1
+      },
+      "data_anchor": {
+        "error": 0,
+        "warning": 0,
+        "info": 2
+      },
+      "forbidden_char": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "not_shi_pattern": {
+        "error": 0,
+        "warning": 2,
+        "info": 0
+      },
+      "comma_chain": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "style_stacking_de": {
+        "error": 0,
+        "warning": 0,
+        "info": 1
+      },
+      "emotion_arc": {
+        "error": 0,
+        "warning": 1,
+        "info": 0
+      }
+    },
+    "smoothness": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "sourceTreeTotal": 16,
+    "cliTreeTotal": 6
+  }
+]

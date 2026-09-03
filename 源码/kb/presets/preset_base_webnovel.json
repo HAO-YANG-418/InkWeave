@@ -1,0 +1,103 @@
+{
+  "preset_id": "preset_base_webnovel",
+  "preset_name": "通用网文基础",
+  "preset_description": "所有网文品类的通用基础预设，包含跨品类通用的写作规则和词汇",
+  "based_on": null,
+  "is_base": true,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_emotion_style": "opt_emotion_show",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_detail",
+    "node_tone": "opt_tone_colloquial",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_sketch",
+    "node_vocab_sensory": "opt_vocab_generic",
+    "node_vocab_filler": "opt_filler_standard",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_standard",
+    "node_strictness": "opt_strict_standard",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_continue_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_suspense"
+  },
+  "extra_vocab": {
+    "add": {
+      "fillerPatterns": [
+        "非常",
+        "十分",
+        "极其",
+        "似乎",
+        "好像",
+        "仿佛",
+        "忽然",
+        "突然",
+        "渐渐地"
+      ],
+      "bannedPhrases": [
+        "目光闪烁",
+        "深吸一口气",
+        "心中一动",
+        "不由得",
+        "不禁",
+        "忍不住",
+        "下意识地"
+      ],
+      "emotionWords": [
+        "愤怒",
+        "恐惧",
+        "悲伤",
+        "喜悦",
+        "惊讶",
+        "厌恶",
+        "紧张",
+        "兴奋",
+        "焦虑",
+        "绝望"
+      ]
+    }
+  },
+  "extra_prompt": "你是一个专业的网文写作助手。遵循以下核心原则：Show Don't Tell、身体锚点驱动、对话推动剧情、章末悬念钩子。",
+  "extra_constraints": [
+    "第一句≤20字，单字感官鼓点最佳",
+    "前300字：冲突在场→身体在场→异常在场",
+    "禁止直述情绪，必须用生理级身体反应",
+    "每段必须有身体锚点",
+    "同一动作链可用逗号串联，换拍才用句号；逗号数与逗句比仅为参考，读着顺就保留连写，严禁为压低逗句比把一句剁碎（好懂优先）"
+  ],
+  "extra_rules": [
+    {
+      "id": "no_dash",
+      "name": "禁止破折号",
+      "description": "中文网文不需要破折号，用逗号或冒号替代",
+      "severity": "error",
+      "pattern": "——",
+      "injectToPrompt": true
+    },
+    {
+      "id": "no_cliche_reaction",
+      "name": "禁止48个套路反应词",
+      "description": "禁止使用AI标签式套路反应",
+      "severity": "error",
+      "pattern": "心头一跳|脸色一变|握紧拳头|不由得|情不自禁|忍不住|不禁|点了点头|叹了口气|皱了皱眉|冷哼一声|嘴角微扬|微微一笑|苦笑一声|瞳孔骤缩|眼中闪过一丝|嘴角勾起一抹|眼中寒光一闪|浑身一颤|虎躯一震|深吸一口气|缓缓开口|淡淡道|冷冷道|沉声道|厉声道|爆喝道|怒吼道",
+      "injectToPrompt": true
+    }
+  ],
+  "examples": [
+    {
+      "text": "烫。他猛地缩手，指腹已经红了一片。这才看清，那截金色纤维的尖端在发光。",
+      "note": "通用强开篇：身体刺激→本能反应→揭示"
+    }
+  ],
+  "tags": [
+    "base",
+    "通用"
+  ]
+}

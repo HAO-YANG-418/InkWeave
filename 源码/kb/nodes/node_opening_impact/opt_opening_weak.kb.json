@@ -1,0 +1,29 @@
+{
+  "kb_version": "3.0",
+  "node_id": "node_opening_impact",
+  "option_id": "opt_opening_weak",
+  "option_name": "平和切入（慢热）",
+  "option_description": "允许环境描写或氛围铺陈开头，适合慢热文、传统文学、抒情场景，不建议用于快节奏网文。",
+  "system_prompt": "你使用平和切入开头模式。允许从环境描写、氛围铺陈、场景介绍开始，节奏舒缓。但仍然要求第一段内出现视角人物，有人物在场，不能纯写景无人。",
+  "constraints": [
+    "第一段内必须出现视角人物",
+    "禁止纯写景无人",
+    "500字内必须有第一个身体锚点"
+  ],
+  "examples": [
+    {
+      "text": "矿道里的风带着三十七点二度的暖意，林深把手掌贴在壁上，金纹在他的指腹下缓慢搏动。",
+      "note": "平和切入：环境+温度，人物在场"
+    }
+  ],
+  "threshold_overrides": {
+    "openingImpact": "weak"
+  },
+  "radar_weights": {
+    "bodyReaction": 0.8,
+    "sensorySignal": 1.0,
+    "action": 0.8,
+    "emotion": 1.2,
+    "infoAdvance": 0.8
+  }
+}

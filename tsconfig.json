@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "strict": true,
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./源码/*"]
+    }
+  },
+  "include": [
+    "检测工具/**/*.ts",
+    "源码/compile-kb.ts",
+    "源码/knowledge/cooling-patterns.ts",
+    "源码/intent/engine.ts",
+    "源码/reflection/engine.ts",
+    "源码/knowledge/battle-styles.ts",
+    "源码/writing/context-builder.ts",
+    "源码/writing/fingerprint-inject.ts",
+    "源码/writing/presets/miner.ts",
+    "源码/kb/base-prompt.ts",
+    "源码/kb/base-prompt-layered.ts",
+    "源码/prompt-builder.ts",
+    "源码/cooling/creative-diverge.ts",
+    "源码/writing/presets/wasteland.ts",
+    "源码/node-registry.ts",
+    "源码/cli.ts",
+    "源码/knowledge/creative-leaps.ts",
+    "源码/writing/presets/game-isekai.ts",
+    "源码/writing/presets/infinite-flow.ts",
+    "源码/writing/presets/light-novel.ts",
+    "源码/writing/presets/wuxia.ts",
+    "源码/writing/presets/composite-preset.ts",
+    "源码/writing/engine.ts",
+    "源码/writing/orchestrator.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

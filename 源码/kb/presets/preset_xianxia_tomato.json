@@ -1,0 +1,66 @@
+{
+  "preset_id": "preset_xianxia_tomato",
+  "preset_name": "玄幻修仙·番茄V3.1追读版",
+  "preset_description": "番茄小说修仙爽文V3.1极致追读版：3秒停留开头+越级冲突直接砸脸+密集打脸反咬+断裂钩子。主角强势不憋屈，金手指早出现，三章内第一个打脸。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_short",
+    "node_paragraph_density": "opt_dense_high",
+    "node_dialogue_style": "opt_dialogue_concise",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_atmosphere",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_badass",
+    "node_platform": "opt_platform_tomato",
+    "node_info_density": "opt_info_fast",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_xianxia",
+    "node_vocab_filler": "opt_filler_webnovel",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_dense",
+    "node_strictness": "opt_strict_lenient",
+    "node_ai_creativity": "opt_ai_adventurous",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_dense",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_vocab": {
+    "add": {
+      "bodyParts": ["丹田", "经脉", "灵根", "神识", "元神", "剑意", "灵力", "真气"],
+      "sensoryVerbs": ["灵力涌动", "剑气逼人", "威压如山", "丹火灼", "灵气灌体", "神识扫过", "血脉偾张"],
+      "actionVerbs": ["拔剑", "斩出", "祭出", "掐诀", "修炼", "突破", "越级", "打脸", "碾压", "灭杀", "臣服", "跪拜"],
+      "environmentSignals": ["灵气暴动", "剑气纵横", "丹香四溢", "雷鸣电闪", "金光爆射", "威压降临", "虚空碎裂"]
+    }
+  },
+  "extra_prompt": "番茄修仙爽文V3.1极致追读版：\n\n【开头】第一句≤20字直接动作/冲突/结果，0铺垫。修仙文最强开头是直接写结果：「外门弟子林凡，一刀斩了内门大师兄。」「天才退婚当天，他觉醒了万古唯一剑体。」前300字必须：越级冲突爆发→主角身体在场→金手指/异常出现。禁止写主角怎么拜师/怎么修炼/宗门介绍，直接进冲突现场。\n\n【反咬】每250-350字一次反咬：反派嚣张→主角冷笑→亮出金手指→反派被打脸→更大的反派出现。打脸节奏要快，不拖泥带水。禁止长篇说教，禁止解释功法原理，直接写效果（一拳轰飞/跪地求饶/全场震惊）。\n\n【钩子】章末必须是断裂钩子：主角刚突破/刚打完脸/刚拿到宝物→更大的危机/更强的敌人/新的秘密出现。最后一句≤15字短句落点，禁止「了。」收尾。\n\n【主角】主角强势，不憋屈，被嘲讽立刻打脸，不隐忍不圣母。该杀就杀，该抢就抢。对话简短有力，反派话多主角话少。\n\n【身体】情绪落到肉身：丹田发热/剑气刺骨/灵力灌体经脉鼓胀/威压如山脊背发沉。禁止48个AI套路反应词。",
+  "extra_constraints": [
+    "第一句直接动作/越级冲突结果，0铺垫",
+    "前300字必须出现冲突+金手指/异常",
+    "三章内第一个打脸爽点",
+    "每250-350字一次反咬/打脸/反转",
+    "主角强势不憋屈，被嘲讽立刻打脸",
+    "章末断裂钩子，最后一句≤15字",
+    "禁止长篇功法/等级介绍，通过战斗自然展现",
+    "禁止48个AI套路反应词，情绪落到肉身"
+  ],
+  "examples": [
+    {
+      "text": "外门弟子林凡，一刀斩了内门大师兄。\n\n血溅在演武场的青石上，围观的弟子全傻了。林凡握刀的手在抖，不是因为害怕，是因为这具身体里的灵魂，三秒前还不是他。\n\n【万古剑体激活中...10%...50%...100%】\n\n他低头，看见自己掌心一道金色剑纹在发亮。\n\n「你...你敢杀大师兄？」执法长老脸色铁青，「按宗规——」\n\n「按什么宗规？」林凡抬眼，刀指长老，「他要抢我未婚妻的时候，宗规在哪？」",
+      "note": "修仙V3.1开头示范：第一句直接写越级杀人结果→第二句现场反应+身体（手抖）→第三句金手指激活（系统）"
+    }
+  ],
+  "extra_rules": [
+    {
+      "id": "no_cultivation_exposition",
+      "name": "禁止等级灌输",
+      "description": "开篇前1000字禁止大段介绍修炼等级/宗门排名/世界格局，通过战斗和对话自然展现",
+      "severity": "warning",
+      "pattern": "^(练气|筑基|金丹|元婴|化神).{0,20}(期|境|界|层)",
+      "injectToPrompt": true
+    }
+  ],
+  "tags": ["玄幻", "修仙", "番茄", "爽文", "V3.1追读"]
+}

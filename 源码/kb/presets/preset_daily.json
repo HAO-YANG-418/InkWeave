@@ -1,0 +1,42 @@
+{
+  "preset_id": "preset_daily",
+  "preset_name": "轻小说·日常V3.1追读版",
+  "preset_description": "日常系V3.1追读版：3秒停留有趣开头+小反转+暧昧/笑点钩子。节奏舒缓但开篇抓人，人物互动有趣。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_high",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_minimal",
+    "node_battle_style": "opt_battle_result",
+    "node_emotion_style": "opt_emotion_both",
+    "node_tone": "opt_tone_playful",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_3",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_metaphor",
+    "node_vocab_sensory": "opt_vocab_daily",
+    "node_vocab_filler": "opt_filler_relaxed",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_standard",
+    "node_strictness": "opt_strict_lenient",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "日常系V3.1追读版：第一句直接有趣/尴尬/心动的瞬间（「她把情书递给他的时候，他正在抠脚。」「班主任叫我去办公室，里面坐着我上周刚甩掉的前女友。」），禁止「我叫XX，是个普通高中生」式自我介绍开头。前300字出现人物互动+第一个笑点/暧昧点/小冲突。每400-500字一次小反转/小笑点/小心动。日常文的反咬是人物反差和关系反转：以为她讨厌他→她在吃醋/以为是社死→是撩/以为是普通日常→藏着秘密。章末暧昧/社死/秘密钩子，最后一句≤15字。对话自然有趣，可以有吐槽和内心OS。身体锚点：脸红/心跳加速/耳朵发烫/手心出汗/嘴角抽搐/脚趾抠地。禁止48个AI套路反应词。",
+  "extra_constraints": [
+    "第一句直接有趣/尴尬/心动瞬间，0自我介绍铺垫",
+    "前300字出现人物互动+第一个笑点/暧昧/冲突",
+    "每400-500字一次小反转/小笑点/小心动",
+    "章末暧昧/社死/秘密钩子，最后一句≤15字",
+    "对话自然有趣，可以吐槽",
+    "身体锚点：脸红/心跳/耳烫/手心出汗/嘴角抽",
+    "禁止开篇自我介绍「我叫XX，是个XX」",
+    "禁止48个AI套路反应词"
+  ],
+  "tags": ["日常", "轻小说", "校园", "恋爱", "V3.1追读"]
+}

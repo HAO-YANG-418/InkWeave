@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卖相对比 · 当前盲写 vs 8本热门网文真实片段</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --ink:#1f2329; --sub:#5c6470;
+    --skill:#e8f0fe; --skill-bd:#4a82f7; --web:#eafaf0; --web-bd:#2e9e5b;
+    --warn:#fff4e5; --warn-bd:#e8830c; --ok:#eafaf0; --ok-bd:#2e9e5b;
+    --gap:#fdecec; --gap-bd:#d8453a;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px;}
+  h1{font-size:23px;margin:0 0 4px;}
+  .lead{color:var(--sub);font-size:14px;margin:0 0 22px;}
+  .score{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 26px;}
+  .score .box{flex:1;min-width:200px;background:var(--card);border:1px solid #e6e8eb;
+    border-radius:12px;padding:14px 16px;}
+  .score .box b{font-size:26px;display:block;}
+  .score .box span{color:var(--sub);font-size:13px;}
+  .card{background:var(--card);border:1px solid #e6e8eb;border-radius:14px;
+    padding:18px 18px 16px;margin:0 0 20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .dim{font-weight:700;font-size:16px;margin:0 0 4px;}
+  .dim small{color:var(--sub);font-weight:400;font-size:13px;}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0;}
+  @media(max-width:720px){.vs{grid-template-columns:1fr;}}
+  .col{border-radius:10px;padding:12px 13px;font-size:14px;}
+  .col.skill{background:var(--skill);border:1px solid var(--skill-bd);}
+  .col.web{background:var(--web);border:1px solid var(--web-bd);}
+  .col h4{margin:0 0 7px;font-size:12px;letter-spacing:.5px;opacity:.8;}
+  .col .q{color:#9a3b00;font-style:normal;}
+  .verdict{margin-top:10px;font-size:14px;padding:10px 12px;border-radius:9px;}
+  .verdict.gap{background:var(--gap);border:1px solid var(--gap-bd);}
+  .verdict.ok{background:var(--ok);border:1px solid var(--ok-bd);}
+  .verdict b{color:var(--ink);}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:20px;
+    background:#eef0f3;color:var(--sub);margin-left:6px;vertical-align:middle;}
+  .foot{color:var(--sub);font-size:12.5px;margin-top:24px;border-top:1px solid #e6e8eb;padding-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>卖相对比 · 当前盲写 vs 热门网文真实片段</h1>
+  <p class="lead">左栏 = 当前 skill 真底座盲写（都市_许照 ch01 / ch02，D级·0error）；右栏 = 8本热门网文真实开头节选（研究用，非全文）。对照的是「卖相/节奏」层，不是「通不通顺」层。</p>
+
+  <div class="score">
+    <div class="box"><b style="color:var(--skill-bd)">D 60</b><span>当前盲写连章均分 · 0 硬错</span></div>
+    <div class="box"><b style="color:var(--web-bd)">B+ 以上</b><span>8本热门网文普遍水位 · 对话密+反转快</span></div>
+    <div class="box"><b style="color:var(--ok-bd)">3 项追平</b><span>开头锚点·对话人味·章尾钩子</span></div>
+    <div class="box"><b style="color:var(--gap-bd)">3 项仍差</b><span>长句断奏·描写密度·硬爆破</span></div>
+  </div>
+
+  <!-- 维度1 -->
+  <div class="card">
+    <p class="dim">① 开场起手 <small>前 3 句给读者「凭什么继续看」</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch01</h4>
+        「刀还烫手。」<br><br>
+        许照后颈一下绷紧，呼吸卡了半秒没吸进去……国庆电话里声音发飘，说你赶紧来，我可能要完了……推开门先看见国庆胸口那片不渗血的暗红。<br><br>
+        <span class="q">（身体锚点有了，但后头 4 行纯描述，第 19 行才出第一句对话）</span>
+      </div>
+      <div class="col web"><h4>大奉打更人 · 卖报小郎君</h4>
+        许七安幽幽醒来，嗅到了空气中潮湿的腐臭味……「没想到重活了，还是逃不掉当警察的宿命？」许七安有些牙疼。「可我为什么会在监狱里？」
+      </div>
+    </div>
+    <div class="verdict ok"><b>判定 · 部分达标：</b>skill 开头「身体锚点 ≤20字」已经做对（刀烫手=好）。但网文第 1–2 句就让人笑/怕，skill 锚点之后慢半拍才给冲突与人味——前 1/3 对话密度偏低。</div>
+  </div>
+
+  <!-- 维度2 -->
+  <div class="card">
+    <p class="dim">② 句节奏 <small>一句话 vs 一整段（D级头号卖相扣分项）</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch01（整段一句话 ≈170字）</h4>
+        屋里灯是惨白吸顶灯，嗡嗡响，听得人后槽牙发酸。光打下来啥都发黄，墙皮掉了一块，底下露水泥灰。空气里一股铁锈混酒气，地上倒个绿啤酒瓶，滚到国庆手边没碎，瓶口凝着半圈白沫。许照吸口气，肺里凉飕飕带着外头寒气，脑子反倒清楚一点。他注意到茶几上两只杯子，一只满一只见底，杯壁都挂水珠，说明来人不只一个，还坐下来喝过。
+      </div>
+      <div class="col web"><h4>诡秘之主 / 斗破苍穹</h4>
+        痛！好痛！头好痛！光怪陆离满是低语的梦境迅速支离破碎……<br><br>
+        三段斗之气，二十岁被强制退婚，这个消息恐怕当今萧家已经成为了你我的笑柄了吧？哈哈！
+      </div>
+    </div>
+    <div class="verdict gap"><b>判定 · 差距明显：</b>skill 大量「逗号长链裹成一段」，单段 150–170 字不换气；网文用短句断奏，阅读更跟手。这直接踩中检测器「长句&gt;60字 / 段落&gt;200字」warning，是 D级的主因。</div>
+  </div>
+
+  <!-- 维度3 -->
+  <div class="card">
+    <p class="dim">③ 白描密度 <small>描写成块堆 vs 碎进动作/对话</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch01（连续 5 行纯感官白描）</h4>
+        刀…切葱的青味混着铁腥 / 暗红铺在胸口左下方…不往外冒血 / 电视柜上那滩才是真血…把「出租」洇开 / 惨白吸顶灯…墙皮掉了一块 / 铁锈混酒气…绿啤酒瓶…两只杯子——<br><br>
+        <span class="q">（描写质量不差，但连续成块，无对话无动作推进）</span>
+      </div>
+      <div class="col web"><h4>全职高手 · 蝴蝶蓝</h4>
+        叶修微微仰首靠在头枕上，闭着眼……「我说哥，你就带这么点东西回来啊？亏我还特地开了辆大车子出来预备拉行李，结果，就一小包——」「你是光带了键盘和鼠标啊你！」
+      </div>
+    </div>
+    <div class="verdict gap"><b>判定 · 差距在中段：</b>skill 描写本身不空不晦涩，但「成块堆」而非「碎进动作/对话里」。网文几乎每段都有对话穿插，描写不抢戏。</div>
+  </div>
+
+  <!-- 维度4 -->
+  <div class="card">
+    <p class="dim">④ 对话人味 <small>角色发声 vs 背设定（08-31旧样章的致命伤）</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch02（陈九电话）</h4>
+        「操，你听我说，我今晚上去一趟，我他妈被老周赶着上去的，他让我看你去死没死。我不去他当场一耳刮子，说不去轮到我。」
+      </div>
+      <div class="col web"><h4>大奉打更人 · 许七安</h4>
+        天道老爷，加个班呗 / 逃不掉当治安员 / 天不生我许新年，大奉万古如长夜
+      </div>
+    </div>
+    <div class="verdict ok"><b>判定 · 已追平：</b>08-31 旧样章的对话是「功能对白、角色背设定」；现在陈九有脾气、有脏话、有处境，人味达标。这一项是从样章到盲写实打实的进步，诚实保留。</div>
+  </div>
+
+  <!-- 维度5 -->
+  <div class="card">
+    <p class="dim">⑤ 章尾钩子 <small>具体威胁 vs 意境留白</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch01 末 / ch02 末</h4>
+        ch01：「门外，有人蹲下来了。」<br>
+        ch02：「老周还要上来。」<br><br>
+        <span class="q">（都是 concrete 的迫近威胁，不是意境）</span>
+      </div>
+      <div class="col web"><h4>大奉 / 夜的命名术</h4>
+        大奉 Ch1：卷宗（concrete 物件钩子）<br>
+        夜的命名术：等的人来了，却转身走
+      </div>
+    </div>
+    <div class="verdict ok"><b>判定 · 已达标：</b>skill 章尾钩子已 concrete 化，不再走「意境留白」老路，与网文同构。</div>
+  </div>
+
+  <!-- 维度6 -->
+  <div class="card">
+    <p class="dim">⑥ 信息推进密度 <small>平推 vs 硬爆破反转</small></p>
+    <div class="vs">
+      <div class="col skill"><h4>SKILL · ch01 推进链</h4>
+        国庆被害→取U盘→借条姓周→陈九不敢进门→针剂硬块→老周等「姓许的」下来。<br><br>
+        <span class="q">（有推进，但「平」，缺斩断退路的硬爆破）</span>
+      </div>
+      <div class="col web"><h4>大奉 Ch1</h4>
+        穿越→绝境（15万两/连坐/2天）→卷宗转机，围三阙一，几百字一反转。
+      </div>
+    </div>
+    <div class="verdict gap"><b>判定 · 差一档：</b>skill 信息点不缺，但推进「平」，少网文那种「啪一下斩断退路」的硬爆破。追读驱动力弱一档，是 D→B 的最后一截。</div>
+  </div>
+
+  <div class="foot">
+    <b>实话总结：</b>当前盲写 = <b>硬伤层全过（0 error，好懂不晦涩有货）</b>，卖相层 <b>3 项追平（开头锚点 / 对话人味 / 章尾钩子）、3 项仍差（长句断奏 / 描写密度 / 硬爆破）</b>。
+    差的全是「节奏与密度」，不是「写得烂」——所以推 D→B 要清的是那 ~10 条结构 warning，是「提卖相」不是「修缺陷」。<br>
+    真实网文片段来源：灵境行者/大奉打更人/斗破苍穹/全职高手/诡秘之主/第一序列/夜的命名术/捞尸人 开头节选（研究用，非全文转载）。
+  </div>
+</div>
+</body>
+</html>

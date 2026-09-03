@@ -1,0 +1,6 @@
+{
+  "provider": "openai-compatible",
+  "baseURL": "https://api.openai.com/v1",
+  "model": "gpt-4o-mini",
+  "apiKey": "在此填入你的LLM_API_KEY（不会自动提交，.gitignore已忽略）"
+}

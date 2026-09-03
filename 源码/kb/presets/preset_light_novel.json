@@ -1,0 +1,52 @@
+{
+  "preset_id": "preset_light_novel",
+  "preset_name": "轻小说·V3.1追读版",
+  "preset_description": "轻小说V3.1追读版：轻松明快+吐槽驱动+对话推进。第一人称为主，日常感强，节奏轻快不拖沓。",
+  "based_on": "preset_daily",
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_high",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_minimal",
+    "node_battle_style": "opt_battle_result",
+    "node_emotion_style": "opt_emotion_both",
+    "node_tone": "opt_tone_playful",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_3",
+    "node_pov": "opt_pov_first_present",
+    "node_rhetoric": "opt_rhetoric_metaphor",
+    "node_vocab_sensory": "opt_vocab_daily",
+    "node_vocab_filler": "opt_filler_relaxed",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_standard",
+    "node_strictness": "opt_strict_lenient",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "轻小说V3.1追读版：第一人称叙事，主角内心吐槽是核心魅力。开篇直接进入有趣/尴尬/心动的瞬间，禁止「我叫XX，是个普通高中生」式自我介绍。语言口语化，节奏轻快。对话是核心驱动力，人物对话要有性格差异。场景描写精炼：用2-3个细节勾勒场景，不要长篇环境描写。禁止过度文艺化描写——「月亮很亮」就够了。每400-500字一个小反转/小笑点/小心动。章末用轻松语气或悬念念白收束，不要过度沉重。",
+  "extra_constraints": [
+    "第一人称视角，除非特殊需要不要切换POV",
+    "每段不超过5行，保持轻快阅读节奏",
+    "禁止过度文艺化描写，描写要精炼直白",
+    "对话要有角色个性差异",
+    "每章至少1处主角内心吐槽",
+    "禁止48个AI套路反应词",
+    "章末不要用沉重/绝望收束，保持轻松基调"
+  ],
+  "extra_rules": [
+    {
+      "id": "ln-overly-literary",
+      "name": "过度文艺化",
+      "type": "regex",
+      "severity": "info",
+      "pattern": "如.{2,10}般|宛若.{2,10}|仿佛.{2,10}一般|恰似.{2,10}",
+      "maxMatches": 5
+    }
+  ],
+  "tags": ["轻小说", "日常", "吐槽", "第一人称", "校园", "异世界"],
+  "examples": []
+}

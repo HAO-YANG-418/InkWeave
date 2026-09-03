@@ -1,0 +1,31 @@
+{
+  "name": "inkweave-writing-engine",
+  "version": "4.8.0",
+  "description": "InkWeave 网文写作引擎 - 认知分离架构，三阶段分离：写前分析→生成→写后检查",
+  "type": "module",
+  "bin": {
+    "inkweave": "./inkweave.mjs"
+  },
+  "scripts": {
+    "prebuild": "npx tsx 源码/compile-kb.ts",
+    "build": "npx tsc",
+    "check": "npx tsx 检测工具/check-chapter.ts",
+    "check-all": "npx tsx 检测工具/check-all.ts",
+    "compile-kb": "npx tsx 源码/compile-kb.ts",
+    "pre-analysis": "npx tsx 检测工具/pre-analysis.ts",
+    "auto-pipeline": "npx tsx 检测工具/auto-pipeline.ts",
+    "quick-write": "npx tsx 检测工具/quick-write.ts",
+    "verify-gates": "npx tsx 检测工具/verify-gates.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "preset_id": "preset_miner",
+  "preset_name": "地下矿探·硬核生存版",
+  "preset_description": "矿探/硬核生存题材：封闭空间压迫开局+资源反咬+绝境钩子。井下细节到位，队友互动真实带恐惧与黑色幽默。",
+  "based_on": null,
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_detail",
+    "node_emotion_style": "opt_emotion_both",
+    "node_tone": "opt_tone_colloquial",
+    "node_platform": "opt_platform_generic",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_chapter",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_plain",
+    "node_vocab_sensory": "opt_vocab_generic",
+    "node_vocab_filler": "opt_filler_standard",
+    "node_target_length": "opt_length_2200",
+    "node_anchor_density": "opt_anchor_standard",
+    "node_strictness": "opt_strict_standard",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "矿探/硬核生存：第一句直接井下现场/塌方瞬间/缺氧危机（「顶板裂了，碎石先掉下来。」「矿灯闪了两下，灭了。」「瓦斯浓度到了1.5。」），禁止大段背景铺垫。每250-350字一次资源/环境反咬（以为通路→塌方/以为有气→瓦斯/以为队友活→是尸体）。井下操作具体（支架/通风/气体/水深/矿车），队友互动真实带恐惧与黑色幽默。章末绝境/新通路/未知声响钩子，最后一句≤15字。身体锚点：手心汗/呼吸白雾/耳压/膝盖抖/指甲缝泥。",
+  "extra_constraints": [
+    "第一句直接井下现场/危机，0背景铺垫",
+    "前300字进入封闭空间冲突",
+    "每250-350字一次环境/资源反咬",
+    "井下操作具体到支架/通风/气体/水深",
+    "章末绝境/新通路/未知声响钩子",
+    "身体锚点：手心汗/呼吸白雾/耳压/膝盖抖",
+    "禁止开篇大段矿史/地质介绍"
+  ],
+  "tags": ["矿探", "硬核生存", "封闭空间", "危机"]
+}

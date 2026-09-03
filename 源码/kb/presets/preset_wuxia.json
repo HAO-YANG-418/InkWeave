@@ -1,0 +1,51 @@
+{
+  "preset_id": "preset_wuxia",
+  "preset_name": "武侠江湖·V3.1追读版",
+  "preset_description": "武侠V3.1追读版：3秒停留冲突开头+快意恩仇+武功对决。半文半白，招式写意，江湖气韵。",
+  "based_on": "preset_xianxia_qidian",
+  "selections": {
+    "node_sentence_rhythm": "opt_rhythm_mixed",
+    "node_paragraph_density": "opt_dense_medium",
+    "node_dialogue_style": "opt_dialogue_natural",
+    "node_description_style": "opt_desc_sensory",
+    "node_battle_style": "opt_battle_detail",
+    "node_emotion_style": "opt_emotion_show",
+    "node_tone": "opt_tone_classical",
+    "node_platform": "opt_platform_qidian",
+    "node_info_density": "opt_info_balanced",
+    "node_payoff_frequency": "opt_payoff_every_3",
+    "node_pov": "opt_pov_limited_third_past",
+    "node_rhetoric": "opt_rhetoric_metaphor",
+    "node_vocab_sensory": "opt_vocab_xianxia",
+    "node_vocab_filler": "opt_filler_webnovel",
+    "node_target_length": "opt_length_3000",
+    "node_anchor_density": "opt_anchor_dense",
+    "node_strictness": "opt_strict_standard",
+    "node_ai_creativity": "opt_ai_balanced",
+    "node_ai_continue_length": "opt_ai_medium",
+    "node_opening_impact": "opt_opening_strong",
+    "node_twist_frequency": "opt_twist_standard",
+    "node_ending_hook": "opt_hook_break"
+  },
+  "extra_prompt": "武侠V3.1追读版：开篇直接入江湖事件（追杀/对决/恩怨/奇遇），禁止世界设定铺垫。语言半文半白但不过度文言，短句有金石声。武功描写重意境不堆砌招式——「一剑刺出，似有风雷之声」优于「他使出了风雷剑法第三式」。对决不只是动作交替，更是气势/心理/经验的博弈。情绪落到肉身：内息流转/虎口发麻/丹田发热/气血翻涌/后背发凉。禁止系统面板式描写。章末余韵收束：景物（雨停/风止/月出）、动作（收剑/转身/离去）、或对话。禁止48个AI套路反应词。",
+  "extra_constraints": [
+    "禁止系统面板式描写，武功进步用身体感知体现",
+    "江湖用语适度使用，每章不超过5次",
+    "禁止48个AI套路反应词，情绪落到肉身（内息/丹田/经络/气血）",
+    "每章至少1处有名字的武功招式，但不超过3处",
+    "对决场面不少于200字，需有起承转合",
+    "章末禁止'他不知道接下来会发生什么'式预告钩子"
+  ],
+  "extra_rules": [
+    {
+      "id": "wuxia-no-system-panel",
+      "name": "禁止系统面板",
+      "type": "regex",
+      "severity": "warning",
+      "pattern": "[力量敏捷智力体质]+\\d+|等级\\s*[：:L]|属性面板|HP|MP|SP",
+      "maxMatches": 0
+    }
+  ],
+  "tags": ["武侠", "江湖", "武功", "对决", "金古"],
+  "examples": []
+}

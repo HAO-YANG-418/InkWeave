@@ -1,0 +1,37 @@
+{
+  "kb_version": "2.0",
+  "node_id": "node_battle_style",
+  "option_id": "opt_battle_result",
+  "option_name": "重结果快节奏",
+  "option_description": "战斗一笔带过，不写过程只写结果，快节奏推进。适合爽文、非重点战斗、或者主角实力碾压的场景。",
+  "threshold_overrides": {
+    "maxSentenceLength": 25,
+    "shortSentenceRatio": 0.6,
+    "maxParagraphLength": 60,
+    "targetParagraphLength": 30
+  },
+  "radar_weights": {
+    "action": 1.4,
+    "infoAdvance": 1.2,
+    "sensorySignal": 0.6,
+    "emotion": 0.7
+  },
+  "system_prompt": "战斗过程极简，不写具体招式和打斗细节，直接呈现结果和关键转折点。快进式叙事，三言两语解决战斗。重点写战斗开始前的压迫感和战斗结束后的结果状态，中间过程一笔带过。适合非关键战斗或者实力悬殊的碾压场景。",
+  "constraints": [
+    "战斗过程不超过300字",
+    "不拆解具体招式",
+    "重点写战斗前的张力和战斗后的结果",
+    "结果必须清晰（谁赢了、谁受伤了、获得了什么）"
+  ],
+  "examples": [
+    {
+      "text": "四个人围了上来。\n\n他没说话。\n\n三分钟后。\n\n四个人全躺在了地上。\n\n他拍了拍袖子上的灰，弯腰捡起掉落的矿灯。灯没碎。\n\n继续往前走。",
+      "note": "过程完全省略，只写结果，节奏极快，爽感强。"
+    }
+  ],
+  "requires": [],
+  "conflicts": [
+    "opt_battle_detail",
+    "opt_battle_psychological"
+  ]
+}

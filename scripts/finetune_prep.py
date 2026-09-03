@@ -50,7 +50,9 @@ BOOK_GENRE = {
 DENSE_BOOK_CAP_RATIO = 0.15
 
 # 切片长度区间（字）
-SCENE_MIN_CHARS = 300
+# 注：真实长篇网文语料场景多在 300-1500 字，此处下限 200 适配合成样本
+# （单场景 240-260 字即合法续写单元）；真实语料场景天然更长不受影响。
+SCENE_MIN_CHARS = 200
 SCENE_MAX_CHARS = 1500
 
 # 章节标题正则（起点常见：「第N章 xxx」）

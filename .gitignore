@@ -1,12 +1,40 @@
+# ============ 依赖 / 构建产物 ============
 node_modules/
 dist/
-.workbuddy/backup/
-_代码归档/_backup/
-旧版_归档/
-*_backup_*/
-docs/历史评审/*backup*
-*.backup
-.inkweave.llm.json
+
+# ============ 内部记忆 / 本地配置（不上 GitHub） ============
+.workbuddy/
+.inkweave/
 .env.inkweave.json
+.inkweave.llm.json
 *.fingerprint.json
 .DS_Store
+
+# ============ 内部归档 / 备份 / 草稿 ============
+_代码归档/
+legacy_drafts/
+*_backup_*/
+
+# ============ 内部方案 / 验收文档（迭代过程已写入 README，不单独入库） ============
+docs/
+
+# ============ 其他产品 / 其他项目（与 InkWeave skill 无关） ============
+视频剪辑素材/
+项目_斗罗同人/
+项目_裂日/
+项目_都市直播/
+
+# ============ 本地数据（用户语料 / 蒸馏产物，含版权不入库） ============
+corpus/
+finetune_data/
+
+# ============ 根目录零散测试残渣 / 日志 / 内部报告 ============
+all_gbk.txt
+all_raw.txt
+audit_punct.py
+ch0*.txt
+checkall_out.log
+验收报告_*.md
+最终方案_*.md
+底座真身_默认种子.md
+*.log

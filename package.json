@@ -15,6 +15,7 @@
     "pre-analysis": "npx tsx 检测工具/pre-analysis.ts",
     "auto-pipeline": "npx tsx 检测工具/auto-pipeline.ts",
     "quick-write": "npx tsx 检测工具/quick-write.ts",
+    "install-skill": "npx tsx scripts/install-skill.ts",
     "verify-gates": "npx tsx 检测工具/verify-gates.ts",
     "test": "vitest run",
     "test:watch": "vitest"

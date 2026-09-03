@@ -217,6 +217,56 @@ export const EXPLAIN_PATTERNS = [
 ];
 
 // ============================================================
+// 书面联接词安全网（P5 加固）：网文好懂口语化，禁止书面联接词堆叠
+// ============================================================
+const BOOKISH_CONJUNCTIONS = [
+  '然而', '因此', '由此可见', '总而言之', '综上所述', '毋庸置疑', '不可否认',
+  '客观地讲', '换言之', '换句话说', '事实上', '诚然', '固然', '虽说', '即便如此',
+  '尽管如此', '究其原因', '值得一提的是', '众所周知', '毫不夸张地说', '平心而论',
+  '说到底', '归根结底', '无可否认', '毋庸讳言', '整体而言', '从某种角度来看',
+];
+function checkBookishConjunction(text: string): Violation[] {
+  const violations: Violation[] = [];
+  const hits: string[] = [];
+  for (const w of BOOKISH_CONJUNCTIONS) {
+    const m = text.match(new RegExp(w, 'g'));
+    if (m) hits.push(...m);
+  }
+  if (hits.length === 0) return violations;
+  const chars = text.length || 1;
+  const density = (hits.length / chars) * 1000;
+  if (density > 4 || hits.length >= 5) {
+    violations.push({
+      ruleId: 'bookish_conjunction',
+      ruleName: '书面联接词',
+      message: `检测到 ${hits.length} 处书面联接词（如${[...new Set(hits)].slice(0, 6).join('、')}），密度 ${density.toFixed(1)}/千字。网文好懂口语化，禁用书面联接词堆叠。`,
+      severity: 'warning',
+      suggestion: '删掉"然而/因此/由此可见/总而言之"等书面联接词，用逗号连写或靠上下文自然过渡；转折用"可/但"，因果用"所以"。',
+    });
+  }
+  return violations;
+}
+
+// ============================================================
+// 漏引号通读（P5 加固）：全角引号必须成对，漏引号/错位给 error
+// ============================================================
+function checkQuoteBalance(text: string): Violation[] {
+  const violations: Violation[] = [];
+  const left = (text.match(/“/g) || []).length;
+  const right = (text.match(/”/g) || []).length;
+  if (left !== right) {
+    violations.push({
+      ruleId: 'quote_unbalanced',
+      ruleName: '漏引号',
+      message: `全角引号不成对：左引号“ ${left} 个，右引号” ${right} 个，差 ${Math.abs(left - right)} 个。漏引号/错位须通读逐句核对修正。`,
+      severity: 'error',
+      suggestion: '逐句通读，补上缺失的引号或修正错位引号；对话与引用必须成对收尾。',
+    });
+  }
+  return violations;
+}
+
+// ============================================================
 // 检测器注册表
 // ============================================================
 
@@ -237,6 +287,8 @@ export const DETECTOR_GROUPS: DetectorGroup[] = [
       { id: 'tag_colon_mid', name: '提示语中冒号', fn: (t, s) => checkTagColonMid(t) },
       { id: 'cjk_half_punct', name: '中文后半角', fn: (t, s) => checkCjkHalfPunct(t) },
       { id: 'repeat_qa', name: '连续问叹', fn: (t, s) => checkRepeatQa(t) },
+      { id: 'bookish_conjunction', name: '书面联接词', fn: (t, s) => checkBookishConjunction(t) },
+      { id: 'quote_unbalanced', name: '漏引号', fn: (t, s) => checkQuoteBalance(t) },
     ],
   },
   {

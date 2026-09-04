@@ -81,6 +81,15 @@ ${styleRecipe}
 | 3 | （待填） | ≥${perScene} | | |
 | 4 | （待填） | ≥${perScene} | | |
 
+## 强制写作铁则（从 base-prompt 同步 · 写第一版前必读，禁止凭记忆写）
+> 下列硬标准直接来自生成端底座 base-prompt。agent 写正文前必须把本段真读进写作上下文，
+> 视作 LLM 的 system prompt 驱动自己，而非凭记忆模仿——这是 889 字初稿写空的根因修复。
+- **篇幅硬下限**：每章正文目标 2800–3200 字，硬下限 2800 字（门禁低于即 error）。镜头链没铺满目标篇幅就继续展开，不要写短就停。
+- **单场四维度**：每个场景必须多维度展开——动作线 + 对话碰撞 + 人物心理/生理反应 + 环境细节，四者至少三者在场；禁止只用概括句带过情节。
+- **禁概括跳过**：不写"他处理完就走了"，要写出怎么处理、遇到什么阻碍、对方什么反应、结果如何。
+- **信息密度≠字数少**：密集短句也需撑起 2800 字体量；篇幅达标靠把每个镜头写足（动作细节、对话来回、感官落地），不靠注水/重复/无效感慨凑数。
+- **每场字数预算**：见上表，单场 < 预算 85% 即视为该场写空，须补场景内容而非 padding。
+
 ## 门禁（写前确认，写时遵守）
 1. 破折号零容忍：本章不出现任何"——"。
 2. 省略号零容忍：不出现"……"。
@@ -126,13 +135,24 @@ function hasProvider(): boolean {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const targetWords = parseInt((args.target as string) || '3000', 10);
+  const targetWords = parseInt((args.target as string) || '2800', 10);
   const projectName = args.project as string | undefined;
 
   // ====== 验收模式 ======
   if (args.review) {
     const file = args.review as string;
     if (!fs.existsSync(file)) { console.error(`文件不存在：${file}`); process.exit(1); }
+    // 初稿达标率：对比规划预算（若存在），写空即预警——治 889 字初稿根因
+    const text0 = fs.readFileSync(file, 'utf-8');
+    const actual0 = countWords(text0);
+    const planFile = file.replace(/第(\d+)章_(.+)\.md$/, '_plan_第$1章_$2.md');
+    if (fs.existsSync(planFile)) {
+      const pm = fs.readFileSync(planFile, 'utf-8').match(/合计须 ≥ (\d+)/);
+      const budget = pm ? parseInt(pm[1], 10) : targetWords;
+      const rate = actual0 / budget;
+      if (rate < 0.85) console.log(`⚠️ 初稿写空预警：实际 ${actual0} / 规划预算 ${budget}（达标率 ${(rate*100).toFixed(0)}%）→ 须补场景内容，勿 padding`);
+      else console.log(`📊 初稿达标率：${(rate*100).toFixed(0)}%（规划预算 ${budget}）`);
+    }
     const r = runGate(file, targetWords);
     if (!r.passed) {
       console.log('\n>>> 有 error，未通过门禁。请修订后重跑本命令，直到 0 error。');

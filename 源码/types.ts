@@ -217,7 +217,7 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   // === ③ 阶段二 KB 阈值收敛（落点 A）：16 项默认值=原硬编码魔法数，行为零变化（可被 知识库/阈值标定/default.json 覆盖） ===
   commaChainRatioWarn: 3.2,
   commaChainLongMax: 8,
-  minChapterWords: 2100,          // 原 2000；2026-08-29 按方案 B 与 CLI 验收下限（0.7×3000）对齐
+  minChapterWords: 2800,          // 2026-09-04 统一单一真值 2800（与检测工具树/CLI 验收树对齐，硬下限 error）
   dataAnchorDensityMax: 5,
   dataAnchorDensityMin: 0.5,
   exclamationWarnThreshold: 10,

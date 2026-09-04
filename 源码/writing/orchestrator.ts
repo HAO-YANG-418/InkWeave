@@ -294,7 +294,7 @@ const DEFAULT_ORCHESTRATOR_CONFIG: OrchestratorConfig = {
   enableAutoRewrite: true,
   maxRewriteRounds: 3,
   enableSelfCorrection: true,
-  defaultTargetWords: 3000,
+  defaultTargetWords: 2800,
   temperature: 0.7,
   maxTokensRatio: 3,
   minMaxTokens: 8192,

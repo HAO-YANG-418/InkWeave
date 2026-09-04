@@ -156,14 +156,14 @@ describe('checkChapter', () => {
 
   it('should detect word count shortfall', () => {
     const { violations } = checkChapter('太短了。', 3000);
-    const shortErrors = violations.filter(v => v.ruleId === 'word_count_short');
+    const shortErrors = violations.filter(v => v.ruleId === 'word_count_below');
     expect(shortErrors.length).toBeGreaterThan(0);
     expect(shortErrors[0].severity).toBe('error');
   });
 
   it('should pass clean text with no violations', () => {
     const cleanText = '他站在窗前。窗外是灰色天空，云层压得很低。风吹过窗帘，带进来潮湿的气息。他深吸一口气，转身走向书桌。桌上摊开一本旧书，书页泛黄。他坐下来，翻到夹着书签的那一页。上面写着几句话，字迹潦草。他盯着那些字看了很久，手指在桌面上轻轻敲击。窗外传来远处的车声，模糊而遥远。他合上书，起身走到窗边。天空的颜色变深了，像是要下雨。他关上了窗户。';
-    const { violations } = checkChapter(cleanText, 200);
+    const { violations } = checkChapter(cleanText, 130);
     const errors = violations.filter(v => v.severity === 'error');
     expect(errors.length).toBe(0);
   });
@@ -237,20 +237,22 @@ describe('checkWordCountHard', () => {
 });
 
 describe('checkWordCountTarget', () => {
-  it('should flag text below 70% completion', () => {
-    const text = '短文本'.repeat(5);
+  it('should flag text far below target as error', () => {
+    const text = '短文本'.repeat(5); // 15/3000, far below target → error
     const stats = computeTextStats(text);
     const violations = checkWordCountTarget(text, stats, 3000);
-    const shortErrors = violations.filter(v => v.ruleId === 'word_count_short');
+    const shortErrors = violations.filter(v => v.ruleId === 'word_count_below');
     expect(shortErrors.length).toBeGreaterThan(0);
+    expect(shortErrors[0].severity).toBe('error');
   });
 
-  it('should warn text below 85% completion', () => {
-    const text = '中'.repeat(2400); // 2400/3000 = 80%, below 85% but above 70%
+  it('should flag text below target (2400/3000=80%) as error', () => {
+    const text = '中'.repeat(2400); // 2400/3000 = 80%, below target → error
     const stats = computeTextStats(text);
     const violations = checkWordCountTarget(text, stats, 3000);
-    const belowWarnings = violations.filter(v => v.ruleId === 'word_count_below');
-    expect(belowWarnings.length).toBeGreaterThan(0);
+    const below = violations.filter(v => v.ruleId === 'word_count_below');
+    expect(below.length).toBeGreaterThan(0);
+    expect(below[0].severity).toBe('error');
   });
 });
 // ============================================================

@@ -1462,7 +1462,7 @@ export function checkSenseDensityWithPrev(stats: TextStats, prevSenseError: bool
 /** 字数硬约束：超标>20%直接报error，触发重写而非修补。targetWords从命令行--target参数传入 */
 export function checkWordCountHard(text: string, stats: TextStats, targetWords?: number): Violation[] {
   const violations: Violation[] = [];
-  const target = targetWords || 3000;
+  const target = targetWords || 2800;
   const ratio = stats.totalWords / target;
   if (ratio > 1.2) {
     violations.push({
@@ -1481,24 +1481,19 @@ export function checkWordCountHard(text: string, stats: TextStats, targetWords?:
 
 export function checkWordCountTarget(text: string, stats: TextStats, targetWords?: number): Violation[] {
   const violations: Violation[] = [];
-  const target = targetWords || 3000;
+  const target = targetWords || 2800;
   const ratio = stats.totalWords / target;
-  // 治本同步（接 B 组源码树 R4，2026-08-25）：不再 2700 死闸硬 error。
-  // 短而空→error 拦"写空"；短而密→warning 放行（精炼好文不被误判）。
-  // 注意：CLI 树 sensoryMentions 字段名与源码树不同（visual/auditory/tactile/olfactory/gustatory）。
-  // 方案 B（2026-08-29 定稿，2026-08-29 复核）：分层门禁。
-  // 原门槛 `sensoryTotal<3 && anchorCount<3` 在真实章节恒 false（锚点/千字全样本 min 19.4 > 12），密度判空分支是死代码。
-  // 复核删除密度豁免分支，只留硬下限：低于 70% 即 error；70%–100% 走下方"字数不足"warning（不再做密度判空）。
-  //   ratio < 0.7  → 绝对下限，不论密度一律 error；
-  //   ratio 0.7–1.0 → 仅 warning 字数不足（不判密度）；
-  //   ratio > 1.5  → 超标 info。
-  if (ratio < 0.7) {
-    // 绝对下限：过短即不合格。短而密不再豁免——密度高只证明不注水，不证明篇幅达标。
-    violations.push({ ruleId: 'word_count_hollow', ruleName: '字数过短（写空）', message: `实际字数${stats.totalWords}，目标${target}字，完成率仅${(ratio * 100).toFixed(0)}%，低于70%下限，判定写空。`, severity: 'error', suggestion: `补充场景与细节至目标的70%以上（≥${Math.round(target * 0.7)}字）。短而密不再豁免：密度高只证明不注水，不证明篇幅达标。禁止修补，回到写前分析重新规划镜头链后扩写。` });
-  } else if (ratio < 1.0) {
-    violations.push({ ruleId: 'word_count_below', ruleName: '字数不足', message: `实际字数${stats.totalWords}，目标${target}字，完成率${(ratio * 100).toFixed(0)}%（低于100%目标）。`, severity: 'warning', suggestion: `扩展内容至目标字数${target}，当前差距${target - stats.totalWords}字。` });
-  } else if (ratio > 1.5) {
-    violations.push({ ruleId: 'word_count_long', ruleName: '字数超标', message: `实际字数${stats.totalWords}，目标${target}字，超出${(ratio * 100 - 100).toFixed(0)}%。`, severity: 'info', suggestion: `考虑拆分章节或精简内容，目标字数${target}。` });
+  // 2026-09-04 修正（用户实测 9 章实战全卡 2100–2600 出货）：
+  // 旧逻辑 ratio<0.7(即<2100) 才 error、2100–3000 仅 warning，导致 agent 在文学极简偏见下停在 2100 附近出货。
+  // 根因：门禁硬下限(2100) << base-prompt 目标(2800–3200)，agent 校准到最低不报错线就停。
+  // 新逻辑：门禁硬下限 = 目标字数(2800)，低于即 error，与 base-prompt「目标 2800–3200」对齐，杜绝写短就停。
+  //   ratio < 1.0    → 低于目标，error（须实质扩写至 ≥2800）；
+  //   ratio 1.0–1.2  → 通过（2800–3360，符合 2800–3200 目标）；
+  //   ratio > 1.2    → 超标 error，须重写（防注水灌水）。
+  if (ratio < 1.0) {
+    violations.push({ ruleId: 'word_count_below', ruleName: '字数未达标', message: `实际字数${stats.totalWords}，目标${target}字，完成率仅${(ratio * 100).toFixed(0)}%，低于目标即 error（门禁硬下限=目标）。`, severity: 'error', suggestion: `回到写前分析重新规划镜头链，把每个场景写足至目标${target}字以上。禁止修补凑数，须靠动作细节/对话来回/感官落地实质扩写。` });
+  } else if (ratio > 1.2) {
+    violations.push({ ruleId: 'word_count_hard_error', ruleName: '字数硬约束', message: `实际字数${stats.totalWords}，超出目标${target}字${((ratio - 1) * 100).toFixed(0)}%。超过20%上限，章节不合格。`, severity: 'error', suggestion: '禁止修补！回到写前分析重新规划镜头链，将场景数压缩到4-6个，每场景500-700字，全文重写。' });
   }
   return violations;
 }

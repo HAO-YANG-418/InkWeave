@@ -308,7 +308,7 @@ async function main() {
         return periods > 0 ? +(commas / periods).toFixed(1) : 0;
       })(),
       wordCount: (text.match(/[\u4e00-\u9fff\u3400-\u4dbf]/g) || []).length,
-      targetWords: targetWords || 3000,
+      targetWords: targetWords || 2800,
       rawViolations: violations,
       // v4.9 新增：风格指纹数据
       stylePatterns: {

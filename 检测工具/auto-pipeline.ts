@@ -73,7 +73,7 @@ function main() {
   }
 
   const chapterNum = parseInt(args[0]);
-  const targetWords = parseInt(args[1]) || 3000;
+  const targetWords = parseInt(args[1]) || 2800;
 
   if (!chapterNum || chapterNum < 1) {
     console.log('用法：npx tsx 检测工具/auto-pipeline.ts <当前章节号> [目标字数] [--project <项目名>]');

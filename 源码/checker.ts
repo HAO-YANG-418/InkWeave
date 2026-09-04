@@ -54,11 +54,11 @@ export function check(
 
   // ---- R4: 字数门禁（治本"写空"，经 R3 接线逼自纠）----
   // 字数下限优先用 KB 外置的 minChapterWords（接 ③ 阶段二 2E 单一标定源，可在知识库/阈值标定/default.json 调）；
-  // 未配置时回退 0.7×目标（默认 2100），与 CLI 验收树方案 B 的下限口径对齐（原回退 2000 与验收 2100 打架）。
+  // 未配置时回退 0.7×目标（默认 2800 时回退=1960 兜底），与检测工具树门禁下限对齐（2026-09-04 统一单一真值 2800）。
   // 方案 B（2026-08-29）：原门槛 `sensoryTotal<3 && anchorCount<3` 在真实章节恒 false（锚点/千字全样本 min 19.4 > 12），
   // 等于"短而密放行"永为假 → 密度判空分支是死代码。2026-08-29 复核：删除该密度分支，只留硬下限——
-  // 低于 minChapterWords(2100) 不论密度一律 error（逼生成自纠）；2100+ 不再做密度判空（交由 Y 降噪/thresholds，不由写空门禁兼任）。
-  const r4Target = (targetWords && targetWords > 0) ? targetWords : 3000;
+  // 低于 minChapterWords(2800) 不论密度一律 error（逼生成自纠）；2800+ 不再做密度判空（交由 Y 降噪/thresholds，不由写空门禁兼任）。
+  const r4Target = (targetWords && targetWords > 0) ? targetWords : 2800;
   const r4Min = (thresholds.minChapterWords && thresholds.minChapterWords > 0)
     ? thresholds.minChapterWords
     : Math.round(r4Target * 0.7);

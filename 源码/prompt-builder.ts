@@ -241,7 +241,7 @@ const TASK_INSTRUCTIONS: Record<WriteTask, string> = {
   generate: `【任务：生成整章】
 请根据提供的上下文信息（前情、角色设定、章节摘要、活跃支线），生成一整章完整的小说正文。
 要求：
-- 章节长度2000-4000字，有完整的起承转合
+- 章节长度2800-3200字，有完整的起承转合
 - 开头自然衔接前情，结尾留下钩子吸引读者继续阅读
 - 保持当前文风、视角、节奏一致
 - 通过动作、对话、感官描写推进剧情，避免大段说明
@@ -709,7 +709,7 @@ function buildTaskInstruction(
     const lengthInfo = TARGET_LENGTH_MAP[lengthOpt || ''];
     if (lengthInfo) {
       return base.replace(
-        '章节长度2000-4000字',
+        '章节长度2800-3200字',
         `章节长度${lengthInfo.label}（${lengthInfo.min}-${lengthInfo.max}字）`
       );
     }

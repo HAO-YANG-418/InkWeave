@@ -37,7 +37,7 @@ export interface WritingAgentConfig {
 
 const DEFAULT_AGENT_CONFIG: WritingAgentConfig = {
   orchestrator: {},
-  defaultTargetWords: 3000,
+  defaultTargetWords: 2800,
   autoRecordFeedback: true,
   autoAnalyzePatterns: true,
   autoAdvanceCooling: true,

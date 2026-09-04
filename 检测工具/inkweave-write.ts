@@ -45,6 +45,7 @@ function parseArgs(argv: string[]): Record<string, string | boolean> {
     else if (a === '--outline') { out.outline = argv[++i]; }
     else if (a === '--target') { out.target = argv[++i]; }
     else if (a === '--project') { out.project = argv[++i]; }
+    else if (a === '--scenecheck') { out.scenecheck = argv[++i]; }
     else if (a === '--auto') { out.auto = true; }
   }
   return out;
@@ -74,12 +75,14 @@ function runPreAnalysis(chapterNum: number, title: string, targetWords: number, 
 ${styleRecipe}
 
 ## 镜头链规划（MANDATORY · 每场 ≥${perScene} 字，合计 ≥${targetWords}）
+> 正文须用 \`<!-- 场1 -->\` \`<!-- 场2 -->\` \`<!-- 场3 -->\` \`<!-- 场4 -->\` 注释标明 4 场边界（不渲染，仅供分场字数校验）。写完先跑 \`inkweave-write.ts --scenecheck\` 逐场校验，有场写空不许进 --review。
+
 | 场次 | 场景 | 字数预算 | 核心任务 | 反转/信息反咬 |
 |------|------|---------|---------|--------------|
-| 1 | （待填） | ≥${perScene} | | |
-| 2 | （待填） | ≥${perScene} | | |
-| 3 | （待填） | ≥${perScene} | | |
-| 4 | （待填） | ≥${perScene} | | |
+| 1 | 起·入局：建立「${title}」初始场景与主角现状，抛第一个反常钩子 | ≥${perScene} | 具体动作+环境感官落地（凉/锈/硌/气味），不概括带过 | 钩子：第一处"不对劲" |
+| 2 | 承·加压：「${title}」阻碍显形，冲突升级 | ≥${perScene} | 对话碰撞+心理/生理反应，对手或环境施压 | 反咬：看似解决实则更深 |
+| 3 | 转·反转：「${title}」真相/代价露出 | ≥${perScene} | 信息反咬+身体性代价（疼/失/亏） | 反转：此前认知被推翻 |
+| 4 | 合·新局：章末硬钩子，引下一章 | ≥${perScene} | 留未解悬念/新威胁（第三只手/未料之人/倒计时） | 钩子：下一章必看 |
 
 ## 强制写作铁则（从 base-prompt 同步 · 写第一版前必读，禁止凭记忆写）
 > 下列硬标准直接来自生成端底座 base-prompt。agent 写正文前必须把本段真读进写作上下文，
@@ -129,6 +132,40 @@ function runGate(chapterFile: string, targetWords: number): { passed: boolean; s
   return { passed: errors.length === 0, score, errors: errors.length };
 }
 
+/** 分场字数硬校验（agent 模式初稿生产内部阻断，防"写空就交"→ 省补写 token） */
+function runSceneCheck(chapterFile: string, targetWords: number): boolean {
+  const text = fs.readFileSync(chapterFile, 'utf-8');
+  const perScene = Math.floor(targetWords / 4);
+  const blocks = text.split(/<!--\s*场\s*(\d+)\s*-->/);
+  // blocks[0] 是前导元信息；之后每 2 个为 [序号, 内容]
+  const scenes: { idx: number; text: string }[] = [];
+  for (let i = 1; i < blocks.length; i += 2) {
+    scenes.push({ idx: parseInt(blocks[i], 10), text: blocks[i + 1] || '' });
+  }
+  console.log('');
+  console.log('🎬 分场字数校验（目标 ' + targetWords + '，每场 ≥ ' + perScene + '）');
+  let allPass = true;
+  if (scenes.length === 0) {
+    console.log('  ⚠️ 未识别到 <!-- 场N --> 分场标记，无法逐场校验。请在正文用该注释标明 4 场边界。');
+    return false;
+  }
+  const seen = new Set<number>();
+  for (const s of scenes) {
+    const w = countWords(s.text);
+    const rate = w / perScene;
+    const ok = rate >= 0.85;
+    if (!ok) allPass = false;
+    if (seen.has(s.idx)) console.log('  ⚠️ 场' + s.idx + ' 重复标记');
+    seen.add(s.idx);
+    console.log('  场' + s.idx + '：' + w + ' 字（达标率 ' + (rate * 100).toFixed(0) + '%）' + (ok ? ' ✅' : ' ❌ 写空，差 ' + (perScene - w) + ' 字'));
+  }
+  if (scenes.length < 4) {
+    console.log('  ⚠️ 仅 ' + scenes.length + ' 场（应 4 场）');
+    allPass = false;
+  }
+  return allPass;
+}
+
 function hasProvider(): boolean {
   return !!process.env.CUSTOM_BASE_URL && !!process.env.CUSTOM_MODEL;
 }
@@ -159,6 +196,19 @@ function main() {
       process.exit(1);
     }
     console.log('\n✅ 0 error，门禁通过，可交付。');
+    process.exit(0);
+  }
+
+  // ====== 分场硬校验（初稿生产内部阻断） ======
+  if (args.scenecheck) {
+    const file = args.scenecheck as string;
+    if (!fs.existsSync(file)) { console.error(`文件不存在：${file}`); process.exit(1); }
+    const ok = runSceneCheck(file, targetWords);
+    if (!ok) {
+      console.log('\n>>> 有场写空，未通过分场校验。请只补写不足场次（勿整章重写），补完重跑本命令。');
+      process.exit(1);
+    }
+    console.log('\n✅ 分场全部达标，可进入 --review 门禁。');
     process.exit(0);
   }
 

@@ -18,7 +18,7 @@
     "node_rhetoric": "opt_rhetoric_metaphor",
     "node_vocab_sensory": "opt_vocab_daily",
     "node_vocab_filler": "opt_filler_relaxed",
-    "node_target_length": "opt_length_2200",
+    "node_target_length": "opt_length_2800",
     "node_anchor_density": "opt_anchor_standard",
     "node_strictness": "opt_strict_lenient",
     "node_ai_creativity": "opt_ai_balanced",

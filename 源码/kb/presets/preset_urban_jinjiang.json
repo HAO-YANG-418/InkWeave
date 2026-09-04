@@ -18,7 +18,7 @@
     "node_rhetoric": "opt_rhetoric_metaphor",
     "node_vocab_sensory": "opt_vocab_urban",
     "node_vocab_filler": "opt_filler_standard",
-    "node_target_length": "opt_length_3000",
+    "node_target_length": "opt_length_2800",
     "node_anchor_density": "opt_anchor_dense",
     "node_strictness": "opt_strict_standard",
     "node_ai_creativity": "opt_ai_balanced",

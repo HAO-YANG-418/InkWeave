@@ -276,6 +276,7 @@ function main() {
     }
 
     const options: OptionInfo[] = [];
+    const expectedFiles = new Set<string>();
 
     // 遍历 .kb.json 文件
     const jsonFiles = fs.readdirSync(nodePath).filter(f => f.endsWith('.kb.json'));
@@ -289,8 +290,21 @@ function main() {
       const outputFile = path.join(outputNodeDir, `${safeName}.md`);
       fs.writeFileSync(outputFile, md, 'utf-8');
 
+      expectedFiles.add(`${safeName}.md`);
       options.push({ name: json.option_name, file: `${safeName}.md` });
       totalGenerated++;
+    }
+
+    // 【2026-09-04 修复】清理孤儿 .md：option_name 改名后旧文件不会被覆盖，
+    // 会永久残留并误导读者（例：把 opt_length_2200 改名后，"2200字标准（默认）.md"
+    // 仍写着 2200 字，与 2800 硬地板直接冲突）。生成后删除本节点目录中
+    // 不属于本轮产物、且非人工维护文件的 .md。
+    const MANUAL_KEEP = new Set(['README.md', '索引.md']);
+    const existing = fs.readdirSync(outputNodeDir).filter(f => f.endsWith('.md'));
+    const orphans = existing.filter(f => !expectedFiles.has(f) && !MANUAL_KEEP.has(f));
+    for (const orphan of orphans) {
+      fs.unlinkSync(path.join(outputNodeDir, orphan));
+      console.log(`🧹 清理孤儿文件：${nodeName}/${orphan}`);
     }
 
     if (options.length > 0) {

@@ -64,7 +64,7 @@ describe('computeTextStats', () => {
   });
 
   it('should detect dialogue ratio', () => {
-    const stats = computeTextStats('"你好。"他说。"你好。"她回答。');
+    const stats = computeTextStats('“你好。”他说。“你好。”她回答。');
     expect(stats.dialogueRatio).toBeGreaterThan(0);
   });
 
@@ -114,7 +114,7 @@ describe('checkChapter', () => {
   });
 
   it('should detect short sentence fragments', () => {
-    const text = '他站了起来。\n看向窗外。\n天空很蓝。\n风吹过。';
+    const text = '天黑了。雨落了。云散了。';
     const { violations } = checkChapter(text);
     const fragments = violations.filter(v => v.ruleId === 'short_sentence_fragment');
     expect(fragments.length).toBeGreaterThan(0);
@@ -158,7 +158,7 @@ describe('checkChapter', () => {
     const { violations } = checkChapter('太短了。', 3000);
     const shortErrors = violations.filter(v => v.ruleId === 'word_count_below');
     expect(shortErrors.length).toBeGreaterThan(0);
-    expect(shortErrors[0].severity).toBe('error');
+    expect(shortErrors[0].severity).toBe('warning');
   });
 
   it('should pass clean text with no violations', () => {
@@ -237,22 +237,30 @@ describe('checkWordCountHard', () => {
 });
 
 describe('checkWordCountTarget', () => {
-  it('should flag text far below target as error', () => {
-    const text = '短文本'.repeat(5); // 15/3000, far below target → error
+  it('should flag text below soft floor (2000) as warning', () => {
+    const text = '短文本'.repeat(5); // 15 字，远低于软地板 2000 → warning（不硬卡）
     const stats = computeTextStats(text);
     const violations = checkWordCountTarget(text, stats, 3000);
     const shortErrors = violations.filter(v => v.ruleId === 'word_count_below');
     expect(shortErrors.length).toBeGreaterThan(0);
-    expect(shortErrors[0].severity).toBe('error');
+    expect(shortErrors[0].severity).toBe('warning');
   });
 
-  it('should flag text below target (2400/3000=80%) as error', () => {
-    const text = '中'.repeat(2400); // 2400/3000 = 80%, below target → error
+  it('should flag text below soft floor (1000) as warning', () => {
+    const text = '中'.repeat(1000); // 1000/2000 = 50%，低于软地板 → warning
     const stats = computeTextStats(text);
     const violations = checkWordCountTarget(text, stats, 3000);
     const below = violations.filter(v => v.ruleId === 'word_count_below');
     expect(below.length).toBeGreaterThan(0);
-    expect(below[0].severity).toBe('error');
+    expect(below[0].severity).toBe('warning');
+  });
+
+  it('should NOT flag text below target but above soft floor (2400/3000=80%)', () => {
+    const text = '中'.repeat(2400); // 2400/3000 = 80%，低于目标但高于软地板 2000 → 放行
+    const stats = computeTextStats(text);
+    const violations = checkWordCountTarget(text, stats, 3000);
+    const below = violations.filter(v => v.ruleId === 'word_count_below');
+    expect(below.length).toBe(0);
   });
 });
 // ============================================================
@@ -462,8 +470,8 @@ describe('P2 人味', () => {
   });
 
   it('unsaid_gap 对话占比高却无留白应报', () => {
-    const stats = computeTextStats('"你昨晚没睡。""嗯。""在想那件事？""是。""你怕了？""有一点。"');
-    const v = checkUnsaidGap('"你昨晚没睡。""嗯。""在想那件事？""是。""你怕了？""有一点。"', stats);
+    const stats = computeTextStats('“你昨晚没睡。”“嗯。”“在想那件事？”“是。”“你怕了？”“有一点。”');
+    const v = checkUnsaidGap('“你昨晚没睡。”“嗯。”“在想那件事？”“是。”“你怕了？”“有一点。”', stats);
     expect(v.some(x => x.ruleId === 'unsaid_gap')).toBe(true);
   });
 

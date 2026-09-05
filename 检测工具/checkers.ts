@@ -433,11 +433,12 @@ function checkForbiddenChar(text: string): Violation[] {
   // 破折号硬禁（零容忍）：与 base-prompt 铁则、preset no_dash 全面对齐。
   // 全局与所有节点一致禁止破折号，出现1个即 error，在门禁中记为错误。
   const dashCount = (text.match(/——/g) || []).length;
-  if (dashCount > 0) {
+  // 破格额度 P0（09-05 软护栏）：≤2 处破折号不报（网文偶发认知翻转可容忍），>2 处才报 warning，绝不硬卡。
+  if (dashCount > 2) {
     violations.push({
       ruleId: 'forbidden_char_dash', ruleName: '禁止破折号',
-      message: `检测到${dashCount}个破折号，破折号全局禁止，须替换为逗号或冒号`,
-      severity: 'error',
+      message: `检测到${dashCount}个破折号（>2），破折号全局禁止，须替换为逗号或冒号（软护栏：warning，不硬卡）`,
+      severity: 'warning',
       suggestion: '中文网文不需要破折号。认知翻转用逗号，解释说明用冒号，停顿用省略号（适量）。',
       fixes: [{ description: '将破折号替换为逗号', before: '——', after: '，' }],
     });
@@ -1493,7 +1494,7 @@ export function checkSenseDensityWithPrev(stats: TextStats, prevSenseError: bool
 /** 字数硬约束：超标>20%直接报error，触发重写而非修补。targetWords从命令行--target参数传入 */
 export function checkWordCountHard(text: string, stats: TextStats, targetWords?: number): Violation[] {
   const violations: Violation[] = [];
-  const target = targetWords || 2800;
+  const target = Math.max(targetWords || 0, 2800);
   const ratio = stats.totalWords / target;
   if (ratio > 1.2) {
     violations.push({
@@ -1512,19 +1513,18 @@ export function checkWordCountHard(text: string, stats: TextStats, targetWords?:
 
 export function checkWordCountTarget(text: string, stats: TextStats, targetWords?: number): Violation[] {
   const violations: Violation[] = [];
-  const target = targetWords || 2800;
-  const ratio = stats.totalWords / target;
-  // 2026-09-04 修正（用户实测 9 章实战全卡 2100–2600 出货）：
-  // 旧逻辑 ratio<0.7(即<2100) 才 error、2100–3000 仅 warning，导致 agent 在文学极简偏见下停在 2100 附近出货。
-  // 根因：门禁硬下限(2100) << base-prompt 目标(2800–3200)，agent 校准到最低不报错线就停。
-  // 新逻辑：门禁硬下限 = 目标字数(2800)，低于即 error，与 base-prompt「目标 2800–3200」对齐，杜绝写短就停。
-  //   ratio < 1.0    → 低于目标，error（须实质扩写至 ≥2800）；
-  //   ratio 1.0–1.2  → 通过（2800–3360，符合 2800–3200 目标）；
-  //   ratio > 1.2    → 超标 error，须重写（防注水灌水）。
-  if (ratio < 1.0) {
-    violations.push({ ruleId: 'word_count_below', ruleName: '字数未达标', message: `实际字数${stats.totalWords}，目标${target}字，完成率仅${(ratio * 100).toFixed(0)}%，低于目标即 error（门禁硬下限=目标）。`, severity: 'error', suggestion: `回到写前分析重新规划镜头链，把每个场景写足至目标${target}字以上。禁止修补凑数，须靠动作细节/对话来回/感官落地实质扩写。` });
-  } else if (ratio > 1.2) {
-    violations.push({ ruleId: 'word_count_hard_error', ruleName: '字数硬约束', message: `实际字数${stats.totalWords}，超出目标${target}字${((ratio - 1) * 100).toFixed(0)}%。超过20%上限，章节不合格。`, severity: 'error', suggestion: '禁止修补！回到写前分析重新规划镜头链，将场景数压缩到4-6个，每场景500-700字，全文重写。' });
+  // 2026-09-05 重构（Layer1 软地板 + 解耦天花板）：
+  // 地板与天花板不再共用 target——否则把 target 调小会连天花板一起塌（>1.2×target 误杀 2600+ 正常章）。
+  // 软地板 FLOOR=2000：低于即 warning（不硬卡），专治"写空"（1000 字裸写会被提醒，2600+ 顺过）。
+  // 硬天花板 CAP_BASE=max(targetWords,2800)：>1.2×CAP_BASE（即 >3360）才 error，防注水灌水。
+  const FLOOR = 2000;
+  const CAP_BASE = Math.max(targetWords || 0, 2800);
+  const floorRatio = stats.totalWords / FLOOR;
+  const capRatio = stats.totalWords / CAP_BASE;
+  if (floorRatio < 1.0) {
+    violations.push({ ruleId: 'word_count_below', ruleName: '字数未达标', message: `实际字数${stats.totalWords}，软地板${FLOOR}字，完成率仅${(floorRatio * 100).toFixed(0)}%，低于软地板即 warning（建议补写）。`, severity: 'warning', suggestion: `回到写前分析重新规划镜头链，把每个场景写足至 ${FLOOR} 字以上。禁止修补凑数，须靠动作细节/对话来回/感官落地实质扩写。` });
+  } else if (capRatio > 1.2) {
+    violations.push({ ruleId: 'word_count_hard_error', ruleName: '字数硬约束', message: `实际字数${stats.totalWords}，超出 ${CAP_BASE} 字 ${((capRatio - 1) * 100).toFixed(0)}%。超过20%上限，章节不合格。`, severity: 'error', suggestion: '禁止修补！回到写前分析重新规划镜头链，将场景数压缩到4-6个，每场景500-700字，全文重写。' });
   }
   return violations;
 }
@@ -1752,7 +1752,6 @@ export function checkChapter(text: string, targetWords?: number, protagonistName
     ...groups[0].violations,
     ...groups[1].violations,
     ...groups[2].violations,
-    ...checkWordCountHard(text, stats, targetWords),
     ...checkWordCountTarget(text, stats, targetWords),
     ...checkTextureVariety(text, excludedTextureWords),
     ...checkEmotionArc(text),

@@ -60,22 +60,22 @@ function runPreAnalysis(chapterNum: number, title: string, targetWords: number, 
   resolveProjectDir(projectName);
   const styleRecipe = step0StyleRecipe(chapterNum);
 
-  // 镜头链模板：4 场，每场 ≥ target/4，合计 ≥ target 才允许开写
+  // 镜头链模板：4 场，每场 ≥ target/4，合计 ≈ target（软建议，偏薄仅预警不硬卡）
   const perScene = Math.floor(targetWords / 4);
   const planPath = path.join(ROOT, '实战出文', '压力测试', `_plan_第${chapterNum}章_${sanitizeTitle(title)}.md`);
   const plan = `# 写前分析 · 第${chapterNum}章「${title}」
 
-> 本文件由 inkweave-write.ts 自动生成，是**写正文的强制前置**。每场字数预算合计须 ≥ ${targetWords}。
+> 本文件由 inkweave-write.ts 自动生成，是**写正文的强制前置**。每场字数预算合计建议 ≥ ${targetWords}（软建议，不硬卡）。
 
 ## 意图 / 调性
 - 意图：${projectName || '(按题材默认)'}
-- 目标字数：${targetWords}（门禁下限，低于即 error）
+- 目标字数：${targetWords}（软地板，低于即 warning·建议补写）
 
 ## 风格配方（预设 + 多样性轮换）
 ${styleRecipe}
 
-## 镜头链规划（MANDATORY · 每场 ≥${perScene} 字，合计 ≥${targetWords}）
-> 正文须用 \`<!-- 场1 -->\` \`<!-- 场2 -->\` \`<!-- 场3 -->\` \`<!-- 场4 -->\` 注释标明 4 场边界（不渲染，仅供分场字数校验）。写完先跑 \`inkweave-write.ts --scenecheck\` 逐场校验，有场写空不许进 --review。
+## 镜头链规划（建议每场 ≥${perScene} 字、合计 ≥${targetWords}，软建议不硬卡）
+> 正文须用 \`<!-- 场1 -->\` \`<!-- 场2 -->\` \`<!-- 场3 -->\` \`<!-- 场4 -->\` 注释标明 4 场边界（不渲染，仅供分场字数校验）。写完先跑 \`inkweave-write.ts --scenecheck\` 逐场校验，有场偏薄建议回写前规划重写该场，不硬卡进 --review。
 
 | 场次 | 场景 | 字数预算 | 核心任务 | 反转/信息反咬 |
 |------|------|---------|---------|--------------|
@@ -84,14 +84,9 @@ ${styleRecipe}
 | 3 | 转·反转：「${title}」真相/代价露出 | ≥${perScene} | 信息反咬+身体性代价（疼/失/亏） | 反转：此前认知被推翻 |
 | 4 | 合·新局：章末硬钩子，引下一章 | ≥${perScene} | 留未解悬念/新威胁（第三只手/未料之人/倒计时） | 钩子：下一章必看 |
 
-## 强制写作铁则（从 base-prompt 同步 · 写第一版前必读，禁止凭记忆写）
-> 下列硬标准直接来自生成端底座 base-prompt。agent 写正文前必须把本段真读进写作上下文，
-> 视作 LLM 的 system prompt 驱动自己，而非凭记忆模仿——这是 889 字初稿写空的根因修复。
-- **篇幅硬下限**：每章正文目标 2800–3200 字，硬下限 2800 字（门禁低于即 error）。镜头链没铺满目标篇幅就继续展开，不要写短就停。
-- **单场四维度**：每个场景必须多维度展开——动作线 + 对话碰撞 + 人物心理/生理反应 + 环境细节，四者至少三者在场；禁止只用概括句带过情节。
-- **禁概括跳过**：不写"他处理完就走了"，要写出怎么处理、遇到什么阻碍、对方什么反应、结果如何。
-- **信息密度≠字数少**：密集短句也需撑起 2800 字体量；篇幅达标靠把每个镜头写足（动作细节、对话来回、感官落地），不靠注水/重复/无效感慨凑数。
-- **每场字数预算**：见上表，单场 < 预算 85% 即视为该场写空，须补场景内容而非 padding。
+## 写作铁则（本文件不再重复抄录 · 详见 SKILL.md BEGIN_AUTO_RULES / base-prompt）
+> 铁则以 SKILL.md 注入 system 为唯一真源，本规划文件删除重复抄录，避免双重注射压制初稿质地（suppression）。
+> 字数目标见上方镜头链预算；初稿偏薄时优先「写足场景内容」而非 padding。
 
 ## 门禁（写前确认，写时遵守）
 1. 破折号零容忍：本章不出现任何"——"。
@@ -132,7 +127,7 @@ function runGate(chapterFile: string, targetWords: number): { passed: boolean; s
   return { passed: errors.length === 0, score, errors: errors.length };
 }
 
-/** 分场字数硬校验（agent 模式初稿生产内部阻断，防"写空就交"→ 省补写 token） */
+/** 分场字数校验（偏薄仅预警，仅真正写空<50%才拦，防偷懒交空稿） */
 function runSceneCheck(chapterFile: string, targetWords: number): boolean {
   const text = fs.readFileSync(chapterFile, 'utf-8');
   const perScene = Math.floor(targetWords / 4);
@@ -153,11 +148,12 @@ function runSceneCheck(chapterFile: string, targetWords: number): boolean {
   for (const s of scenes) {
     const w = countWords(s.text);
     const rate = w / perScene;
+    const severeEmpty = rate < 0.5;  // 软地板：仅真正写空(<50%)才硬拦，偏薄(50%-85%)仅预警
     const ok = rate >= 0.85;
-    if (!ok) allPass = false;
+    if (severeEmpty) allPass = false;
     if (seen.has(s.idx)) console.log('  ⚠️ 场' + s.idx + ' 重复标记');
     seen.add(s.idx);
-    console.log('  场' + s.idx + '：' + w + ' 字（达标率 ' + (rate * 100).toFixed(0) + '%）' + (ok ? ' ✅' : ' ❌ 写空，差 ' + (perScene - w) + ' 字'));
+    console.log('  场' + s.idx + '：' + w + ' 字（达标率 ' + (rate * 100).toFixed(0) + '%）' + (ok ? ' ✅' : (severeEmpty ? ' ❌ 写空，差 ' + (perScene - w) + ' 字' : ' ⚠️ 偏薄')));
   }
   if (scenes.length < 4) {
     console.log('  ⚠️ 仅 ' + scenes.length + ' 场（应 4 场）');
@@ -172,7 +168,7 @@ function hasProvider(): boolean {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const targetWords = parseInt((args.target as string) || '2800', 10);
+  const targetWords = parseInt((args.target as string) || '2000', 10);
   const projectName = args.project as string | undefined;
 
   // ====== 验收模式 ======
@@ -187,7 +183,7 @@ function main() {
       const pm = fs.readFileSync(planFile, 'utf-8').match(/合计须 ≥ (\d+)/);
       const budget = pm ? parseInt(pm[1], 10) : targetWords;
       const rate = actual0 / budget;
-      if (rate < 0.85) console.log(`⚠️ 初稿写空预警：实际 ${actual0} / 规划预算 ${budget}（达标率 ${(rate*100).toFixed(0)}%）→ 须补场景内容，勿 padding`);
+      if (rate < 0.85) console.log(`⚠️ 初稿偏薄预警：实际 ${actual0} / 规划预算 ${budget}（达标率 ${(rate*100).toFixed(0)}%）→ 建议回写前规划重写该场，勿硬补凑数`);
       else console.log(`📊 初稿达标率：${(rate*100).toFixed(0)}%（规划预算 ${budget}）`);
     }
     const r = runGate(file, targetWords);
@@ -199,13 +195,13 @@ function main() {
     process.exit(0);
   }
 
-  // ====== 分场硬校验（初稿生产内部阻断） ======
+  // ====== 分场校验（初稿生产内部阻断） ======
   if (args.scenecheck) {
     const file = args.scenecheck as string;
     if (!fs.existsSync(file)) { console.error(`文件不存在：${file}`); process.exit(1); }
     const ok = runSceneCheck(file, targetWords);
     if (!ok) {
-      console.log('\n>>> 有场写空，未通过分场校验。请只补写不足场次（勿整章重写），补完重跑本命令。');
+      console.log('\n>>> 有场偏薄，分场校验未达标。请回写前规划重写不足场次（勿整章重写，勿硬补凑数），重跑本命令。');
       process.exit(1);
     }
     console.log('\n✅ 分场全部达标，可进入 --review 门禁。');

@@ -691,7 +691,7 @@ function main() {
   }
 
   const chapterNum = parseInt(args[0]);
-  const targetWords = parseInt(args[1]) || 3000;
+  const targetWords = parseInt(args[1]) || 2000;
 
   if (!chapterNum || chapterNum < 1) {
     console.log('用法：npx tsx 检测工具/pre-analysis.ts <章节号> [目标字数] [--project <项目名>]');

@@ -430,15 +430,14 @@ function checkFillerWords(
     });
   }
 
-  // 破折号数量
-  const dashPerThousand = fillerResult.dashCount / perThousandFactor;
-  if (dashPerThousand > thresholds.maxDashCount) {
+  // 破折号数量（对齐 09-04 卫生层 + base-prompt.ts:149 零容忍；09-05 ①卫生/逻辑层继续 hard error，不在②风格层松绑范围）
+  if (fillerResult.dashCount > 0) {
     violations.push({
       ruleId: 'max_dash_count',
       ruleName: '破折号过多',
-      message: `每千字破折号约 ${dashPerThousand.toFixed(1)} 个，上限为 ${thresholds.maxDashCount} 个`,
-      severity: 'info',
-      suggestion: '减少破折号使用，改用句号或逗号断句',
+      message: `检测到${fillerResult.dashCount}个破折号，破折号全局禁止（零容忍），出现1个即错`,
+      severity: 'error',
+      suggestion: '减少破折号使用，改用句号或逗号断句；认知翻转用逗号，解释说明用冒号',
     });
   }
 

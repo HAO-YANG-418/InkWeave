@@ -417,7 +417,7 @@ function checkCommaChain(text: string, stats: TextStats): Violation[] {
 function checkForbiddenChar(text: string): Violation[] {
   const violations: Violation[] = [];
   for (const char of FORBIDDEN_CHARS) {
-    if (char === '——') continue; // 破折号拆出，下方单独按软护栏处理（≤2 不报，>2 warning）
+    if (char === '——') continue; // 破折号拆出，下方单独按硬卡处理（≥1 即 error）
     const escaped = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const count = (text.match(new RegExp(escaped, 'g')) || []).length;
     if (count > 0) {
@@ -430,15 +430,14 @@ function checkForbiddenChar(text: string): Violation[] {
       });
     }
   }
-  // 破折号软护栏（09-05 P0 决策）：与 base-prompt 铁则、preset no_dash 方向一致（不建议使用），
-  // 但偶发认知翻转可容忍——≤2 处不报，>2 处才 warning，不硬卡。（注：源码树 prompt 仍写"零容忍"，双轨未对齐，待拍板）
+  // 破折号硬卡（对齐 09-04 卫生层 + base-prompt.ts:149「零容忍，出现1个即错」+ 09-05 分层①卫生/逻辑层继续 hard error）
+  // 09-05 松绑只针对②风格层（碎句/排比/感官密度），破折号属卫生层，不在松绑范围，故复硬消除三轨漂移。
   const dashCount = (text.match(/——/g) || []).length;
-  // 破格额度 P0（09-05 软护栏）：≤2 处破折号不报（网文偶发认知翻转可容忍），>2 处才报 warning，绝不硬卡。
-  if (dashCount > 2) {
+  if (dashCount >= 1) {
     violations.push({
       ruleId: 'forbidden_char_dash', ruleName: '禁止破折号',
-      message: `检测到${dashCount}个破折号（>2），破折号全局禁止，须替换为逗号或冒号（软护栏：warning，不硬卡）`,
-      severity: 'warning',
+      message: `检测到${dashCount}个破折号，破折号全局禁止（零容忍），出现1个即错，须替换为逗号或冒号`,
+      severity: 'error',
       suggestion: '中文网文不需要破折号。认知翻转用逗号，解释说明用冒号，停顿用省略号（适量）。',
       fixes: [{ description: '将破折号替换为逗号', before: '——', after: '，' }],
     });
@@ -1130,7 +1129,8 @@ function checkShortSentenceFragments(text: string, stats?: TextStats): Violation
           const hasActionSense = SHORT_SENTENCE_ACTION_SENSE.test(runText);
           if (!inDialogue && !hasActionSense) {
             const fragmentTexts = sentences.slice(runStart, i + 1).map(x => x.trim());
-            violations.push({ ruleId: 'short_sentence_fragment', ruleName: '碎句', message: `第${runStart + 1}-${i + 1}句连续${run}句≤8字且无动作/感官信息，碎句过多，建议用逗号合并`, severity: 'error', suggestion: '相邻无信息短句用逗号合并为一句；若属危险/发现/选择/打断的刻意节奏短句（含动作/感官动词）可保留。', fixes: [{ description: '用逗号合并碎句', before: fragmentTexts.join('。'), after: fragmentTexts.join('，') + '。' }] });
+            // 风格层软护栏（09-05 ②）：碎句仅 warning 不硬卡——硬卡会逼模型回避一切短句，挤掉危险/发现/选择/打断场景的节奏质地
+            violations.push({ ruleId: 'short_sentence_fragment', ruleName: '碎句', message: `第${runStart + 1}-${i + 1}句连续${run}句≤8字且无动作/感官信息，碎句过多，建议用逗号合并`, severity: 'warning', suggestion: '相邻无信息短句用逗号合并为一句；若属危险/发现/选择/打断的刻意节奏短句（含动作/感官动词）可保留。', fixes: [{ description: '用逗号合并碎句', before: fragmentTexts.join('。'), after: fragmentTexts.join('，') + '。' }] });
           }
           run = 0;
         }
@@ -1153,7 +1153,8 @@ function checkBeatBreak(text: string, stats: TextStats): Violation[] {
       const actionVerbs = /走|跑|跳|看|说|拿|放|推|拉|打|踢|握|抓|站|坐|躺|蹲|转身|回头|抬手|迈步|伸|缩/;
       const senseWords = /冷|热|烫|疼|痛|麻|痒|酸|软|硬|重|轻|紧|松|沉|静|响|亮|暗|刺眼|刺耳|刺鼻/;
       if (aWords <= 15 && bWords <= 15 && actionVerbs.test(a) && senseWords.test(b)) {
-        violations.push({ ruleId: 'beat_break', ruleName: '拍内断句', message: `第${para.index + 1}段检测到拍内断句："${a.substring(0, 20)}。"→"${b.substring(0, 20)}。"，同拍内可逗号串联`, severity: 'error', suggestion: '同拍内的动作和感受可用逗号串联（逗号数与逗句比仅为参考，读着顺就保留连写，严禁为压低逗句比把一句剁碎），换拍（换动作/换空间/换时间）用句号断开。', fixes: [{ description: '同拍可逗号串联', before: `${a}。${b}`, after: `${a}，${b}` }] });
+        // 风格层软护栏（09-05 ②）：拍内断句仅 warning 不硬卡——硬卡会压住同拍连写的自然节奏
+        violations.push({ ruleId: 'beat_break', ruleName: '拍内断句', message: `第${para.index + 1}段检测到拍内断句："${a.substring(0, 20)}。"→"${b.substring(0, 20)}。"，同拍内可逗号串联`, severity: 'warning', suggestion: '同拍内的动作和感受可用逗号串联（逗号数与逗句比仅为参考，读着顺就保留连写，严禁为压低逗句比把一句剁碎），换拍（换动作/换空间/换时间）用句号断开。', fixes: [{ description: '同拍可逗号串联', before: `${a}。${b}`, after: `${a}，${b}` }] });
         break;
       }
     }

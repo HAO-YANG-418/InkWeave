@@ -80,15 +80,17 @@ describe('computeTextStats', () => {
 // 核心检测器测试
 // ============================================================
 describe('checkChapter', () => {
-  it('should report dash as grace-quota warning, not hard error (破格额度 P0)', () => {
-    // 1处破折号：≤2 不报
+  it('破折号硬卡：出现1个即 error（对齐 09-04 卫生层 + base-prompt 零容忍）', () => {
+    // 1处破折号：error
     const { violations: v1 } = checkChapter('他转过身——突然停住了。');
-    expect(v1.filter(x => x.ruleId === 'forbidden_char_dash').length).toBe(0);
-    // 3处破折号：>2 报 warning（不再是 error 硬禁）
+    const d1 = v1.filter(x => x.ruleId === 'forbidden_char_dash');
+    expect(d1.length).toBe(1);
+    expect(d1[0].severity).toBe('error');
+    // 3处破折号：仍 error（不是 warning）
     const { violations: v3 } = checkChapter('他转过身——突然停住——看见一道光——没再说话。');
-    const dashWarn = v3.filter(x => x.ruleId === 'forbidden_char_dash');
-    expect(dashWarn.length).toBe(1);
-    expect(dashWarn[0].severity).toBe('warning');
+    const d3 = v3.filter(x => x.ruleId === 'forbidden_char_dash');
+    expect(d3.length).toBe(1);
+    expect(d3[0].severity).toBe('error');
   });
 
   it('should detect comma chain in narrative', () => {
@@ -413,15 +415,15 @@ describe('semantic-check (P1.5)', () => {
 import { checkTextureVariety } from './checkers.js';
 
 describe('P0 去均匀腔', () => {
-  it('破折号≤2处不报，>2处报warning', () => {
+  it('破折号零容忍：出现即 error', () => {
     const { violations: v0 } = checkChapter('他看了很久，没有名字。风从窗缝进来。');
     const { violations: v2 } = checkChapter('他看了——很久——没有名字。风从窗缝进来。');
     const { violations: v4 } = checkChapter('他看了——很久——没有名字——一个都没有——他忽然笑了。');
     expect(v0.filter(x => x.ruleId === 'forbidden_char_dash').length).toBe(0);
-    expect(v2.filter(x => x.ruleId === 'forbidden_char_dash').length).toBe(0);
-    const dashWarn = v4.filter(x => x.ruleId === 'forbidden_char_dash');
-    expect(dashWarn.length).toBe(1);
-    expect(dashWarn[0].severity).toBe('warning');
+    expect(v2.filter(x => x.ruleId === 'forbidden_char_dash').length).toBe(1);
+    expect(v2.filter(x => x.ruleId === 'forbidden_char_dash')[0].severity).toBe('error');
+    expect(v4.filter(x => x.ruleId === 'forbidden_char_dash').length).toBe(1);
+    expect(v4.filter(x => x.ruleId === 'forbidden_char_dash')[0].severity).toBe('error');
   });
 
   it('checkTextureVariety 应抓密集循环质感词', () => {

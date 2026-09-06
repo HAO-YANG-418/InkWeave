@@ -417,7 +417,7 @@ function checkCommaChain(text: string, stats: TextStats): Violation[] {
 function checkForbiddenChar(text: string): Violation[] {
   const violations: Violation[] = [];
   for (const char of FORBIDDEN_CHARS) {
-    if (char === '——') continue; // 破折号拆出，按全局禁止单独硬禁处理
+    if (char === '——') continue; // 破折号拆出，下方单独按软护栏处理（≤2 不报，>2 warning）
     const escaped = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const count = (text.match(new RegExp(escaped, 'g')) || []).length;
     if (count > 0) {
@@ -430,8 +430,8 @@ function checkForbiddenChar(text: string): Violation[] {
       });
     }
   }
-  // 破折号硬禁（零容忍）：与 base-prompt 铁则、preset no_dash 全面对齐。
-  // 全局与所有节点一致禁止破折号，出现1个即 error，在门禁中记为错误。
+  // 破折号软护栏（09-05 P0 决策）：与 base-prompt 铁则、preset no_dash 方向一致（不建议使用），
+  // 但偶发认知翻转可容忍——≤2 处不报，>2 处才 warning，不硬卡。（注：源码树 prompt 仍写"零容忍"，双轨未对齐，待拍板）
   const dashCount = (text.match(/——/g) || []).length;
   // 破格额度 P0（09-05 软护栏）：≤2 处破折号不报（网文偶发认知翻转可容忍），>2 处才报 warning，绝不硬卡。
   if (dashCount > 2) {
@@ -1081,10 +1081,10 @@ function checkNotShiPattern(text: string): Violation[] {
   if (allMatches.length > 0) {
     const unique = [...new Set(allMatches)];
     const fixes: FixSuggestion[] = unique.slice(0, 5).map(m => ({ description: '删除"不是X"，直接写Y的具体表现', before: m.length > 60 ? m.substring(0, 60) + '...' : m, after: '直接写Y的具体表现，不用"不是X是Y"绕弯子' }));
-    // 修复 D2：对齐铁则十二"零容忍/硬禁 error"。原阈值 >=5 才 error（放水），
-    // 导致作者写 4 处仍可过门禁，与契约承诺严重不符。改为出现即 error。
-    // D2 方案 B（用户拍板 2026-08-22）：≤2处宽容（warning），≥3处才 error。
-    // 1–2处为感官/认知辨识破格放行；仅卡≥3处排比式堆砌的真 AI 味。
+    // 修复 D2 演进：最初阈值 >=5 才 error（放水，作者写 4 处仍可过门禁）；
+    // 后一度收紧为"出现即 error"；最终用户 2026-08-22 拍板 方案 B：
+    // ≤2处宽容（warning），≥3处才 error。1–2处为感官/认知辨识破格放行；
+    // 仅卡≥3处排比式堆砌的真 AI 味。下方 severity 实现以方案 B 为准。
     const severity = allMatches.length >= 3 ? 'error' : (allMatches.length >= 1 ? 'warning' : 'info');
     violations.push({ ruleId: 'not_shi_pattern', ruleName: '不是X是Y', message: `检测到${allMatches.length}处"不是X是Y"句式（含跨段/孤句模式）：${unique.slice(0, 4).join(' | ')}`, severity, suggestion: '直接写Y的具体表现，不用"不是X是Y"绕弯子。跨段写法（"不是X。↵是Y。"）与同句写法同等违规。白名单已排除"不是+动词/人称"的合法否定。', fixes });
   }
